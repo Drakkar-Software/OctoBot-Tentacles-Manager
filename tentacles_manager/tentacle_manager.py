@@ -13,14 +13,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import logging
 
-from tools.logging.logging_util import get_logger
+import tentacles_manager.tentacle_package_util as TentaclePackageUtil
+import tentacles_manager.tentacle_util as TentacleUtil
+from tentacles_manager.tentacle_package_manager import TentaclePackageManager
 
-import tools.tentacle_manager.tentacle_package_util as TentaclePackageUtil
-import tools.tentacle_manager.tentacle_util as TentacleUtil
-from tools.tentacle_manager.tentacle_package_manager import TentaclePackageManager
-
-from config import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, CONFIG_TENTACLES_KEY, \
+from tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, CONFIG_TENTACLES_KEY, \
     TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, TENTACLE_DESCRIPTION_IS_URL, EVALUATOR_ADVANCED_FOLDER, \
     TentacleManagerActions, TENTACLE_PACKAGE_NAME
 
@@ -36,7 +35,7 @@ class TentacleManager:
         self.tentacle_package_manager = TentaclePackageManager(config, self)
         self.default_package = None
         self.advanced_package_list = []
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.force_actions = False
 
     def install_tentacle_package(self, package_path_or_url, force=False):

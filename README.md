@@ -1,10 +1,8 @@
-# OctoBot-Tentacles-Manager [1.0.0](https://github.com/Drakkar-Software/OctoBot-Tentacles-Manager/tree/master/CHANGELOG.md)
+# OctoBot-Tentacles-Manager [1.0.1](https://github.com/Drakkar-Software/OctoBot-Tentacles-Manager/tree/master/CHANGELOG.md)
 [![PyPI](https://img.shields.io/pypi/v/OctoBot-Tentacles-Manager.svg)](https://pypi.python.org/pypi/OctoBot-Tentacles-Manager/)
 [![Downloads](https://pepy.tech/badge/OctoBot-Tentacles-Manager/month)](https://pepy.tech/project/OctoBot-Tentacles-Manager)
 [![Build Status](https://api.travis-ci.org/Drakkar-Software/OctoBot-Tentacles-Manager.svg?branch=master)](https://travis-ci.org/Drakkar-Software/OctoBot-Tentacles-Manager) 
 [![Build status](https://ci.appveyor.com/api/projects/status/c7afc4o5bxt84po9?svg=true)](https://ci.appveyor.com/project/Herklos/octobot-tentacles-manager)
-
-
 
 
 A module manager for your [OctoBot](https://github.com/Drakkar-Software/OctoBot) ! 
@@ -14,6 +12,7 @@ A module manager for your [OctoBot](https://github.com/Drakkar-Software/OctoBot)
 - Install [OctoBot](https://github.com/Drakkar-Software/OctoBot)
 
 - Use CLI interface : 
+
 ``` {.sourceCode .bash}
 $ python3 start.py -p install all
 ```
