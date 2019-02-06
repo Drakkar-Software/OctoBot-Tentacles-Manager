@@ -14,16 +14,17 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from tools.logging.logging_util import get_logger
 import os
+import logging
 
 from jinja2.nativetypes import NativeEnvironment
 
-from config import TENTACLE_CREATOR_PATH, TENTACLE_TEMPLATE_PATH, TOOLS_PATH, \
+from tentacles_manager import TENTACLE_CREATOR_PATH, TENTACLE_TEMPLATE_PATH, \
     TENTACLE_TEMPLATE_DESCRIPTION, TENTACLE_TEMPLATE_EXT, TENTACLE_TEMPLATE_PRE_EXT, TENTACLE_PARENTS, TENTACLE_SONS, \
     EVALUATOR_ADVANCED_FOLDER, TENTACLES_PATH, TENTACLE_CONFIG_TEMPLATE_PRE_EXT, CONFIG_FILE_EXT, \
     EVALUATOR_CONFIG_FOLDER
-from tools.tentacle_manager.tentacle_util import get_tentacles_arch
+
+from tentacles_manager.tentacle_util import get_tentacles_arch
 
 
 class TentacleCreator:
@@ -32,16 +33,16 @@ class TentacleCreator:
         self.config = config
         self.templates = {}
         self.config_templates = {}
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     @staticmethod
     def get_template_path(name):
-        return f"{TOOLS_PATH}/{TENTACLE_CREATOR_PATH}/{TENTACLE_TEMPLATE_PATH}/{name,}{TENTACLE_TEMPLATE_PRE_EXT}" \
+        return f"TODO/{TENTACLE_CREATOR_PATH}/{TENTACLE_TEMPLATE_PATH}/{name,}{TENTACLE_TEMPLATE_PRE_EXT}" \
             f"{TENTACLE_TEMPLATE_EXT}"
 
     @staticmethod
     def get_config_template_path(name):
-        return f"{TOOLS_PATH}/{TENTACLE_CREATOR_PATH}/{TENTACLE_TEMPLATE_PATH}/{name}" \
+        return f"TODO/{TENTACLE_CREATOR_PATH}/{TENTACLE_TEMPLATE_PATH}/{name}" \
             f"{TENTACLE_CONFIG_TEMPLATE_PRE_EXT}{TENTACLE_TEMPLATE_EXT}"
 
     def get_templates(self):
@@ -111,7 +112,7 @@ class CreatedTentacle:
         self.tests = []
 
         self.config_file = self.get_config_path() if self.subtype in self.tentacle_creator.get_config_templates() else[]
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     def get_path(self):
         return f"{TENTACLES_PATH}/{self.t_type}/{self.subtype}/{EVALUATOR_ADVANCED_FOLDER}/{self.name}.py"

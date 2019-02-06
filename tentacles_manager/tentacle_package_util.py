@@ -15,15 +15,16 @@
 #  License along with this library.
 
 import json
+import logging
+
 import requests
 import os
 
-from tools.tentacle_manager import tentacle_util as TentacleUtil
-from config import TENTACLES_PUBLIC_LIST, TENTACLES_DEFAULT_BRANCH, TENTACLE_PACKAGE_DESCRIPTION, \
+from tentacles_manager import tentacle_util as TentacleUtil
+from tentacles_manager import TENTACLES_PUBLIC_LIST, TENTACLES_DEFAULT_BRANCH, TENTACLE_PACKAGE_DESCRIPTION, \
     GITHUB_BASE_URL, GITHUB, TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, TENTACLE_DESCRIPTION_IS_URL, \
     TENTACLES_INSTALL_FOLDERS, PYTHON_INIT_FILE, TENTACLE_PACKAGE_NAME, TENTACLES_PUBLIC_REPOSITORY, \
     GITHUB_RAW_CONTENT_URL
-from tools.logging.logging_util import get_logger
 
 
 def get_package_description_with_adaptation(url_or_path):
@@ -143,7 +144,7 @@ def check_path(path):
 
 def update_config_file(config_file_path, default_file_path, classes_to_consider):
 
-    logger = get_logger("TentaclePackageUtil")
+    logger = logging.getLogger("TentaclePackageUtil")
 
     # initialize file content
     config_content = {}
