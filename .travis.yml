@@ -1,0 +1,52 @@
+notifications:
+  email: false
+sudo: enabled
+os: linux
+language: python
+cache: pip
+python: 3.7-dev
+install:
+  - python3 -m pip install -r requirements.txt -r dev_requirements.txt
+
+matrix:
+  include:
+#    - name: "OS X - Python 3"
+#      os: osx
+#      osx_image: xcode8.3
+#      language: generic
+#      before_cache:
+#        - brew cleanup
+#      cache:
+#        directories:
+#          - $HOME/Library/Caches/Homebrew
+#      before_install:
+#        - brew update || travis_terminate 1;
+#        - brew upgrade python || brew install python || travis_terminate 1;
+#        - python3 -m venv venv || travis_terminate 1;
+#        - source venv/bin/activate;
+#
+#      script:
+#        - pytest tests
+
+    - name: "Linux - Python 3 nightly"
+      os: linux
+      python: nightly
+      language: python
+      script:
+        - pytest tests
+        - python3 setup.py sdist bdist_wheel && python3 -m twine check dist/*
+
+deploy:
+  - provider: pypi
+    user:
+      secure: hV7CzUekkPr2BPNmjnTERvWUD6taGN10NvEy2MemX1znXEWQUTp/VFZYXPtunOH4mrEPP8dBF61kdLA+uaSble6Us3pWL6VWRgXf0LjDGngaK+So98rxGbrf+NX9/+u8rRb0IRqTGPFPOXMRKCNmWmcnEXlUZLjcUx7NSs2/Jn3hf5x2lf0+l9TXgolaV7/W+eRTrI3vMY05dT+T9fOwZ7Qlg/cWvenaB8KgmDxpjnfgyYsaYJmO+XrNq/Iq+rXZX4TkIjQdCCAX7CYYeOcoNJi/tTBPbzDQR3ehL+1i/oUhk9iEjpjSSso7o7sMeSI1v1z7DyRzVvcZ5+RsCDuY9gSUP95TvBUl7E+J1pQt7qPoqJz8lHpBeKGIoXm0KTisNu/0wlRdCH85SFQPAxu/uwpqFAXroFinItTgBQ20fyOoYmHGNIs6N8QKB8fXI33HZusdt7XM9D9HgsZeuX2NaKDuqrn7d2gP+H6YEv4ekKtmvbey9d4uzxpBSqVccwe4hsPPWrUJ0SDWW3NWrw+ozJAmL6Exs5iIka/+T1fxj1pqF6wsiEb4t3AhK/Rpuq8vZgkgRUs/o9gtrBYkLxugUBVThaWeleBx+suXxp+IznZ7NGwpq6XHYol22E66OIYalrYNfYh/RekW+f/L/sWZyc2MeTO863odudJslfvrMpA=
+      password:
+        secure: ceZNP0fRW5F9+lZrFvrGgmqK5a9yzLJpP3kEEyEu+ISpQ4By/NUkCDoVTZivx4wh6rEtv3wh6CgbbJV/ydTLNeHKi21H7tv8YPr1Hq/Hvsh4pdjL+M/ii3l9VtS6CnXhDNKwn0Sqp4b9PeUC7UcUeJeNv915b1A7nMRee32iGbm3ToILGVApWzMLp0+dWtYdJ4ZKyfyJqbzl6414jkCqdCWz7o6Lf7dO9xe/Sl6Tnop6893d1XaoZ07eSVTrTmmvWpSEIaJrX+Fj9TBUnWqc3GqqYXwhmZGIOxE+qwgX/LIIBDSiW31TwJRRIZt76+5xjtjzFuwlz0J2LlT3fBbpX5Q7afFbWsfrEdqYOhvkG0lyDDiKNngp2UffnS5KRRTHgjMoeXmS4yOwE3N+kF/LGw+4htzcobkZ8b5L9+I+aD2M4a8BpTI2zXokyCIOg/QSK0gK3P6pCHXkLYnHEbHXeodzUogKbd42DTgqsNK9P1ne4WHE2WkqNu6n2yJBgBta3C7owkYvfRJ4UuaQX6eASH19BsgGzJ0N0rcB9/3mVKIXcAG4QAN9OmWZem6i8f/uc4JWtFcHhb7vfpTWeo0qCpxi7lZuZXQsC+sSa+E/JqELtC4wb4WZVYMzFzt3Wa/q9I+F6rPYx03RxAieU0q8emhfpksePc0obHJsO/ABsmA=
+    skip_existing: true
+    skip_cleanup: true
+    distributions: "sdist bdist_wheel"
+    on:
+      repo: Drakkar-Software/OctoBot-Tentacles-Manager
+      branch: master
+      tags: true
+      condition: $TRAVIS_OS_NAME = 'linux'
