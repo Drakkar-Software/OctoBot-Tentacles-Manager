@@ -13,14 +13,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
-from tools.logging.logging_util import get_logger
+import logging
 import os
 
-import tools.tentacle_manager.tentacle_package_util as TentaclePackageUtil
-import tools.tentacle_manager.tentacle_util as TentacleUtil
+import tentacles_manager.tentacle_package_util as TentaclePackageUtil
+import tentacles_manager.tentacle_util as TentacleUtil
 
-from config import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, \
+from tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, \
     TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, \
     TENTACLE_DESCRIPTION_IS_URL, TENTACLE_TYPES, EVALUATOR_CONFIG_FOLDER, TENTACLE_MODULE_NAME, TENTACLE_MODULE_TYPE, \
     TENTACLE_MODULE_SUBTYPE, TENTACLE_MODULE_VERSION, TENTACLE_MODULE_CONFIG_FILES, TENTACLE_MODULE_REQUIREMENTS, \
@@ -34,7 +33,7 @@ class TentaclePackageManager:
     def __init__(self, config, tentacle_manager):
         self.config = config
         self.tentacle_manager = tentacle_manager
-        self.logger = get_logger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.just_processed_modules = []
         self.installed_modules = {}
         self.max_steps = None
@@ -423,10 +422,10 @@ except Exception as e:
         with open(init_file, "w") as init_file_w:
             init_file_content = """import os
 
-from tools.tentacle_manager.tentacle_util import check_tentacle
-from tools.logging.logging_util import get_logger
+from tentacles_manager.tentacle_util import check_tentacle
+from tools.logging.logging_util import logging.getLogger
 
-LOGGER = get_logger("TentacleLoader")
+LOGGER = logging.getLogger("TentacleLoader")
 PATH = os.path.dirname(os.path.realpath(__file__))
 
 """
@@ -443,7 +442,7 @@ PATH = os.path.dirname(os.path.realpath(__file__))
     @staticmethod
     def update_evaluator_config_file(evaluator_config_file=CONFIG_EVALUATOR_FILE_PATH):
 
-        logger = get_logger(TentaclePackageManager.__name__)
+        logger = logging.getLogger(TentaclePackageManager.__name__)
         try:
             logger.info(f"Updating {evaluator_config_file} using new data...")
 
@@ -462,7 +461,7 @@ PATH = os.path.dirname(os.path.realpath(__file__))
     @staticmethod
     def update_trading_config_file(trading_config_file=CONFIG_TRADING_FILE_PATH):
 
-        logger = get_logger(TentaclePackageManager.__name__)
+        logger = logging.getLogger(TentaclePackageManager.__name__)
         try:
             logger.info(f"Updating {trading_config_file} using new data...")
 

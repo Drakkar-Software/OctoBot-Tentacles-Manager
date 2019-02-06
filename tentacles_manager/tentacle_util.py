@@ -13,13 +13,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
+import logging
 import os
 import shutil
 import copy
 import json
 
-from config import EVALUATOR_DEFAULT_FOLDER, TENTACLE_TYPES, EVALUATOR_CONFIG_FOLDER, \
+from tentacles_manager import EVALUATOR_DEFAULT_FOLDER, TENTACLE_TYPES, EVALUATOR_CONFIG_FOLDER, \
     TENTACLE_MODULE_REQUIREMENT_VERSION_SEPARATOR, TENTACLE_MODULE_NAME, TENTACLE_MODULE_TYPE, \
     TENTACLE_MODULE_SUBTYPE, TENTACLE_MODULE_VERSION, TENTACLE_MODULE_CONFIG_FILES, TENTACLE_MODULE_REQUIREMENTS, \
     TENTACLE_MODULE_LIST_SEPARATOR, TENTACLE_MODULE_REQUIREMENT_WITH_VERSION, TENTACLE_MODULE_DESCRIPTION, \
@@ -28,9 +28,7 @@ from config import EVALUATOR_DEFAULT_FOLDER, TENTACLE_TYPES, EVALUATOR_CONFIG_FO
     TENTACLES_EVALUATOR_STRATEGIES_PATH, TENTACLES_EVALUATOR_UTIL_PATH, TENTACLES_TRADING_MODE_PATH, \
     TENTACLES_PYTHON_INIT_CONTENT, PYTHON_INIT_FILE, TENTACLE_MODULE_TESTS, TENTACLES_TEST_PATH, TENTACLE_MODULE_DEV, \
     TENTACLE_PACKAGE, TENTACLE_MODULE_RESOURCE_FILES, EVALUATOR_RESOURCE_FOLDER, \
-    TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION
-from tools.config_manager import ConfigManager
-from tools.logging.logging_util import get_logger
+    TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION, CONFIG_DEBUG_OPTION
 
 
 def tentacles_arch_exists() -> bool:
@@ -266,7 +264,7 @@ def install_on_development(config, module_dev):
         return True
 
     # is on development
-    if module_dev and ConfigManager.is_in_dev_mode(config):
+    if module_dev and CONFIG_DEBUG_OPTION in config and config[CONFIG_DEBUG_OPTION]:
         return True
 
     return False
@@ -289,7 +287,7 @@ def _read_tentacle(file_name):
 
 
 def check_tentacle(path, tentacle, verbose=True):
-    logger = get_logger("TentacleChecker")
+    logger = logging.getLogger("TentacleChecker")
     try:
         # only check tentacle version for default tentacles
         if path.endswith(EVALUATOR_DEFAULT_FOLDER):

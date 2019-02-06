@@ -5,8 +5,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/c7afc4o5bxt84po9?svg=true)](https://ci.appveyor.com/project/Herklos/octobot-tentacles-manager)
 
 
-
-
 A module manager for your [OctoBot](https://github.com/Drakkar-Software/OctoBot) ! 
 
 
@@ -14,6 +12,7 @@ A module manager for your [OctoBot](https://github.com/Drakkar-Software/OctoBot)
 - Install [OctoBot](https://github.com/Drakkar-Software/OctoBot)
 
 - Use CLI interface : 
+
 ``` {.sourceCode .bash}
 $ python3 start.py -p install all
 ```
