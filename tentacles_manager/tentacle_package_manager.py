@@ -423,7 +423,7 @@ except Exception as e:
             init_file_content = """import os
 
 from tentacles_manager.tentacle_util import check_tentacle
-from tools.logging.logging_util import logging.getLogger
+import logging
 
 LOGGER = logging.getLogger("TentacleLoader")
 PATH = os.path.dirname(os.path.realpath(__file__))
