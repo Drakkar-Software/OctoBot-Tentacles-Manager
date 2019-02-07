@@ -14,16 +14,15 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-import os
 import logging
+import os
 
 from jinja2.nativetypes import NativeEnvironment
 
-from tentacles_manager import TENTACLE_CREATOR_PATH, TENTACLE_TEMPLATE_PATH, \
+from tentacles_manager import TENTACLE_TEMPLATE_PATH, \
     TENTACLE_TEMPLATE_DESCRIPTION, TENTACLE_TEMPLATE_EXT, TENTACLE_TEMPLATE_PRE_EXT, TENTACLE_PARENTS, TENTACLE_SONS, \
     EVALUATOR_ADVANCED_FOLDER, TENTACLES_PATH, TENTACLE_CONFIG_TEMPLATE_PRE_EXT, CONFIG_FILE_EXT, \
     EVALUATOR_CONFIG_FOLDER
-
 from tentacles_manager.tentacle_util import get_tentacles_arch
 
 
@@ -37,13 +36,13 @@ class TentacleCreator:
 
     @staticmethod
     def get_template_path(name):
-        return f"TODO/{TENTACLE_CREATOR_PATH}/{TENTACLE_TEMPLATE_PATH}/{name,}{TENTACLE_TEMPLATE_PRE_EXT}" \
-            f"{TENTACLE_TEMPLATE_EXT}"
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), TENTACLE_TEMPLATE_PATH,
+                            f"{name}{TENTACLE_TEMPLATE_PRE_EXT}{TENTACLE_TEMPLATE_EXT}")
 
     @staticmethod
     def get_config_template_path(name):
-        return f"TODO/{TENTACLE_CREATOR_PATH}/{TENTACLE_TEMPLATE_PATH}/{name}" \
-            f"{TENTACLE_CONFIG_TEMPLATE_PRE_EXT}{TENTACLE_TEMPLATE_EXT}"
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), TENTACLE_TEMPLATE_PATH,
+                            f"{name}{TENTACLE_CONFIG_TEMPLATE_PRE_EXT}{TENTACLE_TEMPLATE_EXT}")
 
     def get_templates(self):
         return self.templates
@@ -88,7 +87,7 @@ class TentacleCreator:
                 new_tentacle.ask_description(tentacle_type)
                 new_tentacle.create_file()
                 new_tentacle.create_config_file()
-                self.logger.info("{new_tentacle.get_name()} tentacle successfully created in {new_tentacle.get_path()}")
+                self.logger.info(f"{new_tentacle.get_name()} tentacle successfully created in {new_tentacle.get_path()}")
             except Exception as e:
                 self.logger.error(f"Tentacle creation failed : {e}")
         else:
