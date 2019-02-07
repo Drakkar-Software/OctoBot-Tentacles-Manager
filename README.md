@@ -21,4 +21,4 @@ OR
 $ ./OctoBot -p install all
 ```
 
-- Use your OctoBot web interface at **'Tentacles'**
+- Use your [OctoBot web interface at **'Tentacles'**.](https://github.com/Drakkar-Software/OctoBot/wiki/Customize-your-OctoBot#octobot-is-customizable-)
