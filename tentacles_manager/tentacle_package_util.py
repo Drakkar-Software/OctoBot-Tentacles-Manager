@@ -27,15 +27,15 @@ from tentacles_manager import TENTACLES_PUBLIC_LIST, TENTACLES_DEFAULT_BRANCH, T
     GITHUB_RAW_CONTENT_URL
 
 
-def get_package_description_with_adaptation(url_or_path):
+def get_package_description_with_adaptation(url_or_path, git_branch=TENTACLES_DEFAULT_BRANCH):
     # try with package as in configuration
     try:
-        return get_package_description(url_or_path)
+        return get_package_description(url_or_path, git_branch=git_branch)
     except Exception:
-        return get_package_description(url_or_path, True)
+        return get_package_description(url_or_path, True, git_branch=git_branch)
 
 
-def get_package_description(url_or_path, try_to_adapt=False):
+def get_package_description(url_or_path, try_to_adapt=False, git_branch=TENTACLES_DEFAULT_BRANCH):
     package_url_or_path = str(url_or_path)
     # if its an url: download with requests.get and return text
     if get_is_url(package_url_or_path):
@@ -44,7 +44,7 @@ def get_package_description(url_or_path, try_to_adapt=False):
                 package_url_or_path += "/"
             # if checking on github, try adding branch and file
             if GITHUB in package_url_or_path:
-                package_url_or_path += f"{TENTACLES_DEFAULT_BRANCH}/{TENTACLES_PUBLIC_LIST}"
+                package_url_or_path += f"{git_branch}/{TENTACLES_PUBLIC_LIST}"
             # else try adding file
             else:
                 package_url_or_path += TENTACLES_PUBLIC_LIST
@@ -88,9 +88,9 @@ def add_package_description_metadata(package_description, localisation, is_url):
     }
 
 
-def get_octobot_tentacle_public_repo(to_description_file=True):
+def get_octobot_tentacle_public_repo(to_description_file=True, git_branch=TENTACLES_DEFAULT_BRANCH):
     if to_description_file:
-        return f"{GITHUB_BASE_URL}/{TENTACLES_PUBLIC_REPOSITORY}/{TENTACLES_DEFAULT_BRANCH}/{TENTACLES_PUBLIC_LIST}"
+        return f"{GITHUB_BASE_URL}/{TENTACLES_PUBLIC_REPOSITORY}/{git_branch}/{TENTACLES_PUBLIC_LIST}"
     else:
         return f"{GITHUB_BASE_URL}/{TENTACLES_PUBLIC_REPOSITORY}"
 

@@ -21,7 +21,7 @@ from tentacles_manager.tentacle_package_manager import TentaclePackageManager
 
 from tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, CONFIG_TENTACLES_KEY, \
     TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, TENTACLE_DESCRIPTION_IS_URL, EVALUATOR_ADVANCED_FOLDER, \
-    TentacleManagerActions, TENTACLE_PACKAGE_NAME
+    TentacleManagerActions, TENTACLE_PACKAGE_NAME, TENTACLES_DEFAULT_BRANCH
 
 
 class TentacleManager:
@@ -37,10 +37,12 @@ class TentacleManager:
         self.advanced_package_list = []
         self.logger = logging.getLogger(self.__class__.__name__)
         self.force_actions = False
+        self.git_branch = TENTACLES_DEFAULT_BRANCH
 
     def install_tentacle_package(self, package_path_or_url, force=False):
         self.update_list()
-        package = TentaclePackageUtil.get_package_description_with_adaptation(package_path_or_url)
+        package = TentaclePackageUtil.get_package_description_with_adaptation(package_path_or_url,
+                                                                              git_branch=self.git_branch)
         should_install = force
         if TentacleUtil.create_missing_tentacles_arch() and not force:
             should_install = self._confirm_action(self.TENTACLE_INSTALLATION_FOUND_MESSAGE)
@@ -49,7 +51,36 @@ class TentacleManager:
             self.tentacle_package_manager.try_action_on_tentacles_package(TentacleManagerActions.INSTALL,
                                                                           package, EVALUATOR_ADVANCED_FOLDER)
 
-    def parse_commands(self, commands, force=False):
+    def _update_git_branch(self, commands, default_git_branch):
+        branch_cmd = "branch"
+        equals_separator = "="
+        branch_equals_cmd = f"{branch_cmd}{equals_separator}"
+        # check if specific branch is specified in commands
+        # if found, set self.git_branch and remove info from commands
+        if branch_cmd in commands and len(commands)-1 > commands.index(branch_cmd):
+            cmd_index = commands.index(branch_cmd)
+            self.git_branch = commands[cmd_index+1]
+            commands.pop(cmd_index+1)
+            commands.pop(cmd_index)
+        elif any(branch_equals_cmd in command for command in commands):
+            for command in commands:
+                if branch_equals_cmd in command:
+                    cmd_index = commands.index(command)
+                    potential_branch = command.split(equals_separator)[1]
+                    if potential_branch:
+                        self.git_branch = potential_branch
+                        commands.pop(cmd_index)
+                        return
+                    elif len(commands)-1 > commands.index(command):
+                        self.git_branch = commands[commands.index(command)+1]
+                        commands.pop(cmd_index+1)
+                        commands.pop(cmd_index)
+                        return
+        else:
+            # otherwise use default
+            self.git_branch = default_git_branch
+
+    def parse_commands(self, commands, force=False, default_git_branch=TENTACLES_DEFAULT_BRANCH):
         help_message = """- install: Install or re-install the given tentacles modules with their requirements if any.
     Also reset tentacles configuration files if any.
 - update: Update the given tentacle modules with their requirements if any. Does not edit tentacles configuration files
@@ -59,6 +90,7 @@ Note: install, update and uninstall commands can take 2 types of arguments:
     - all: applies the command to all available tentacles (remote and installed tentacles).
     - modules_name1, module_name2, ... : force to apply the command to the given tentacle modules 
           identified by their name and separated by a ' '."""
+        self._update_git_branch(commands, default_git_branch=default_git_branch)
         self.update_list()
         if commands:
             if commands[0] == "install":
@@ -216,16 +248,18 @@ Note: install, update and uninstall commands can take 2 types of arguments:
         self.logger.info("Tentacles reset.")
 
     def update_list(self):
-        default_package_list_url = TentaclePackageUtil.get_octobot_tentacle_public_repo()
+        default_package_list_url = TentaclePackageUtil.get_octobot_tentacle_public_repo(git_branch=self.git_branch)
 
-        self.default_package = TentaclePackageUtil.get_package_description(default_package_list_url)
+        self.default_package = TentaclePackageUtil.get_package_description(default_package_list_url,
+                                                                           git_branch=self.git_branch)
 
         if CONFIG_TENTACLES_KEY in self.config:
             for package in self.config[CONFIG_TENTACLES_KEY]:
                 # try with package as in configuration
                 try:
                     self.advanced_package_list.append(
-                        TentaclePackageUtil.get_package_description_with_adaptation(package))
+                        TentaclePackageUtil.get_package_description_with_adaptation(package,
+                                                                                    git_branch=self.git_branch))
                 except Exception:
                     self.logger.error(f"Impossible to get an OctoBot Tentacles Package at : {package}")
 
