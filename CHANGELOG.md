@@ -3,7 +3,7 @@ Changelog for 1.0.6
 *Released date : April 13 2019*
 
 # New feature :
-    - Install now only reset tentecle config file if config file is missing
+    - Install now only reset tentacle config file if config file is missing
 
 Changelog for 1.0.5
 ====================
