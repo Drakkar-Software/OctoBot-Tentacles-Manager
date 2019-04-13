@@ -137,6 +137,10 @@ def read_tentacles(path, description_list):
                 read_tentacles(file_name, description_list)
 
 
+def should_recreate_config_file(file_path, config_file_content):
+    return config_file_content and not os.path.isfile(file_path)
+
+
 def check_path(path):
     last_path_folder = path.split("/")[-1]
     return last_path_folder in TENTACLES_INSTALL_FOLDERS

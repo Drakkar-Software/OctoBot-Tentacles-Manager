@@ -82,7 +82,7 @@ class TentacleManager:
 
     def parse_commands(self, commands, force=False, default_git_branch=TENTACLES_DEFAULT_BRANCH):
         help_message = """- install: Install or re-install the given tentacles modules with their requirements if any.
-    Also reset tentacles configuration files if any.
+    Does not edit tentacles configuration files and creates it if missing.
 - update: Update the given tentacle modules with their requirements if any. Does not edit tentacles configuration files
 - uninstall: Uninstall the given tentacle modules. Also delete the associated tentacle configuration.
 - reset_tentacles: Deletes all the installed tentacle modules and configurations.

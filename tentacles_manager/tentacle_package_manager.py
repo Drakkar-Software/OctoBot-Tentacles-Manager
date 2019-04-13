@@ -340,7 +340,8 @@ except Exception as e:
                         config_file_content = module_file.read()
 
                 # install local file content
-                if action == TentacleManagerActions.INSTALL:
+                if action == TentacleManagerActions.INSTALL and \
+                        TentaclePackageUtil.should_recreate_config_file(file_path, config_file_content):
                     with open(file_path, "wb" if read_as_bytes else "w") as new_file:
                         new_file.write(config_file_content)
 
