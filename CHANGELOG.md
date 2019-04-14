@@ -1,3 +1,10 @@
+Changelog for 1.0.8
+====================
+*Released date : April 14 2019*
+
+# New feature :
+    - Log hotfix
+   
 Changelog for 1.0.7
 ====================
 *Released date : April 14 2019*

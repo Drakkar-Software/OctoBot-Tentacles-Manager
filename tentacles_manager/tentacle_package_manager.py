@@ -162,9 +162,9 @@ except Exception as e:
             if action == TentacleManagerActions.INSTALL or action == TentacleManagerActions.UPDATE:
                 self._try_action_on_requirements(action, parsed_module, package_name)
         elif action == TentacleManagerActions.INSTALL or action == TentacleManagerActions.UPDATE:
-            self.logger.infoing(f"{module_name} is currently on development, "
-                                "it will not be installed (to install it anyway, "
-                                "add \"DEV-MODE\": true in your config.json)")
+            self.logger.info(f"{module_name} is currently on development, "
+                             "it will not be installed (to install it anyway, "
+                             "add \"DEV-MODE\": true in your config.json)")
 
     def _should_do_something(self, action, module_name, module_version, need_this_exact_version=False, requiring=None,
                              parsed_module=None, package=None):
