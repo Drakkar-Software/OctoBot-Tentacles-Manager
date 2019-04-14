@@ -76,10 +76,13 @@ def test_config_file_management():
     _cleanup()
 
 
-def test_install_specified_argument_branch():
+def test_install_update_specified_argument_branch():
     manager = TentacleManager({})
     # use default_git_branch
     command_install = ["install", "all"]
+    manager.parse_commands(command_install, force=True, default_git_branch="dev")
+    manager = TentacleManager({})
+    command_install = ["update", "all"]
     manager.parse_commands(command_install, force=True, default_git_branch="dev")
     _cleanup()
     # use command_install branch

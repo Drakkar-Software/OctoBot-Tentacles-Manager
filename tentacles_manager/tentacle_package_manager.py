@@ -157,16 +157,17 @@ except Exception as e:
                                               parsed_module[TENTACLE_MODULE_VERSION],
                                               module_file_content, module_test_files, target_folder, module_name):
                 # manage module config
-                self._try_action_on_config_or_resources(action, package, module_name, is_url, package_localisation)
+                self._try_action_on_config_or_resources(action, parsed_module, module_name, is_url, package_localisation)
 
             if action == TentacleManagerActions.INSTALL or action == TentacleManagerActions.UPDATE:
-                self._try_action_on_requirements(action, package, module_name, package_name)
-        else:
-            self.logger.warning(f"{module_name} is currently on development, "
+                self._try_action_on_requirements(action, parsed_module, package_name)
+        elif action == TentacleManagerActions.INSTALL or action == TentacleManagerActions.UPDATE:
+            self.logger.infoing(f"{module_name} is currently on development, "
                                 "it will not be installed (to install it anyway, "
                                 "add \"DEV-MODE\": true in your config.json)")
 
-    def _should_do_something(self, action, module_name, module_version, need_this_exact_version=False, requiring=None):
+    def _should_do_something(self, action, module_name, module_version, need_this_exact_version=False, requiring=None,
+                             parsed_module=None, package=None):
         if action == TentacleManagerActions.UPDATE:
             if TentacleUtil.is_module_in_list(module_name, None, self.installed_modules):
                 installed_version = self.installed_modules[module_name][TENTACLE_MODULE_VERSION]
@@ -192,8 +193,11 @@ except Exception as e:
                     self.logger.error(f"can't find tentacle: {module_name} required for {requiring} in installed "
                                       f"tentacles. Try to install the required tentacle")
                 else:
-                    self.logger.info(f"new tentacle found in tentacles packages: {module_name}. "
-                                     f"You can install it using the command: start.py -p install {module_name}")
+                    if parsed_module is None:
+                        parsed_module = TentacleUtil.parse_module_header(package)
+                    if TentacleUtil.install_on_development(self.config, parsed_module[TENTACLE_MODULE_DEV]):
+                        self.logger.info(f"new tentacle found in tentacles packages: {module_name}. "
+                                         f"You can install it using the command: start.py -p install {module_name}")
 
             return False
         else:
@@ -210,7 +214,8 @@ except Exception as e:
                         not self._has_just_processed_module(tentacle_module,
                                                             package[tentacle_module][TENTACLE_MODULE_VERSION]) and \
                         self._should_do_something(action, tentacle_module,
-                                                  package[tentacle_module][TENTACLE_MODULE_VERSION]):
+                                                  package[tentacle_module][TENTACLE_MODULE_VERSION],
+                                                  package=package[tentacle_module]):
                     self.process_module(action, package, tentacle_module, package_localisation, is_url, target_folder,
                                         package_name)
             except Exception as e:
@@ -223,8 +228,7 @@ except Exception as e:
                     self.logger.error(f"Updating {error}")
             self.inc_current_step()
 
-    def _try_action_on_requirements(self, action, package, module_name, package_name):
-        parsed_module = TentacleUtil.parse_module_header(package[module_name])
+    def _try_action_on_requirements(self, action, parsed_module, package_name):
         success = True
         module_name = parsed_module[TENTACLE_MODULE_NAME]
         applied_modules = [module_name]
@@ -235,7 +239,8 @@ except Exception as e:
                     requirement_module_version = requirement_data[TENTACLE_MODULE_VERSION]
                     if not self._has_just_processed_module(requirement_module_name, requirement_module_version) and \
                             self._should_do_something(action, requirement_module_name,
-                                                      requirement_module_version, True, module_name):
+                                                      requirement_module_version, True, module_name,
+                                                      parsed_module=parsed_module):
                         try:
                             req_package, _, localisation, is_url, destination, _ = self.tentacle_manager. \
                                 get_package_in_lists(requirement_module_name, requirement_module_version)
@@ -279,8 +284,7 @@ except Exception as e:
                             self.process_module(TentacleManagerActions.UNINSTALL, req_package, module_to_remove,
                                                 localisation, is_url, destination, package_name)
 
-    def _try_action_on_config_or_resources(self, action, package, module_name, is_url, package_localisation):
-        parsed_module = TentacleUtil.parse_module_header(package[module_name])
+    def _try_action_on_config_or_resources(self, action, parsed_module, module_name, is_url, package_localisation):
 
         file_dir = TentacleUtil.create_path_from_type(parsed_module[TENTACLE_MODULE_TYPE],
                                                       parsed_module[TENTACLE_MODULE_SUBTYPE], "")

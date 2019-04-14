@@ -15,7 +15,7 @@
 #  License along with this library.
 from enum import Enum
 
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 PROJECT_NAME = "OctoBot-Tentacles-Manager"
 OCTOBOT_NAME = "OctoBot"
 

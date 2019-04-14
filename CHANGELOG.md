@@ -1,3 +1,10 @@
+Changelog for 1.0.7
+====================
+*Released date : April 14 2019*
+
+# New feature :
+    - Now do not display in dev tentacles when update or uninstall if dev mode is not activated
+
 Changelog for 1.0.6
 ====================
 *Released date : April 13 2019*
