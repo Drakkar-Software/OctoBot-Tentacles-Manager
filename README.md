@@ -7,6 +7,10 @@
 
 A module manager for your [OctoBot](https://github.com/Drakkar-Software/OctoBot) ! 
 
+- Install OctoBot-Tentacles-Manager from pip
+``` {.sourceCode .bash}
+$ python3 -m pip install OctoBot-Tentacles-Manager
+```
 
 ## Usage
 - Install [OctoBot](https://github.com/Drakkar-Software/OctoBot)
@@ -21,9 +25,5 @@ OR
 $ ./OctoBot -p install all
 ```
 
-- Install from pip
-``` {.sourceCode .bash}
-$ python3 -m pip install OctoBot-Tentacles-Manager
-```
-
 - Use your [OctoBot web interface at **'Tentacles'**.](https://github.com/Drakkar-Software/OctoBot/wiki/Customize-your-OctoBot#octobot-is-customizable-)
+
