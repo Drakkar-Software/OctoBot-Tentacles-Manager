@@ -22,7 +22,7 @@ from jinja2.nativetypes import NativeEnvironment
 from tentacles_manager import TENTACLE_TEMPLATE_PATH, \
     TENTACLE_TEMPLATE_DESCRIPTION, TENTACLE_TEMPLATE_EXT, TENTACLE_TEMPLATE_PRE_EXT, TENTACLE_PARENTS, TENTACLE_SONS, \
     EVALUATOR_ADVANCED_FOLDER, TENTACLES_PATH, TENTACLE_CONFIG_TEMPLATE_PRE_EXT, CONFIG_FILE_EXT, \
-    EVALUATOR_CONFIG_FOLDER
+    EVALUATOR_CONFIG_FOLDER, INFO
 from tentacles_manager.tentacle_util import get_tentacles_arch
 
 
@@ -33,6 +33,7 @@ class TentacleCreator:
         self.templates = {}
         self.config_templates = {}
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(INFO)
 
     @staticmethod
     def get_template_path(name):
@@ -112,6 +113,7 @@ class CreatedTentacle:
 
         self.config_file = self.get_config_path() if self.subtype in self.tentacle_creator.get_config_templates() else[]
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(INFO)
 
     def get_path(self):
         return f"{TENTACLES_PATH}/{self.t_type}/{self.subtype}/{EVALUATOR_ADVANCED_FOLDER}/{self.name}.py"

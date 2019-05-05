@@ -1,3 +1,10 @@
+Changelog for 1.0.9
+====================
+*Released date : Mai 5 2019*
+
+# New feature :
+    - Handle config schema
+   
 Changelog for 1.0.8
 ====================
 *Released date : April 14 2019*

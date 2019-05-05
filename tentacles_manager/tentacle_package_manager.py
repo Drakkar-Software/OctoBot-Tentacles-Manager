@@ -26,7 +26,7 @@ from tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FO
     TENTACLE_MODULE_REQUIREMENT_WITH_VERSION, TENTACLES_PATH, PYTHON_INIT_FILE, TENTACLE_MODULE_TESTS, \
     TentacleManagerActions, CONFIG_DEFAULT_EVALUATOR_FILE, CONFIG_EVALUATOR_FILE_PATH, TENTACLE_MODULE_DEV, \
     TENTACLE_PACKAGE_NAME, TENTACLE_MODULE_RESOURCE_FILES, EVALUATOR_RESOURCE_FOLDER, CONFIG_TRADING_FILE_PATH, \
-    CONFIG_DEFAULT_TRADING_FILE
+    CONFIG_DEFAULT_TRADING_FILE, TENTACLE_MODULE_CONFIG_SCHEMA_FILES, INFO
 
 
 class TentaclePackageManager:
@@ -34,6 +34,7 @@ class TentaclePackageManager:
         self.config = config
         self.tentacle_manager = tentacle_manager
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(INFO)
         self.just_processed_modules = []
         self.installed_modules = {}
         self.max_steps = None
@@ -304,6 +305,22 @@ except Exception as e:
                                                             config_file_path,
                                                             default_file_path=default_config_file_path)
 
+        if parsed_module[TENTACLE_MODULE_CONFIG_SCHEMA_FILES]:
+            for config_schema_file in parsed_module[TENTACLE_MODULE_CONFIG_SCHEMA_FILES]:
+                config_schema_file_path = f"{file_dir}{EVALUATOR_CONFIG_FOLDER}/{config_schema_file}"
+                default_config_schema_file_path = \
+                    f"{file_dir}{EVALUATOR_CONFIG_FOLDER}/{EVALUATOR_DEFAULT_FOLDER}/{config_schema_file}"
+
+                self._try_action_on_config_or_resource_file(action,
+                                                            module_name,
+                                                            package_localisation,
+                                                            is_url,
+                                                            parsed_module,
+                                                            config_schema_file,
+                                                            config_schema_file_path,
+                                                            default_file_path=default_config_schema_file_path,
+                                                            force_refresh=True)
+
         if parsed_module[TENTACLE_MODULE_RESOURCE_FILES]:
             for res_file in parsed_module[TENTACLE_MODULE_RESOURCE_FILES]:
                 res_file_path = f"{file_dir}{EVALUATOR_RESOURCE_FOLDER}/{res_file}"
@@ -325,7 +342,8 @@ except Exception as e:
                                                file,
                                                file_path,
                                                default_file_path=None,
-                                               read_as_bytes=False):
+                                               read_as_bytes=False,
+                                               force_refresh=False):
 
         if action == TentacleManagerActions.INSTALL or action == TentacleManagerActions.UPDATE:
 
@@ -343,21 +361,25 @@ except Exception as e:
                     with open(module_loc, "rb" if read_as_bytes else "r") as module_file:
                         config_file_content = module_file.read()
 
-                # install local file content
-                if action == TentacleManagerActions.INSTALL and \
-                        TentaclePackageUtil.should_recreate_config_file(file_path, config_file_content):
+                if force_refresh:
                     with open(file_path, "wb" if read_as_bytes else "w") as new_file:
                         new_file.write(config_file_content)
+                else:
+                    # install local file content
+                    if action == TentacleManagerActions.INSTALL and \
+                            TentaclePackageUtil.should_recreate_config_file(file_path, config_file_content):
+                        with open(file_path, "wb" if read_as_bytes else "w") as new_file:
+                            new_file.write(config_file_content)
 
-                # copy into default
-                if default_file_path:
-                    with open(default_file_path, "wb" if read_as_bytes else "w") as new_default_file:
-                        new_default_file.write(config_file_content)
+                    # copy into default
+                    if default_file_path:
+                        with open(default_file_path, "wb" if read_as_bytes else "w") as new_default_file:
+                            new_default_file.write(config_file_content)
 
-                    if action == TentacleManagerActions.UPDATE:
-                        self.logger.info(f"{file} configuration / resource file for {module_name} module ignored "
-                                         f"to save the current configuration. The default configuration file has "
-                                         f"been updated in: {default_file_path}.")
+                        if action == TentacleManagerActions.UPDATE:
+                            self.logger.info(f"{file} configuration / resource file for {module_name} module ignored "
+                                             f"to save the current configuration. The default configuration file has "
+                                             f"been updated in: {default_file_path}.")
 
             except Exception as e:
                 raise Exception(f"Fail to install configuration / resource : {e}")
@@ -448,6 +470,7 @@ PATH = os.path.dirname(os.path.realpath(__file__))
     def update_evaluator_config_file(evaluator_config_file=CONFIG_EVALUATOR_FILE_PATH):
 
         logger = logging.getLogger(TentaclePackageManager.__name__)
+        logger.setLevel(INFO)
         try:
             logger.info(f"Updating {evaluator_config_file} using new data...")
 
@@ -467,6 +490,7 @@ PATH = os.path.dirname(os.path.realpath(__file__))
     def update_trading_config_file(trading_config_file=CONFIG_TRADING_FILE_PATH):
 
         logger = logging.getLogger(TentaclePackageManager.__name__)
+        logger.setLevel(INFO)
         try:
             logger.info(f"Updating {trading_config_file} using new data...")
 

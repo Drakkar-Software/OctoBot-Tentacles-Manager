@@ -14,10 +14,13 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 from enum import Enum
+from logging import INFO
 
-VERSION = "1.0.8"
+VERSION = "1.0.9"
 PROJECT_NAME = "OctoBot-Tentacles-Manager"
 OCTOBOT_NAME = "OctoBot"
+
+LOG_LEVEL = INFO
 
 # github
 GITHUB = "github"
@@ -75,6 +78,7 @@ TENTACLE_MODULE_VERSION = "version"
 TENTACLE_MODULE_DEV = "developing"
 TENTACLE_PACKAGE = "package_name"
 TENTACLE_MODULE_CONFIG_FILES = "config_files"
+TENTACLE_MODULE_CONFIG_SCHEMA_FILES = "config_schema_files"
 TENTACLE_MODULE_RESOURCE_FILES = "resource_files"
 TENTACLE_CREATOR_PATH = "tentacle_creator"
 TENTACLE_TEMPLATE_DESCRIPTION = "description"

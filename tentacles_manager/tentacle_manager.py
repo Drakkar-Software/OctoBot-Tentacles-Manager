@@ -21,7 +21,7 @@ from tentacles_manager.tentacle_package_manager import TentaclePackageManager
 
 from tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, CONFIG_TENTACLES_KEY, \
     TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, TENTACLE_DESCRIPTION_IS_URL, EVALUATOR_ADVANCED_FOLDER, \
-    TentacleManagerActions, TENTACLE_PACKAGE_NAME, TENTACLES_DEFAULT_BRANCH
+    TentacleManagerActions, TENTACLE_PACKAGE_NAME, TENTACLES_DEFAULT_BRANCH, INFO
 
 
 class TentacleManager:
@@ -36,6 +36,7 @@ class TentacleManager:
         self.default_package = None
         self.advanced_package_list = []
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(INFO)
         self.force_actions = False
         self.git_branch = TENTACLES_DEFAULT_BRANCH
 

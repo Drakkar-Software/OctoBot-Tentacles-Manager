@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
 import logging
 import os
 import shutil
@@ -27,8 +28,8 @@ from tentacles_manager import EVALUATOR_DEFAULT_FOLDER, TENTACLE_TYPES, EVALUATO
     TENTACLES_EVALUATOR_REALTIME_PATH, TENTACLES_EVALUATOR_TA_PATH, TENTACLES_EVALUATOR_SOCIAL_PATH, \
     TENTACLES_EVALUATOR_STRATEGIES_PATH, TENTACLES_EVALUATOR_UTIL_PATH, TENTACLES_TRADING_MODE_PATH, \
     TENTACLES_PYTHON_INIT_CONTENT, PYTHON_INIT_FILE, TENTACLE_MODULE_TESTS, TENTACLES_TEST_PATH, TENTACLE_MODULE_DEV, \
-    TENTACLE_PACKAGE, TENTACLE_MODULE_RESOURCE_FILES, EVALUATOR_RESOURCE_FOLDER, \
-    TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION, CONFIG_DEBUG_OPTION
+    TENTACLE_PACKAGE, TENTACLE_MODULE_RESOURCE_FILES, EVALUATOR_RESOURCE_FOLDER, TENTACLE_MODULE_CONFIG_SCHEMA_FILES, \
+    TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION, CONFIG_DEBUG_OPTION, INFO
 
 
 def tentacles_arch_exists() -> bool:
@@ -156,6 +157,8 @@ def parse_module_header(module_header_content):
         TENTACLE_MODULE_TESTS: extract_tentacle_tests(module_header_content),
         TENTACLE_MODULE_CONFIG_FILES: module_header_content[TENTACLE_MODULE_CONFIG_FILES]
         if TENTACLE_MODULE_CONFIG_FILES in module_header_content else None,
+        TENTACLE_MODULE_CONFIG_SCHEMA_FILES: module_header_content[TENTACLE_MODULE_CONFIG_SCHEMA_FILES]
+        if TENTACLE_MODULE_CONFIG_SCHEMA_FILES in module_header_content else None,
         TENTACLE_MODULE_RESOURCE_FILES: module_header_content[TENTACLE_MODULE_RESOURCE_FILES]
         if TENTACLE_MODULE_RESOURCE_FILES in module_header_content else None,
         TENTACLE_MODULE_DEV: module_header_content[TENTACLE_MODULE_DEV]
@@ -288,6 +291,7 @@ def _read_tentacle(file_name):
 
 def check_tentacle(path, tentacle, verbose=True):
     logger = logging.getLogger("TentacleChecker")
+    logger.setLevel(INFO)
     try:
         # only check tentacle version for default tentacles
         if path.endswith(EVALUATOR_DEFAULT_FOLDER):

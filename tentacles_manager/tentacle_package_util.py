@@ -24,7 +24,7 @@ from tentacles_manager import tentacle_util as TentacleUtil
 from tentacles_manager import TENTACLES_PUBLIC_LIST, TENTACLES_DEFAULT_BRANCH, TENTACLE_PACKAGE_DESCRIPTION, \
     GITHUB_BASE_URL, GITHUB, TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, TENTACLE_DESCRIPTION_IS_URL, \
     TENTACLES_INSTALL_FOLDERS, PYTHON_INIT_FILE, TENTACLE_PACKAGE_NAME, TENTACLES_PUBLIC_REPOSITORY, \
-    GITHUB_RAW_CONTENT_URL
+    GITHUB_RAW_CONTENT_URL, INFO
 
 
 def get_package_description_with_adaptation(url_or_path, git_branch=TENTACLES_DEFAULT_BRANCH):
@@ -149,6 +149,7 @@ def check_path(path):
 def update_config_file(config_file_path, default_file_path, classes_to_consider):
 
     logger = logging.getLogger("TentaclePackageUtil")
+    logger.setLevel(INFO)
 
     # initialize file content
     config_content = {}
