@@ -1,3 +1,10 @@
+Changelog for 1.0.10
+====================
+*Released date : Mai 8 2019*
+
+# New feature :
+    - Fixed import error
+
 Changelog for 1.0.9
 ====================
 *Released date : Mai 5 2019*

@@ -16,9 +16,11 @@
 from enum import Enum
 from logging import INFO
 
-VERSION = "1.0.9"
+VERSION = "1.0.10"
 PROJECT_NAME = "OctoBot-Tentacles-Manager"
 OCTOBOT_NAME = "OctoBot"
+
+OCTOBOT_ADV_MNG_IMPORT_CHANGE_VERSION = "0.3.4"
 
 LOG_LEVEL = INFO
 
