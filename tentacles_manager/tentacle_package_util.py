@@ -20,6 +20,8 @@ import logging
 import requests
 import os
 
+from octobot_commons.tentacles_management.advanced_manager import AdvancedManager
+
 from tentacles_manager import tentacle_util as TentacleUtil
 from tentacles_manager import TENTACLES_PUBLIC_LIST, TENTACLES_DEFAULT_BRANCH, TENTACLE_PACKAGE_DESCRIPTION, \
     GITHUB_BASE_URL, GITHUB, TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, TENTACLE_DESCRIPTION_IS_URL, \
@@ -198,11 +200,6 @@ def update_config_file(config_file_path, default_file_path, classes_to_consider)
 
 
 def add_class_to_config_file_content(clazz, config_file_content, classes_list, activated=False):
-    from config import SHORT_VERSION
-    if TentacleUtil.is_first_version_superior(SHORT_VERSION, OCTOBOT_ADV_MNG_IMPORT_CHANGE_VERSION, or_equal=True):
-        from tentacles_management.advanced_manager import AdvancedManager
-    else:
-        from evaluator.Util.advanced_manager import AdvancedManager
     changed_something = False
     current_classes_list = AdvancedManager.create_default_types_list(clazz)
     for current_class in current_classes_list:
