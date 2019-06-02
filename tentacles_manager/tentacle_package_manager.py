@@ -366,20 +366,18 @@ except Exception as e:
                         new_file.write(config_file_content)
                 else:
                     # install local file content
-                    if action == TentacleManagerActions.INSTALL and \
-                            TentaclePackageUtil.should_recreate_config_file(file_path, config_file_content):
+                    if TentaclePackageUtil.should_recreate_config_file(file_path, config_file_content):
                         with open(file_path, "wb" if read_as_bytes else "w") as new_file:
                             new_file.write(config_file_content)
+                    else:
+                        self.logger.info(f"{file} configuration / resource file for {module_name} module ignored "
+                                         f"to save the current configuration. The default configuration file has "
+                                         f"been updated in: {default_file_path}.")
 
-                    # copy into default
-                    if default_file_path:
-                        with open(default_file_path, "wb" if read_as_bytes else "w") as new_default_file:
-                            new_default_file.write(config_file_content)
-
-                        if action == TentacleManagerActions.UPDATE:
-                            self.logger.info(f"{file} configuration / resource file for {module_name} module ignored "
-                                             f"to save the current configuration. The default configuration file has "
-                                             f"been updated in: {default_file_path}.")
+                # copy into default
+                if default_file_path:
+                    with open(default_file_path, "wb" if read_as_bytes else "w") as new_default_file:
+                        new_default_file.write(config_file_content)
 
             except Exception as e:
                 raise Exception(f"Fail to install configuration / resource : {e}")

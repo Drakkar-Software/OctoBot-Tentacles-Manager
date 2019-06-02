@@ -1,3 +1,12 @@
+Changelog for 1.0.11
+====================
+*Released date : June 2 2019*
+
+# New feature :
+    - Now store tentacles config schemas as well as tentacles config in default folder
+# Bug fix :
+    - Fixed config file sometimes not created on tentacles update
+
 Changelog for 1.0.10
 ====================
 *Released date : Mai 8 2019*

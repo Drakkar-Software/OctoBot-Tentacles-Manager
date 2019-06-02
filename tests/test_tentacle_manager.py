@@ -61,7 +61,7 @@ def test_config_file_management():
     # now check with install command
     _install_test_tentacle(manager)
 
-    # ensure tentacle configuration file did not change with update
+    # ensure tentacle configuration file did not change with install
     new_config_content = _get_file_content(tentacle_config_file)
     assert edited_config_content == new_config_content
 
