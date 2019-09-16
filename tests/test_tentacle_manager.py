@@ -1,5 +1,3 @@
-# TODO
-
 import fileinput
 import re
 import sys
@@ -8,7 +6,7 @@ from os import remove
 from tentacles_manager.tentacle_manager import TentacleManager
 from tentacles_manager.tentacle_util import delete_tentacles_arch
 from tentacles_manager.tentacle_package_util import read_tentacles
-from tentacles_manager import TENTACLES_PATH, TENTACLES_EVALUATOR_PATH, TENTACLES_EVALUATOR_STRATEGIES_PATH, \
+from tentacles_manager import TentaclePathHandler, TENTACLES_EVALUATOR_PATH, TENTACLES_EVALUATOR_STRATEGIES_PATH, \
     EVALUATOR_DEFAULT_FOLDER, TENTACLE_MODULE_VERSION, EVALUATOR_CONFIG_FOLDER
 
 
@@ -29,7 +27,8 @@ def test_config_file_management():
     manager = TentacleManager({})
     _install_test_tentacle(manager)
     test_tentacle = "staggered_orders_strategy_evaluator"
-    tentacle_evaluator_path = f"{TENTACLES_PATH}/{TENTACLES_EVALUATOR_PATH}/{TENTACLES_EVALUATOR_STRATEGIES_PATH}"
+    tentacle_evaluator_path = f"{TentaclePathHandler.get_tentacle_path()}/{TENTACLES_EVALUATOR_PATH}/" \
+                              f"{TENTACLES_EVALUATOR_STRATEGIES_PATH}"
     tentacle_path = f"{tentacle_evaluator_path}/{EVALUATOR_DEFAULT_FOLDER}"
     tentacle_name = f"{test_tentacle}.py"
 

@@ -16,7 +16,7 @@
 from enum import Enum
 from logging import INFO
 
-VERSION = "1.0.11"
+VERSION = "1.0.12"
 PROJECT_NAME = "OctoBot-Tentacles-Manager"
 OCTOBOT_NAME = "OctoBot"
 
@@ -39,11 +39,8 @@ CONFIG_DEBUG_OPTION = "DEV-MODE"
 PYTHON_INIT_FILE = "__init__.py"
 CONFIG_EVALUATOR_FILE = "evaluator_config.json"
 CONFIG_TRADING_FILE = "trading_config.json"
-TENTACLES_PATH = "tentacles"
 TENTACLES_EVALUATOR_PATH = "Evaluator"
 TENTACLES_TRADING_PATH = "Trading"
-CONFIG_EVALUATOR_FILE_PATH = f"{TENTACLES_PATH}/{TENTACLES_EVALUATOR_PATH}/{CONFIG_EVALUATOR_FILE}"
-CONFIG_TRADING_FILE_PATH = f"{TENTACLES_PATH}/{TENTACLES_TRADING_PATH}/{CONFIG_TRADING_FILE}"
 CONFIG_DEFAULT_EVALUATOR_FILE = "config/default_evaluator_config.json"
 CONFIG_DEFAULT_TRADING_FILE = "config/default_trading_config.json"
 TENTACLES_TEST_PATH = "tests"
@@ -112,3 +109,29 @@ class TentacleManagerActions(Enum):
     INSTALL = 1
     UNINSTALL = 2
     UPDATE = 3
+
+
+"""
+Wrapper class used to share the current tentacle path: call TentaclePathHandler.set_tentacle_path before any other 
+tentacle package manager command if your tentacles directory is not in the current terminal working directory
+"""
+
+
+class TentaclePathHandler:
+    DEFAULT_TENTACLE_PATH = "/tentacles"
+
+    _tentacle_parent_path = ""
+    _tentacle_path = DEFAULT_TENTACLE_PATH
+
+    @staticmethod
+    def get_tentacle_parent_path():
+        return TentaclePathHandler._tentacle_parent_path
+
+    @staticmethod
+    def get_tentacle_path():
+        return TentaclePathHandler._tentacle_path
+
+    @staticmethod
+    def set_tentacle_parent_directory(tentacle_parent_dir_path):
+        TentaclePathHandler._tentacle_parent_path = tentacle_parent_dir_path
+        TentaclePathHandler._tentacle_path = f"{tentacle_parent_dir_path}{TentaclePathHandler.DEFAULT_TENTACLE_PATH}"

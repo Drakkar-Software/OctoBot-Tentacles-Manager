@@ -21,8 +21,8 @@ from jinja2.nativetypes import NativeEnvironment
 
 from tentacles_manager import TENTACLE_TEMPLATE_PATH, \
     TENTACLE_TEMPLATE_DESCRIPTION, TENTACLE_TEMPLATE_EXT, TENTACLE_TEMPLATE_PRE_EXT, TENTACLE_PARENTS, TENTACLE_SONS, \
-    EVALUATOR_ADVANCED_FOLDER, TENTACLES_PATH, TENTACLE_CONFIG_TEMPLATE_PRE_EXT, CONFIG_FILE_EXT, \
-    EVALUATOR_CONFIG_FOLDER, INFO
+    EVALUATOR_ADVANCED_FOLDER, TENTACLE_CONFIG_TEMPLATE_PRE_EXT, CONFIG_FILE_EXT, EVALUATOR_CONFIG_FOLDER, INFO, \
+    TentaclePathHandler
 from tentacles_manager.tentacle_util import get_tentacles_arch
 
 
@@ -116,10 +116,12 @@ class CreatedTentacle:
         self.logger.setLevel(INFO)
 
     def get_path(self):
-        return f"{TENTACLES_PATH}/{self.t_type}/{self.subtype}/{EVALUATOR_ADVANCED_FOLDER}/{self.name}.py"
+        return f"{TentaclePathHandler.get_tentacle_path()}/{self.t_type}/{self.subtype}/{EVALUATOR_ADVANCED_FOLDER}/" \
+               f"{self.name}.py"
 
     def get_config_path(self):
-        return f"{TENTACLES_PATH}/{self.t_type}/{self.subtype}/{EVALUATOR_CONFIG_FOLDER}/{self.name}{CONFIG_FILE_EXT}"
+        return f"{TentaclePathHandler.get_tentacle_path()}/{self.t_type}/{self.subtype}/{EVALUATOR_CONFIG_FOLDER}/" \
+               f"{self.name}{CONFIG_FILE_EXT}"
 
     def get_name(self):
         return self.name
@@ -127,7 +129,7 @@ class CreatedTentacle:
     def ask_description(self, tentacle_type):
         self.name = input(f"Enter your new {self.t_type} tentacle name : ")
         while self.subtype == "":
-            sub_types = self.tentacle_creator.tentacles_arch[TENTACLES_PATH][0][tentacle_type]
+            sub_types = self.tentacle_creator.tentacles_arch[TentaclePathHandler.get_tentacle_path()][0][tentacle_type]
             if len(sub_types) > 1:
                 new_subtype = input(f"Choose your tentacle type in {sub_types} : ")
                 if new_subtype in sub_types:
