@@ -118,7 +118,7 @@ tentacle package manager command if your tentacles directory is not in the curre
 
 
 class TentaclePathHandler:
-    DEFAULT_TENTACLE_PATH = "/tentacles"
+    DEFAULT_TENTACLE_PATH = "tentacles"
 
     _tentacle_parent_path = ""
     _tentacle_path = DEFAULT_TENTACLE_PATH
@@ -134,4 +134,4 @@ class TentaclePathHandler:
     @staticmethod
     def set_tentacle_parent_directory(tentacle_parent_dir_path):
         TentaclePathHandler._tentacle_parent_path = tentacle_parent_dir_path
-        TentaclePathHandler._tentacle_path = f"{tentacle_parent_dir_path}{TentaclePathHandler.DEFAULT_TENTACLE_PATH}"
+        TentaclePathHandler._tentacle_path = f"{tentacle_parent_dir_path}/{TentaclePathHandler.DEFAULT_TENTACLE_PATH}"
