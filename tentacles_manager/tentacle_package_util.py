@@ -20,7 +20,7 @@ import logging
 import requests
 import os
 
-from octobot_commons.tentacles_management.advanced_manager import AdvancedManager
+from octobot_commons.tentacles_management.advanced_manager import create_default_types_list
 
 from tentacles_manager import tentacle_util as TentacleUtil
 from tentacles_manager import TENTACLES_PUBLIC_LIST, TENTACLES_DEFAULT_BRANCH, TENTACLE_PACKAGE_DESCRIPTION, \
@@ -201,7 +201,7 @@ def update_config_file(config_file_path, default_file_path, classes_to_consider)
 
 def add_class_to_config_file_content(clazz, config_file_content, classes_list, activated=False):
     changed_something = False
-    current_classes_list = AdvancedManager.create_default_types_list(clazz)
+    current_classes_list = create_default_types_list(clazz)
     for current_class in current_classes_list:
         if not current_class.get_name() in config_file_content:
             config_file_content[current_class.get_name()] = activated
