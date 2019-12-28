@@ -24,26 +24,25 @@ from tentacles_manager import EVALUATOR_DEFAULT_FOLDER, TENTACLE_TYPES, EVALUATO
     TENTACLE_MODULE_REQUIREMENT_VERSION_SEPARATOR, TENTACLE_MODULE_NAME, TENTACLE_MODULE_TYPE, \
     TENTACLE_MODULE_SUBTYPE, TENTACLE_MODULE_VERSION, TENTACLE_MODULE_CONFIG_FILES, TENTACLE_MODULE_REQUIREMENTS, \
     TENTACLE_MODULE_LIST_SEPARATOR, TENTACLE_MODULE_REQUIREMENT_WITH_VERSION, TENTACLE_MODULE_DESCRIPTION, \
-    TENTACLES_INSTALL_FOLDERS, TENTACLES_EVALUATOR_PATH, TENTACLES_TRADING_PATH, \
+    TENTACLES_INSTALL_FOLDERS, TENTACLES_PATH, TENTACLES_EVALUATOR_PATH, TENTACLES_TRADING_PATH, \
     TENTACLES_EVALUATOR_REALTIME_PATH, TENTACLES_EVALUATOR_TA_PATH, TENTACLES_EVALUATOR_SOCIAL_PATH, \
     TENTACLES_EVALUATOR_STRATEGIES_PATH, TENTACLES_EVALUATOR_UTIL_PATH, TENTACLES_TRADING_MODE_PATH, \
     TENTACLES_PYTHON_INIT_CONTENT, PYTHON_INIT_FILE, TENTACLE_MODULE_TESTS, TENTACLES_TEST_PATH, TENTACLE_MODULE_DEV, \
     TENTACLE_PACKAGE, TENTACLE_MODULE_RESOURCE_FILES, EVALUATOR_RESOURCE_FOLDER, TENTACLE_MODULE_CONFIG_SCHEMA_FILES, \
-    TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION, CONFIG_DEBUG_OPTION, INFO, TentaclePathHandler
+    TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION, CONFIG_DEBUG_OPTION, INFO
 
 
 def tentacles_arch_exists() -> bool:
     try:
         import tentacles
-        tentacle_path = TentaclePathHandler.get_tentacle_path()
-        return os.path.exists(tentacle_path) and os.path.exists(f"{tentacle_path}/{TENTACLES_TEST_PATH}")
+        return os.path.exists(TENTACLES_PATH) and os.path.exists(f"{TENTACLES_PATH}/{TENTACLES_TEST_PATH}")
     except ImportError:
         return False
 
 
 def delete_tentacles_arch():
     if tentacles_arch_exists():
-        shutil.rmtree(TentaclePathHandler.get_tentacle_path())
+        shutil.rmtree(TENTACLES_PATH)
 
 
 def check_format(component):
@@ -127,8 +126,7 @@ def get_tentacles_arch():
         ]
     }
     tentacle_architecture = {
-        TentaclePathHandler.get_tentacle_path():
-            [tentacles_content_folder, {TENTACLES_TEST_PATH: tentacles_content_folder}]
+        TENTACLES_PATH: [tentacles_content_folder, {TENTACLES_TEST_PATH: tentacles_content_folder}]
     }
     tentacle_extremity_architecture = copy.deepcopy(TENTACLES_INSTALL_FOLDERS)
     return tentacle_architecture, tentacle_extremity_architecture
@@ -225,11 +223,10 @@ def create_path_from_type(module_type, module_subtype, target_folder, tests=Fals
     if tests:
         test_folder_if_required = f"/{TENTACLES_TEST_PATH}"
     if module_subtype:
-        return f"{TentaclePathHandler.get_tentacle_path()}{test_folder_if_required}/{TENTACLE_TYPES[module_type]}/" \
-               f"{TENTACLE_TYPES[module_subtype]}/{target_folder}"
+        return f"{TENTACLES_PATH}{test_folder_if_required}/{TENTACLE_TYPES[module_type]}/" \
+            f"{TENTACLE_TYPES[module_subtype]}/{target_folder}"
     else:
-        return f"{TentaclePathHandler.get_tentacle_path()}{test_folder_if_required}/{TENTACLE_TYPES[module_type]}/" \
-               f"{target_folder}"
+        return f"{TENTACLES_PATH}{test_folder_if_required}/{TENTACLE_TYPES[module_type]}/{target_folder}"
 
 
 def get_full_module_identifier(module_name, module_version):
@@ -312,5 +309,5 @@ def check_tentacle(path, tentacle, verbose=True):
                 return False
     except Exception as e:
         if verbose:
-            logger.error(f"Error when reading {tentacle} tentacle description: {e}")
+            logger.error(f"Error when reading tentacle description: {e}")
         return False

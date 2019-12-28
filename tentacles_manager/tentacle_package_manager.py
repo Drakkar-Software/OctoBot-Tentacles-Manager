@@ -23,11 +23,10 @@ from tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FO
     TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, \
     TENTACLE_DESCRIPTION_IS_URL, TENTACLE_TYPES, EVALUATOR_CONFIG_FOLDER, TENTACLE_MODULE_NAME, TENTACLE_MODULE_TYPE, \
     TENTACLE_MODULE_SUBTYPE, TENTACLE_MODULE_VERSION, TENTACLE_MODULE_CONFIG_FILES, TENTACLE_MODULE_REQUIREMENTS, \
-    TENTACLE_MODULE_REQUIREMENT_WITH_VERSION, PYTHON_INIT_FILE, TENTACLE_MODULE_TESTS, \
-    TentacleManagerActions, CONFIG_DEFAULT_EVALUATOR_FILE, TENTACLE_MODULE_DEV, \
-    TENTACLE_PACKAGE_NAME, TENTACLE_MODULE_RESOURCE_FILES, EVALUATOR_RESOURCE_FOLDER, TENTACLES_TRADING_PATH, \
-    CONFIG_DEFAULT_TRADING_FILE, TENTACLE_MODULE_CONFIG_SCHEMA_FILES, INFO, TENTACLES_EVALUATOR_PATH, \
-    CONFIG_EVALUATOR_FILE, CONFIG_TRADING_FILE, TentaclePathHandler
+    TENTACLE_MODULE_REQUIREMENT_WITH_VERSION, TENTACLES_PATH, PYTHON_INIT_FILE, TENTACLE_MODULE_TESTS, \
+    TentacleManagerActions, CONFIG_DEFAULT_EVALUATOR_FILE, CONFIG_EVALUATOR_FILE_PATH, TENTACLE_MODULE_DEV, \
+    TENTACLE_PACKAGE_NAME, TENTACLE_MODULE_RESOURCE_FILES, EVALUATOR_RESOURCE_FOLDER, CONFIG_TRADING_FILE_PATH, \
+    CONFIG_DEFAULT_TRADING_FILE, TENTACLE_MODULE_CONFIG_SCHEMA_FILES, INFO
 
 
 class TentaclePackageManager:
@@ -76,8 +75,8 @@ class TentaclePackageManager:
 except Exception as e:
     LOGGER.error(f'Error when loading {module_name}: {{e}}')
 """
-            init_file = f"{TentaclePathHandler.get_tentacle_path()}/{TENTACLE_TYPES[module_type]}/" \
-                        f"{TENTACLE_TYPES[module_subtype]}/{target_folder}/{PYTHON_INIT_FILE}"
+            init_file = f"{TENTACLES_PATH}/{TENTACLE_TYPES[module_type]}/{TENTACLE_TYPES[module_subtype]}/" \
+                f"{target_folder}/{PYTHON_INIT_FILE}"
 
             self.update_init_file(action, init_file, lines_in_init)
 
@@ -466,10 +465,8 @@ PATH = os.path.dirname(os.path.realpath(__file__))
                      "problem keeps appearing, try to reset all tentacles (start.py -p reset_tentacles).")
 
     @staticmethod
-    def update_evaluator_config_file(evaluator_config_file=None):
-        if evaluator_config_file is None:
-            evaluator_config_file = f"{TentaclePathHandler.get_tentacle_path()}/{TENTACLES_EVALUATOR_PATH}" \
-                                    f"/{CONFIG_EVALUATOR_FILE}"
+    def update_evaluator_config_file(evaluator_config_file=CONFIG_EVALUATOR_FILE_PATH):
+
         logger = logging.getLogger(TentaclePackageManager.__name__)
         logger.setLevel(INFO)
         try:
@@ -482,16 +479,14 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 
             evaluators_in_config = [TAEvaluator, SocialEvaluator, RealTimeEvaluator, StrategiesEvaluator]
 
-            default_config = f"{TentaclePathHandler.get_tentacle_parent_path()}/{CONFIG_DEFAULT_EVALUATOR_FILE}"
-            TentaclePackageUtil.update_config_file(evaluator_config_file, default_config, evaluators_in_config)
+            TentaclePackageUtil.update_config_file(evaluator_config_file, CONFIG_DEFAULT_EVALUATOR_FILE,
+                                                   evaluators_in_config)
         except Exception as e:
             TentaclePackageManager._log_config_file_update_exception(logger, e)
 
     @staticmethod
-    def update_trading_config_file(trading_config_file=None):
-        if trading_config_file is None:
-            trading_config_file = f"{TentaclePathHandler.get_tentacle_path()}/{TENTACLES_TRADING_PATH}" \
-                                    f"/{CONFIG_TRADING_FILE}"
+    def update_trading_config_file(trading_config_file=CONFIG_TRADING_FILE_PATH):
+
         logger = logging.getLogger(TentaclePackageManager.__name__)
         logger.setLevel(INFO)
         try:
@@ -501,7 +496,7 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 
             trading_modes_in_config = [AbstractTradingMode]
 
-            default_config = f"{TentaclePathHandler.get_tentacle_parent_path()}/{CONFIG_DEFAULT_TRADING_FILE}"
-            TentaclePackageUtil.update_config_file(trading_config_file, default_config, trading_modes_in_config)
+            TentaclePackageUtil.update_config_file(trading_config_file, CONFIG_DEFAULT_TRADING_FILE,
+                                                   trading_modes_in_config)
         except Exception as e:
             TentaclePackageManager._log_config_file_update_exception(logger, e)

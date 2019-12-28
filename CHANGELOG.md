@@ -1,10 +1,3 @@
-Changelog for 1.0.12
-====================
-*Released date : September 16 2019*
-
-# New feature :
-    - Can now specify the tentacle target directory
-
 Changelog for 1.0.11
 ====================
 *Released date : June 2 2019*
