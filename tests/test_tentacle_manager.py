@@ -5,10 +5,10 @@ import re
 import sys
 from os import remove
 
-from tentacles_manager.tentacle_manager import TentacleManager
-from tentacles_manager.tentacle_util import delete_tentacles_arch
-from tentacles_manager.tentacle_package_util import read_tentacles
-from tentacles_manager import TENTACLES_PATH, TENTACLES_EVALUATOR_PATH, TENTACLES_EVALUATOR_STRATEGIES_PATH, \
+from octobot_tentacles_manager.tentacle_manager import TentacleManager
+from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
+from octobot_tentacles_manager.util.tentacle_package_util import read_tentacles
+from octobot_tentacles_manager import TENTACLES_PATH, TENTACLES_EVALUATOR_PATH, TENTACLES_EVALUATOR_STRATEGIES_PATH, \
     EVALUATOR_DEFAULT_FOLDER, TENTACLE_MODULE_VERSION, EVALUATOR_CONFIG_FOLDER
 
 

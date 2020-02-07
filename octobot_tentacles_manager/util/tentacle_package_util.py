@@ -22,11 +22,11 @@ import os
 
 from octobot_commons.tentacles_management.advanced_manager import create_default_types_list
 
-from tentacles_manager import tentacle_util as TentacleUtil
-from tentacles_manager import TENTACLES_PUBLIC_LIST, TENTACLES_DEFAULT_BRANCH, TENTACLE_PACKAGE_DESCRIPTION, \
+from octobot_tentacles_manager.util import tentacle_util as TentacleUtil
+from octobot_tentacles_manager import TENTACLES_PUBLIC_LIST, TENTACLES_DEFAULT_BRANCH, TENTACLE_PACKAGE_DESCRIPTION, \
     GITHUB_BASE_URL, GITHUB, TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, TENTACLE_DESCRIPTION_IS_URL, \
     TENTACLES_INSTALL_FOLDERS, PYTHON_INIT_FILE, TENTACLE_PACKAGE_NAME, TENTACLES_PUBLIC_REPOSITORY, \
-    GITHUB_RAW_CONTENT_URL, INFO, OCTOBOT_ADV_MNG_IMPORT_CHANGE_VERSION
+    GITHUB_RAW_CONTENT_URL, INFO
 
 
 def get_package_description_with_adaptation(url_or_path, git_branch=TENTACLES_DEFAULT_BRANCH):

@@ -1,5 +1,5 @@
 # TODO
-from tentacles_manager.tentacle_creator.tentacle_creator import TentacleCreator
+from octobot_tentacles_manager.creators.tentacle_creator import TentacleCreator
 
 
 def test_init():
