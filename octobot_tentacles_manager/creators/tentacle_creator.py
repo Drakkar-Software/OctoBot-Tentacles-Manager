@@ -19,11 +19,11 @@ import os
 
 from jinja2.nativetypes import NativeEnvironment
 
-from tentacles_manager import TENTACLE_TEMPLATE_PATH, \
+from octobot_tentacles_manager import TENTACLE_TEMPLATE_PATH, \
     TENTACLE_TEMPLATE_DESCRIPTION, TENTACLE_TEMPLATE_EXT, TENTACLE_TEMPLATE_PRE_EXT, TENTACLE_PARENTS, TENTACLE_SONS, \
     EVALUATOR_ADVANCED_FOLDER, TENTACLES_PATH, TENTACLE_CONFIG_TEMPLATE_PRE_EXT, CONFIG_FILE_EXT, \
     EVALUATOR_CONFIG_FOLDER, INFO
-from tentacles_manager.tentacle_util import get_tentacles_arch
+from octobot_tentacles_manager.util.tentacle_util import get_tentacles_arch
 
 
 class TentacleCreator:
@@ -78,7 +78,7 @@ class TentacleCreator:
                 for command in commands:
                     self.create_tentacle(command)
         else:
-            arguments_help = "-c: activates the tentacle creator."
+            arguments_help = "-c: activates the tentacle creators."
             self.logger.error(f"Invalid arguments, arguments are: {arguments_help}")
 
     def create_tentacle(self, tentacle_type):

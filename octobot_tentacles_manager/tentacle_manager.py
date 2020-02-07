@@ -15,11 +15,11 @@
 #  License along with this library.
 import logging
 
-import tentacles_manager.tentacle_package_util as TentaclePackageUtil
-import tentacles_manager.tentacle_util as TentacleUtil
-from tentacles_manager.tentacle_package_manager import TentaclePackageManager
+import octobot_tentacles_manager.util.tentacle_package_util as TentaclePackageUtil
+import octobot_tentacles_manager.util.tentacle_util as TentacleUtil
+from octobot_tentacles_manager.tentacle_package_manager import TentaclePackageManager
 
-from tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, CONFIG_TENTACLES_KEY, \
+from octobot_tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, CONFIG_TENTACLES_KEY, \
     TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, TENTACLE_DESCRIPTION_IS_URL, EVALUATOR_ADVANCED_FOLDER, \
     TentacleManagerActions, TENTACLE_PACKAGE_NAME, TENTACLES_DEFAULT_BRANCH, INFO
 
