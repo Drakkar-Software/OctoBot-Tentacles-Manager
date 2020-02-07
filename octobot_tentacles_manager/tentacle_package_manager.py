@@ -16,10 +16,10 @@
 import logging
 import os
 
-import tentacles_manager.tentacle_package_util as TentaclePackageUtil
-import tentacles_manager.tentacle_util as TentacleUtil
+import octobot_tentacles_manager.util.tentacle_package_util as TentaclePackageUtil
+import octobot_tentacles_manager.util.tentacle_util as TentacleUtil
 
-from tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, \
+from octobot_tentacles_manager import TENTACLE_PACKAGE_DESCRIPTION, EVALUATOR_DEFAULT_FOLDER, \
     TENTACLE_PACKAGE_DESCRIPTION_LOCALISATION, \
     TENTACLE_DESCRIPTION_IS_URL, TENTACLE_TYPES, EVALUATOR_CONFIG_FOLDER, TENTACLE_MODULE_NAME, TENTACLE_MODULE_TYPE, \
     TENTACLE_MODULE_SUBTYPE, TENTACLE_MODULE_VERSION, TENTACLE_MODULE_CONFIG_FILES, TENTACLE_MODULE_REQUIREMENTS, \
@@ -447,7 +447,7 @@ except Exception as e:
         with open(init_file, "w") as init_file_w:
             init_file_content = """import os
 
-from tentacles_manager.tentacle_util import check_tentacle
+from octobot_tentacles_manager.tentacle_util import check_tentacle
 import logging
 
 LOGGER = logging.getLogger("TentacleLoader")
