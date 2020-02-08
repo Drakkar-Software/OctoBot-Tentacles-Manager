@@ -13,12 +13,36 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import asyncio
+import logging
 
-import pip_api
+from poc import parse_pip_command_result, list_installed_tentacles, install_tentacle, update_tentacle
 
-requirement_file = "requirements.txt"
+tentacles_folder = "./tentacles"
 
-packages_extra_dict = pip_api.parse_requirements(requirement_file)
-packages_extra = {str(value) for value in packages_extra_dict.values()}
 
-print(packages_extra)
+async def list_tentacles():
+    stdout_list = await list_installed_tentacles(tentacles_folder)
+    for stdout, stderr in stdout_list:
+        print(parse_pip_command_result(stdout))
+
+
+async def install_test_tentacle():
+    stdout, stderr = await install_tentacle(tentacles_folder, "OctoBot-Commons")
+    print(parse_pip_command_result(stdout))
+
+
+async def update_test_tentacle():
+    stdout, stderr = await update_tentacle(tentacles_folder, "OctoBot-Commons")
+    print(parse_pip_command_result(stdout))
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+
+    main_loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(main_loop)
+
+    main_loop.run_until_complete(list_tentacles())
+    main_loop.run_until_complete(install_test_tentacle())
+    main_loop.run_until_complete(update_test_tentacle())
