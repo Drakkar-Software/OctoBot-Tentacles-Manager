@@ -13,6 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot_tentacles_manager.creators.tentacle_creator import TentacleCreator
 
-# TODO: use real 0.4 tentacles url
-tentacles_url = "https://raw.githubusercontent.com/GuillaumeDSM/test_tentacles/master/0.4.0.zip"
+
+def start_tentacle_creator(config, commands):
+    tentacle_creator_inst = TentacleCreator(config)
+    tentacle_creator_inst.parse_commands(commands)

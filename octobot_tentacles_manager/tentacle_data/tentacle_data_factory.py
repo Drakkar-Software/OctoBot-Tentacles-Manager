@@ -13,6 +13,12 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot_tentacles_manager.tentacle_data.tentacle_data import TentacleData
 
-# TODO: use real 0.4 tentacles url
-tentacles_url = "https://raw.githubusercontent.com/GuillaumeDSM/test_tentacles/master/0.4.0.zip"
+
+class TentacleDataFactory:
+    def __init__(self, reference_tentacles_path):
+        self.reference_tentacles_path = reference_tentacles_path
+
+    def create_tentacle_data(self, name, tentacle_type):
+        return TentacleData(self.reference_tentacles_path, name, tentacle_type)
