@@ -17,16 +17,23 @@ import aiohttp
 import pytest
 from os import path
 
-from octobot_tentacles_manager.api.installer import install_all_tentacles
+from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles
 from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
 
-async def test_call_installer():
-    session = aiohttp.ClientSession()
-    assert await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session) == 0
+async def test_install_all_tentacles():
+    async with aiohttp.ClientSession() as session:
+        assert await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session) == 0
+    _cleanup()
+
+
+async def test_install_one_tentacle_with_requirement():
+    async with aiohttp.ClientSession() as session:
+        assert await install_tentacles(["reddit_service_feed"], _tentacles_local_path(), aiohttp_session=session) == 0
+        assert path.exists(path.join("tentacles", "Services", "reddit_service", "reddit_service.py"))
     _cleanup()
 
 

@@ -107,7 +107,7 @@ class TentacleWorker:
     async def _fetch_tentacles_for_requirement(self, repo):
         await fetch_and_extract_tentacles(repo, DEFAULT_TENTACLES_URL, self.aiohttp_session, merge_dirs=True)
         self.fetched_for_requirements_tentacles = \
-            self.parse_all_tentacle_data(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
+            self.parse_all_tentacle_data(path.join(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, TENTACLES_ARCHIVE_ROOT))
         await self.load_all_metadata(self.fetched_for_requirements_tentacles)
         self.fetched_for_requirements_tentacles_versions = \
             self._get_version_by_tentacle_data(self.fetched_for_requirements_tentacles)
@@ -143,13 +143,13 @@ class TentacleWorker:
     def _is_requirement_satisfied(self, requirement, version, tentacle_data, version_by_modules):
         satisfied = False
         if requirement in version_by_modules:
-            installed_version = version_by_modules[requirement]
+            available = version_by_modules[requirement]
             if version is None:
                 satisfied = True
-            elif version != installed_version:
+            elif version != available:
                 self.logger.error(f"Incompatible tentacle version requirement for "
                                   f"{tentacle_data.name}: requires {version}, installed: "
-                                  f"{installed_version}. This tentacle might not work as expected")
+                                  f"{available}. This tentacle might not work as expected")
                 satisfied = True
         return satisfied
 
