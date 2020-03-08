@@ -13,6 +13,19 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import aiofiles
+from os import path, makedirs
 
-# TODO: use real 0.4 tentacles url
-tentacles_url = "https://raw.githubusercontent.com/GuillaumeDSM/test_tentacles/master/0.4.0.zip"
+
+async def find_or_create(path_to_create, is_directory=True, file_content=""):
+    if not path.exists(path_to_create):
+        if is_directory:
+            if not path.isdir(path_to_create):
+                makedirs(path_to_create)
+        else:
+            if not path.isfile(path_to_create):
+                # should be used for python init.py files only
+                async with aiofiles.open(path_to_create, "w+") as file:
+                    await file.write(file_content)
+        return True
+    return False
