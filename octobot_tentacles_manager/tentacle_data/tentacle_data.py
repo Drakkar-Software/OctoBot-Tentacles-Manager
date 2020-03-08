@@ -23,11 +23,11 @@ from octobot_tentacles_manager.constants import TENTACLE_METADATA, METADATA_VERS
 
 
 class TentacleData:
-    def __init__(self, reference_path, name, tentacle_type):
-        self.reference_path = reference_path
+    def __init__(self, tentacle_root_path, name, tentacle_type):
+        self.tentacle_root_path = tentacle_root_path
         self.name = name
         self.tentacle_type = tentacle_type
-        self.tentacle_path = join(self.reference_path, self.tentacle_type)
+        self.tentacle_path = join(self.tentacle_root_path, self.tentacle_type)
         self.version = None
         self.tentacles = None
         self.origin_package = None
@@ -45,6 +45,13 @@ class TentacleData:
     @staticmethod
     def to_import_path(path):
         return path.replace(sep, ".")
+
+    @staticmethod
+    def find(iterable, name):
+        for tentacle_data in iterable:
+            if tentacle_data.name == name:
+                return tentacle_data
+        return None
 
     def is_valid(self):
         return self.version is not None

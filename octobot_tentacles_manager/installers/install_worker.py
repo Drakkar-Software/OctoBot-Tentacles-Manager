@@ -21,29 +21,29 @@ from asyncio import gather
 from octobot_tentacles_manager.base.tentacle_worker import TentacleWorker
 from octobot_tentacles_manager.constants import TENTACLES_FOLDERS_ARCH, PYTHON_INIT_FILE, TENTACLE_MODULE_FOLDERS, \
     USER_TENTACLE_SPECIFIC_CONFIG_PATH
+from octobot_tentacles_manager.tentacle_data.tentacle_data import TentacleData
 from octobot_tentacles_manager.util.file_util import find_or_create
 
 
 class InstallWorker(TentacleWorker):
 
-    def __init__(self, reference_tentacles_dir, tentacle_path, use_confirm_prompt, aiohttp_session):
-        super().__init__(reference_tentacles_dir, tentacle_path, use_confirm_prompt, aiohttp_session)
-        self.to_install_tentacles = []
-
     async def install_tentacles(self, name_filter=None) -> int:
         await self.create_missing_tentacles_arch()
+        self.reset_worker()
         self.progress = 1
-        self.errors = []
-        self.to_install_tentacles = [tentacle_data
-                                     for tentacle_data in self.parse_all_tentacle_data(self.reference_tentacles_root)
-                                     if name_filter is None or tentacle_data.name in name_filter]
-        self.total_steps = len(self.to_install_tentacles)
-        await self.load_all_metadata(self.to_install_tentacles)
-        self.register_to_process_tentacles_modules(self.to_install_tentacles)
-        await gather(*[self._install_tentacle(tentacle_data) for tentacle_data in self.to_install_tentacles])
+        all_tentacle_data = await self.load_tentacle_with_metadata(self.reference_tentacles_root)
+        to_install_tentacles = [tentacle_data
+                                for tentacle_data in all_tentacle_data
+                                if self._should_tentacle_data_be_processed(tentacle_data, name_filter)]
+        self.total_steps = len(to_install_tentacles)
+        self.register_to_process_tentacles_modules(to_install_tentacles)
+        await gather(*[self._install_tentacle(tentacle_data) for tentacle_data in to_install_tentacles])
         await self.refresh_tentacle_config_file()
         self.log_summary()
         return len(self.errors)
+
+    def _should_tentacle_data_be_processed(self, tentacle_data, name_filter):
+        return name_filter is None or tentacle_data.name in name_filter
 
     async def create_missing_tentacles_arch(self):
         # tentacle user config folder
@@ -80,7 +80,11 @@ class InstallWorker(TentacleWorker):
         for requirement, version in missing_requirements.items():
             if self._is_requirement_satisfied(requirement, version, tentacle_data,
                                               self.fetched_for_requirements_tentacles_versions):
-                await self._install_tentacle(self.get_fetched_for_requirements_tentacles(requirement))
+                to_install_tentacle = TentacleData.find(self.fetched_for_requirements_tentacles, requirement)
+                if to_install_tentacle is not None:
+                    await self._install_tentacle(to_install_tentacle)
+                else:
+                    raise RuntimeError(f"Can't find {requirement} tentacle required for {tentacle_data.name}")
 
     def _update_tentacle_folder(self, tentacle_data):
         reference_tentacle_path = path.join(tentacle_data.tentacle_path, tentacle_data.name)
@@ -148,13 +152,7 @@ class InstallWorker(TentacleWorker):
         return f"""from octobot_tentacles_manager.api.inspector import check_tentacle
 from octobot_commons.logging.logging_util import get_logger
 
-VERSION = '{tentacle_data.version}'
-NAME = '{tentacle_data.name}'
-TENTACLES = {tentacle_data.tentacles}
-ORIGIN_PACKAGE = '{tentacle_data.origin_package}'
-TENTACLES_REQUIREMENTS = {tentacle_data.tentacles_requirements}
-
-if check_tentacle(VERSION, NAME, ORIGIN_PACKAGE):
+if check_tentacle('{tentacle_data.version}', '{tentacle_data.name}', '{tentacle_data.origin_package}'):
     try:
         {InstallWorker._get_single_module_init_line(tentacle_data)}
     except Exception as e:

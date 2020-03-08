@@ -13,12 +13,23 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from os.path import sep
 from octobot_tentacles_manager.tentacle_data.tentacle_data import TentacleData
 
 
 class TentacleDataFactory:
-    def __init__(self, reference_tentacles_path):
-        self.reference_tentacles_path = reference_tentacles_path
+    def __init__(self, tentacle_root_path):
+        self.tentacle_root_path = tentacle_root_path
 
-    def create_tentacle_data(self, name, tentacle_type):
-        return TentacleData(self.reference_tentacles_path, name, tentacle_type)
+    def create_tentacle_data_from_type(self, name, tentacle_type):
+        return TentacleData(self.tentacle_root_path, name, tentacle_type)
+
+    async def create_and_load_tentacle_data_from_module(self, tentacle_module):
+        full_name = tentacle_module.__name__
+        short_name = full_name.split(".")[-1]
+        tentacle_type = full_name.split(f"{self.tentacle_root_path}.")[-1]\
+            .replace(f".{short_name}", "")\
+            .replace(f".", sep)
+        tentacle_data = TentacleData(self.tentacle_root_path, short_name, tentacle_type)
+        await tentacle_data.load_metadata()
+        return tentacle_data
