@@ -26,7 +26,7 @@ pytestmark = pytest.mark.asyncio
 
 async def test_call_installer():
     session = aiohttp.ClientSession()
-    await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+    assert await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session) == 0
     _cleanup()
 
 
