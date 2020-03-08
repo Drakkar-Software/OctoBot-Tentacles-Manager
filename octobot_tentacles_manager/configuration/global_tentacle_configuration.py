@@ -32,9 +32,11 @@ class GlobalTentacleConfiguration:
 
     async def fill_tentacle_config(self, tentacle_data_list, default_tentacle_config=DEFAULT_TENTACLE_CONFIG):
         default_config = await self._read_config(default_tentacle_config)
+        activation_config = default_config[self.TENTACLE_ACTIVATION_KEY] \
+            if self.TENTACLE_ACTIVATION_KEY in default_config else {}
         for tentacle_data in tentacle_data_list:
             if tentacle_data.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES:
-                self._update_tentacle_activation(tentacle_data, default_config[self.TENTACLE_ACTIVATION_KEY])
+                self._update_tentacle_activation(tentacle_data, activation_config)
 
     def upsert_tentacle_activation(self, new_config):
         # merge new_config into self.tentacles_activation (also replace conflicting values)

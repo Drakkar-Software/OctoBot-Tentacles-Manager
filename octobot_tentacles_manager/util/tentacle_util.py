@@ -16,10 +16,12 @@
 
 import logging
 import os
-import shutil
+from os import path
+from shutil import rmtree
 import copy
 import json
 
+from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager import EVALUATOR_DEFAULT_FOLDER, TENTACLE_TYPES, EVALUATOR_CONFIG_FOLDER, \
     TENTACLE_MODULE_REQUIREMENT_VERSION_SEPARATOR, TENTACLE_MODULE_NAME, TENTACLE_MODULE_TYPE, \
     TENTACLE_MODULE_SUBTYPE, TENTACLE_MODULE_VERSION, TENTACLE_MODULE_CONFIG_FILES, TENTACLE_MODULE_REQUIREMENTS, \
@@ -30,19 +32,24 @@ from octobot_tentacles_manager import EVALUATOR_DEFAULT_FOLDER, TENTACLE_TYPES, 
     TENTACLES_PYTHON_INIT_CONTENT, PYTHON_INIT_FILE, TENTACLE_MODULE_TESTS, TENTACLES_TEST_PATH, TENTACLE_MODULE_DEV, \
     TENTACLE_PACKAGE, TENTACLE_MODULE_RESOURCE_FILES, EVALUATOR_RESOURCE_FOLDER, TENTACLE_MODULE_CONFIG_SCHEMA_FILES, \
     TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION, CONFIG_DEBUG_OPTION, INFO
+from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH
 
 
-def tentacles_arch_exists() -> bool:
+def tentacles_arch_exists(verbose=True) -> bool:
     try:
         import tentacles
-        return os.path.exists(TENTACLES_PATH) and os.path.exists(f"{TENTACLES_PATH}/{TENTACLES_TEST_PATH}")
-    except ImportError:
+        return os.path.exists(TENTACLES_PATH)
+    except ImportError as e:
+        if verbose:
+            get_logger(__name__).exception(e, True, f"Error when importing tentacles: {e}")
         return False
 
 
 def delete_tentacles_arch():
-    if tentacles_arch_exists():
-        shutil.rmtree(TENTACLES_PATH)
+    if tentacles_arch_exists(verbose=False):
+        rmtree(TENTACLES_PATH)
+    if path.exists(USER_TENTACLE_CONFIG_PATH):
+        rmtree(USER_TENTACLE_CONFIG_PATH)
 
 
 def check_format(component):
@@ -50,6 +57,7 @@ def check_format(component):
     purified_name = purified_name.strip(",+.; ")
     return purified_name
 
+# bellow is unused
 
 def has_required_package(package, component_name, component_version=None):
     if component_name in package:
