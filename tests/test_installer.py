@@ -13,6 +13,26 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import aiohttp
+import pytest
+from os import path
 
-# TODO: use real 0.4 tentacles url
-tentacles_url = "https://raw.githubusercontent.com/GuillaumeDSM/test_tentacles/master/0.4.0.zip"
+from octobot_tentacles_manager.api.installer import install_all_tentacles
+from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
+
+# All test coroutines will be treated as marked.
+pytestmark = pytest.mark.asyncio
+
+
+async def test_call_installer():
+    session = aiohttp.ClientSession()
+    await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+    _cleanup()
+
+
+def _tentacles_local_path():
+    return path.join("tests", "static", "tentacles.zip")
+
+
+def _cleanup():
+    delete_tentacles_arch()
