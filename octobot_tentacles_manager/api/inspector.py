@@ -25,16 +25,18 @@ def tentacles_arch_exists():
     return util_tentacles_arch_exists()
 
 
-def check_tentacle(module, verbose=True):
+def check_tentacle(version, name, origin_package, verbose=True):
     logger = get_logger("TentacleChecker")
     try:
-        if module.ORIGIN_PACKAGE == DEFAULT_TENTACLES_PACKAGE:
-            if LooseVersion(module.VERSION) < LooseVersion(TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION) \
+        if origin_package == DEFAULT_TENTACLES_PACKAGE:
+            if LooseVersion(version) < LooseVersion(TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION) \
                     and verbose:
-                logger.error(f"Incompatible tentacle {module.NAME}: version {module.VERSION}, "
+                logger.error(f"Incompatible tentacle {name}: version {version}, "
                              f"minimum expected: {TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION} this tentacle "
-                             f"may not work properly. Please update your tentacles ('start.py -p update {module.NAME}' "
+                             f"may not work properly. Please update your tentacles ('start.py -p update {name}' "
                              f"or 'start.py -p update all')")
+                return False
     except Exception as e:
         if verbose:
             logger.error(f"Error when reading tentacle metadata: {e}")
+    return True
