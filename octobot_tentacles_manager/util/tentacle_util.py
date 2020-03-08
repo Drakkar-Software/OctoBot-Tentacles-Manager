@@ -39,7 +39,7 @@ def tentacles_arch_exists(verbose=True) -> bool:
     try:
         import tentacles
         return os.path.exists(TENTACLES_PATH)
-    except ImportError as e:
+    except (ImportError, SyntaxError) as e:
         if verbose:
             get_logger(__name__).exception(e, True, f"Error when importing tentacles: {e}")
         return False

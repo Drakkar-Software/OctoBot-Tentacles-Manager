@@ -52,12 +52,16 @@ class TentacleWorker:
         self.fetching_requirements = False
         self.requirements_downloading_event = Event()
 
-    def parse_all_tentacle_data(self, root):
-        factory = TentacleDataFactory(root)
-        return [factory.create_tentacle_data(tentacle_name, tentacle_type)
-                for tentacle_type in self._get_tentacle_types(root)
-                for tentacle_name in listdir(join(root, tentacle_type))
-                if not tentacle_name == PYTHON_INIT_FILE]
+    def reset_worker(self):
+        self.errors = []
+
+        self.to_process_tentacle_modules = {}
+        self.processed_tentacles_modules = []
+
+        self.fetched_for_requirements_tentacles = []
+        self.fetched_for_requirements_tentacles_versions = {}
+        self.fetching_requirements = False
+        self.requirements_downloading_event = Event()
 
     @staticmethod
     def import_tentacle_config_if_any(target_tentacle_path, replace=False):
@@ -69,8 +73,7 @@ class TentacleWorker:
                     copyfile(path.join(target_tentacle_config_path, config_file), target_user_path)
 
     async def refresh_tentacle_config_file(self):
-        available_tentacle_data = self.parse_all_tentacle_data(self.tentacle_path)
-        await self.load_all_metadata(available_tentacle_data)
+        available_tentacle_data = await self.load_tentacle_with_metadata(self.tentacle_path)
         tentacle_global_config = GlobalTentacleConfiguration()
         await tentacle_global_config.read_config()
         await tentacle_global_config.fill_tentacle_config(available_tentacle_data, self.default_tentacle_config)
@@ -95,8 +98,20 @@ class TentacleWorker:
                 self.fetching_requirements = True
                 await self._fetch_all_available_tentacles()
             else:
-                await wait_for(self.requirements_downloading_event, self.TENTACLES_FETCHING_TIMEOUT)
+                await wait_for(self.requirements_downloading_event.wait(), self.TENTACLES_FETCHING_TIMEOUT)
             await callback(tentacle_data, missing_requirements)
+
+    async def load_tentacle_with_metadata(self, tentacle_path):
+        loaded_tentacle_data = self._parse_all_tentacle_data(tentacle_path)
+        await self.load_all_metadata(loaded_tentacle_data)
+        return loaded_tentacle_data
+
+    def _parse_all_tentacle_data(self, root):
+        factory = TentacleDataFactory(root)
+        return [factory.create_tentacle_data_from_type(tentacle_name, tentacle_type)
+                for tentacle_type in self._get_tentacle_types(root)
+                for tentacle_name in listdir(join(root, tentacle_type))
+                if not tentacle_name == PYTHON_INIT_FILE]
 
     async def _fetch_all_available_tentacles(self):
         # try getting it from available tentacles
@@ -106,17 +121,10 @@ class TentacleWorker:
 
     async def _fetch_tentacles_for_requirement(self, repo):
         await fetch_and_extract_tentacles(repo, DEFAULT_TENTACLES_URL, self.aiohttp_session, merge_dirs=True)
-        self.fetched_for_requirements_tentacles = \
-            self.parse_all_tentacle_data(path.join(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, TENTACLES_ARCHIVE_ROOT))
-        await self.load_all_metadata(self.fetched_for_requirements_tentacles)
+        requirements_tentacles_path = path.join(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, TENTACLES_ARCHIVE_ROOT)
+        self.fetched_for_requirements_tentacles = await self.load_tentacle_with_metadata(requirements_tentacles_path)
         self.fetched_for_requirements_tentacles_versions = \
             self._get_version_by_tentacle_data(self.fetched_for_requirements_tentacles)
-
-    def get_fetched_for_requirements_tentacles(self, name):
-        for tentacle_data in self.fetched_for_requirements_tentacles:
-            if tentacle_data.name == name:
-                return tentacle_data
-        return None
 
     def _get_available_tentacles_repos(self):
         # TODO: add advanced tentacles repos
@@ -155,7 +163,8 @@ class TentacleWorker:
 
     def _get_tentacle_types(self, ref_tentacles_root):
         tentacle_types = []
-        self._rec_get_tentacles_type(ref_tentacles_root, tentacle_types, 1, TENTACLE_MAX_SUB_FOLDERS_LEVEL)
+        if isdir(ref_tentacles_root):
+            self._rec_get_tentacles_type(ref_tentacles_root, tentacle_types, 1, TENTACLE_MAX_SUB_FOLDERS_LEVEL)
         return tentacle_types
 
     def _rec_get_tentacles_type(self, ref_tentacles_root, tentacle_types, current_level, max_level):
