@@ -20,6 +20,6 @@ from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_t
 
 async def install_all_tentacles(tentacles_path_or_url, tentacle_path=TENTACLES_PATH, use_confirm_prompt=False, aiohttp_session=None):
     await fetch_and_extract_tentacles(TENTACLES_INSTALL_TEMP_DIR, tentacles_path_or_url, aiohttp_session)
-    install_worker = InstallWorker(TENTACLES_INSTALL_TEMP_DIR, tentacle_path, use_confirm_prompt)
+    install_worker = InstallWorker(TENTACLES_INSTALL_TEMP_DIR, tentacle_path, use_confirm_prompt, aiohttp_session)
     await install_worker.install_all_tentacles()
     cleanup_temp_dirs(TENTACLES_INSTALL_TEMP_DIR)
