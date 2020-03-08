@@ -23,7 +23,7 @@ from octobot_tentacles_manager.constants import TENTACLE_TYPES, TENTACLES_ARCHIV
 DOWNLOADED_DATA_CHUNK_SIZE = 60000
 
 
-async def fetch_and_extract_tentacles(tentacles_temp_dir, tentacles_path_or_url, aiohttp_session):
+async def fetch_and_extract_tentacles(tentacles_temp_dir, tentacles_path_or_url, aiohttp_session, merge_dirs=False):
     compressed_file = tentacles_path_or_url
     should_download = _is_url(tentacles_path_or_url)
     if should_download:
@@ -31,7 +31,7 @@ async def fetch_and_extract_tentacles(tentacles_temp_dir, tentacles_path_or_url,
             raise RuntimeError("Missing aiohttp_session argument")
         compressed_file = f"downloaded_{tentacles_temp_dir}"
         await _download_tentacles(compressed_file, tentacles_path_or_url, aiohttp_session)
-    await _extract_tentacles(compressed_file, tentacles_temp_dir, should_download)
+    await _extract_tentacles(compressed_file, tentacles_temp_dir, should_download, merge_dirs)
 
 
 def cleanup_temp_dirs(target_path):
@@ -50,8 +50,8 @@ async def _download_tentacles(target_file, download_URL, aiohttp_session):
                 await downloaded_file.write(chunk)
 
 
-async def _extract_tentacles(source_path, target_path, remove_source_file):
-    if path.exists(target_path) and path.isdir(target_path):
+async def _extract_tentacles(source_path, target_path, remove_source_file, merge_dirs):
+    if path.exists(target_path) and path.isdir(target_path) and not merge_dirs:
         rmtree(target_path)
     with ZipFile(source_path) as zipped_tentacles:
         for archive_member in zipped_tentacles.namelist():

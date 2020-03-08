@@ -13,10 +13,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from importlib import import_module
+import json
 from os.path import join, sep
 
-from octobot_commons.logging.logging_util import get_logger
+import aiofiles
+
+from octobot_tentacles_manager.constants import TENTACLE_METADATA, METADATA_VERSION, METADATA_ORIGIN_PACKAGE, \
+    METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, TENTACLE_REQUIREMENT_VERSION_EQUALS
 
 
 class TentacleData:
@@ -25,20 +28,19 @@ class TentacleData:
         self.name = name
         self.tentacle_type = tentacle_type
         self.tentacle_path = join(self.reference_path, self.tentacle_type)
-        self.module_import_path = self.tentacle_path.replace(sep, ".")
         self.version = None
+        self.tentacles = None
         self.origin_package = None
-        self.requirements = None
+        self.tentacles_requirements = None
+        self.metadata = {}
 
-    def load_metadata(self):
-        try:
-            module_import_path = self.to_import_path(self.tentacle_path)
-            tentacle_module = import_module(f".{self.name}", module_import_path)
-            self.version = tentacle_module.VERSION
-            self.origin_package = tentacle_module.ORIGIN_PACKAGE
-            self.requirements = tentacle_module.REQUIREMENTS
-        except ModuleNotFoundError as e:
-            get_logger(self.__class__.__name__).exception(e, True, f"Error when importing new tentacle module {e}")
+    async def load_metadata(self):
+        async with aiofiles.open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
+            self.metadata = json.loads(await metadata_file.read())
+            self.version = self.metadata[METADATA_VERSION]
+            self.origin_package = self.metadata[METADATA_ORIGIN_PACKAGE]
+            self.tentacles = self.metadata[METADATA_TENTACLES]
+            self.tentacles_requirements = self.metadata[METADATA_TENTACLES_REQUIREMENTS]
 
     @staticmethod
     def to_import_path(path):
@@ -47,9 +49,22 @@ class TentacleData:
     def is_valid(self):
         return self.version is not None
 
+    def get_simple_tentacle_type(self):
+        return self.tentacle_type.split(sep)[-1]
+
     def __str__(self):
         str_rep = f"{self.name} tentacle [type: {self.tentacle_type}"
         if self.is_valid():
             return f"{str_rep}, version: {self.version}]"
         else:
             return f"{str_rep}]"
+
+    def extract_tentacle_requirements(self):
+        return [self._parse_requirements(component) for component in self.tentacles_requirements]
+
+    @staticmethod
+    def _parse_requirements(requirement):
+        if TENTACLE_REQUIREMENT_VERSION_EQUALS in requirement:
+            return requirement.split(TENTACLE_REQUIREMENT_VERSION_EQUALS)
+        else:
+            return [requirement, None]

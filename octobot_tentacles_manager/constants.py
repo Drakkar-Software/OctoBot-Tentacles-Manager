@@ -13,11 +13,37 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from os.path import join
+from octobot_commons.constants import USER_FOLDER, CONFIG_FOLDER
+
+# Default tentacles URL
+# TODO: use real 0.4 tentacles url
+DEFAULT_TENTACLES_URL = "https://raw.githubusercontent.com/GuillaumeDSM/test_tentacles/master/0.4.0.zip"
 
 # Tentacles files
 PYTHON_INIT_FILE = "__init__.py"
+PYTHON_EXT = ".py"
 CONFIG_EVALUATOR_FILE = "evaluator_config.json"
 CONFIG_TRADING_FILE = "trading_config.json"
+CONFIG_TENTACLES_FILE = "tentacles_config.json"
+CONFIG_EXT = ".json"
+CONFIG_SCHEMA_EXT = "_schema.json"
+TENTACLE_METADATA = "metadata.json"
+DEFAULT_TENTACLE_CONFIG = join(CONFIG_FOLDER, "default_tentacles_config.json")
+
+# Metadata keys
+METADATA_VERSION = "version"
+METADATA_TENTACLES = "tentacles"
+METADATA_ORIGIN_PACKAGE = "origin_package"
+METADATA_TENTACLES_REQUIREMENTS = "tentacles-requirements"
+
+# Requirements
+TENTACLE_REQUIREMENT_VERSION_EQUALS = "=="
+
+# Tentacle user config files and folders
+USER_TENTACLE_CONFIG_PATH = join(USER_FOLDER, "tentacles_config")
+USER_TENTACLE_CONFIG_FILE_PATH = join(USER_TENTACLE_CONFIG_PATH, CONFIG_TENTACLES_FILE)
+USER_TENTACLE_SPECIFIC_CONFIG_PATH = join(USER_TENTACLE_CONFIG_PATH, "specific_config")
 
 # Current minimum default tentacles version
 TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION = "1.2.0"
@@ -25,6 +51,7 @@ DEFAULT_TENTACLES_PACKAGE = "OctoBot-Default-Tentacles"
 
 # Tentacles installation folders
 TENTACLES_INSTALL_TEMP_DIR = "temp_tentacles"
+TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR = "requirements_temp_tentacles"
 TENTACLES_ARCHIVE_ROOT = "reference_tentacles"
 
 # Tentacles folders
@@ -34,6 +61,7 @@ TENTACLES_EVALUATOR_PATH = "Evaluator"
 TENTACLES_INTERFACES_PATH = "Interfaces"
 TENTACLES_NOTIFIERS_PATH = "Notifiers"
 TENTACLES_SERVICES_PATH = "Services"
+TENTACLES_SERVICES_FEEDS_PATH = "Services_feeds"
 TENTACLES_TRADING_PATH = "Trading"
 TENTACLES_WEBSOCKETS_PATH = "Websockets"
 
@@ -53,10 +81,19 @@ TENTACLES_TRADING_MODE_PATH = "Mode"
 TENTACLES_TRADING_EXCHANGE_PATH = "Exchange"
 TENTACLES_WEBSOCKETS_FEEDS_PATH = "feeds"
 
-# Tentacle module folders
+# Tentacle local module folders
 TENTACLE_CONFIG = "config"
 TENTACLE_RESOURCES = "resources"
 TENTACLE_TESTS = "tests"
+
+# Tentacles that can be activated / deactivated
+ACTIVATABLE_TENTACLES = [
+    TENTACLES_EVALUATOR_REALTIME_PATH,
+    TENTACLES_EVALUATOR_SOCIAL_PATH,
+    TENTACLES_EVALUATOR_TA_PATH,
+    TENTACLES_EVALUATOR_STRATEGIES_PATH,
+    TENTACLES_TRADING_MODE_PATH,
+]
 
 # Tentacles architecture
 TENTACLES_FOLDERS_ARCH = {
@@ -83,6 +120,7 @@ TENTACLES_FOLDERS_ARCH = {
     TENTACLES_INTERFACES_PATH: [],
     TENTACLES_NOTIFIERS_PATH: [],
     TENTACLES_SERVICES_PATH: [],
+    TENTACLES_SERVICES_FEEDS_PATH: [],
     TENTACLES_TRADING_PATH: [
         TENTACLES_TRADING_MODE_PATH,
         TENTACLES_TRADING_EXCHANGE_PATH
@@ -98,8 +136,6 @@ TENTACLE_MODULE_FOLDERS = {
     TENTACLE_TESTS
 }
 
-TENTACLES_TEST_PATH = "tests"
-
 
 # tentacles files management
 TENTACLE_TYPES = [TENTACLES_BACKTESTING_PATH,
@@ -107,5 +143,6 @@ TENTACLE_TYPES = [TENTACLES_BACKTESTING_PATH,
                   TENTACLES_INTERFACES_PATH,
                   TENTACLES_NOTIFIERS_PATH,
                   TENTACLES_SERVICES_PATH,
+                  TENTACLES_SERVICES_FEEDS_PATH,
                   TENTACLES_TRADING_PATH,
                   TENTACLES_WEBSOCKETS_PATH]
