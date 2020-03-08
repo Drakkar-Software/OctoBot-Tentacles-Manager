@@ -46,13 +46,68 @@ async def test_create_missing_tentacles_arch():
     _cleanup()
 
 
+async def test_install_two_tentacles():
+    _cleanup()
+    _enable_loggers()
+    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
+    worker = InstallWorker(temp_dir, test_tentacle_path, False, None)
+    worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
+    assert await worker.install_tentacles(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
+
+    # test installed files
+    trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
+    assert trading_mode_files_count == 1
+    backtesting_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Backtesting", "importers")))
+    assert backtesting_mode_files_count == 7
+    config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files_count = len(config_files)
+    assert config_files_count == 1
+    assert "InstantFluctuationsEvaluator.json" in config_files[0][2]
+    assert "DailyTradingMode.json" not in config_files[0][2]
+    assert len(config_files[0][2]) == 1
+
+    # test tentacles config
+    with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
+        assert json.load(config_f) == {
+            'tentacle_activation': {
+                'InstantFluctuationsEvaluator': True
+            }
+        }
+    _cleanup()
+
+
+async def test_install_one_tentacle_with_requirement():
+    async with aiohttp.ClientSession() as session:
+        _cleanup()
+        _enable_loggers()
+        await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
+        worker = InstallWorker(temp_dir, test_tentacle_path, False, session)
+        worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
+        assert await worker.install_tentacles(["reddit_service_feed"]) == 0
+
+    # test installed files
+    trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
+    assert trading_mode_files_count == 1
+    config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    assert len(config_files) == 1
+    assert len(config_files[0][2]) == 0
+
+    # test tentacles config
+    with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
+        assert json.load(config_f) == {
+            'tentacle_activation': {}
+        }
+    assert path.exists(path.join("tentacles", "Services", "reddit_service", "reddit_service.py"))
+    _cleanup()
+
+
 async def test_install_all_tentacles():
     _cleanup()
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
     worker = InstallWorker(temp_dir, test_tentacle_path, False, None)
     worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await worker.install_all_tentacles() == 0
+    assert await worker.install_tentacles() == 0
 
     # test installed files
     trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
@@ -81,21 +136,22 @@ async def test_install_all_tentacles_twice():
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
     worker = InstallWorker(temp_dir, test_tentacle_path, False, None)
     worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await worker.install_all_tentacles() == 0
-    assert await worker.install_all_tentacles() == 0
+    assert await worker.install_tentacles() == 0
+    assert await worker.install_tentacles() == 0
     trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
     assert trading_mode_files_count == 5
     _cleanup()
 
 
 async def test_install_all_tentacles_fetching_requirements():
-    _cleanup()
-    _enable_loggers()
-    session = aiohttp.ClientSession()
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "requirements_tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, test_tentacle_path, False, session)
-    worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await worker.install_all_tentacles() == 0
+    async with aiohttp.ClientSession() as session:
+        _cleanup()
+        _enable_loggers()
+        await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "requirements_tentacles.zip"), None)
+        worker = InstallWorker(temp_dir, test_tentacle_path, False, session)
+        worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
+        assert await worker.install_tentacles() == 0
+
     trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
     assert trading_mode_files_count == 5
     config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
@@ -103,6 +159,8 @@ async def test_install_all_tentacles_fetching_requirements():
     assert config_files_count == 1
     # ensure fetched InstantFluctuationsEvaluator requirement
     assert "InstantFluctuationsEvaluator.json" in config_files[0][2]
+    assert path.exists(path.join("tentacles", "Evaluator", "RealTime",
+                                 "instant_fluctuations_evaluator", "instant_fluctuations_evaluator.py"))
     assert len(config_files[0][2]) == 4
     _cleanup()
 

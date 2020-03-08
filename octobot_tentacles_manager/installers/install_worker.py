@@ -30,12 +30,14 @@ class InstallWorker(TentacleWorker):
         super().__init__(reference_tentacles_dir, tentacle_path, use_confirm_prompt, aiohttp_session)
         self.to_install_tentacles = []
 
-    async def install_all_tentacles(self) -> int:
+    async def install_tentacles(self, name_filter=None) -> int:
         await self.create_missing_tentacles_arch()
-        self.to_install_tentacles = self.parse_all_tentacle_data(self.reference_tentacles_root)
-        self.total_steps = len(self.to_install_tentacles)
         self.progress = 1
         self.errors = []
+        self.to_install_tentacles = [tentacle_data
+                                     for tentacle_data in self.parse_all_tentacle_data(self.reference_tentacles_root)
+                                     if name_filter is None or tentacle_data.name in name_filter]
+        self.total_steps = len(self.to_install_tentacles)
         await self.load_all_metadata(self.to_install_tentacles)
         self.register_to_process_tentacles_modules(self.to_install_tentacles)
         await gather(*[self._install_tentacle(tentacle_data) for tentacle_data in self.to_install_tentacles])
