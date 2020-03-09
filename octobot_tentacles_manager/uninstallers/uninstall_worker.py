@@ -26,19 +26,21 @@ from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
 class UninstallWorker(TentacleWorker):
 
     async def uninstall_tentacles(self, name_filter=None) -> int:
-        if name_filter is None:
-            delete_tentacles_arch()
-        else:
-            self.reset_worker()
-            self.progress = 1
-            all_tentacle_data = await self.load_tentacle_with_metadata(self.tentacle_path)
-            to_uninstall_tentacles = [tentacle_data
-                                      for tentacle_data in all_tentacle_data
-                                      if tentacle_data.name in name_filter]
-            await gather(*[self._uninstall_tentacle(tentacle_data) for tentacle_data in to_uninstall_tentacles])
-        await self.create_missing_tentacles_arch()
-        await self.refresh_tentacle_config_file()
-        self.log_summary()
+        self.reset_worker()
+        if self.confirm_action("Remove all installed tentacles ?"
+                               if name_filter is None else "Remove {', '.join(name_filter)} tentacles ?"):
+            if name_filter is None:
+                delete_tentacles_arch()
+            else:
+                self.progress = 1
+                all_tentacle_data = await self.load_tentacle_with_metadata(self.tentacle_path)
+                to_uninstall_tentacles = [tentacle_data
+                                          for tentacle_data in all_tentacle_data
+                                          if tentacle_data.name in name_filter]
+                await gather(*[self._uninstall_tentacle(tentacle_data) for tentacle_data in to_uninstall_tentacles])
+            await self.create_missing_tentacles_arch()
+            await self.refresh_tentacle_config_file()
+            self.log_summary()
         return len(self.errors)
 
     async def _uninstall_tentacle(self, tentacle_data):
