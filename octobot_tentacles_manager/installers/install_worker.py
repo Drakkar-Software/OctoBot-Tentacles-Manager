@@ -18,9 +18,10 @@ from os import path, listdir
 from shutil import copyfile, copytree, rmtree
 from asyncio import gather
 
-from octobot_tentacles_manager.base.tentacle_worker import TentacleWorker
+from octobot_tentacles_manager.base_worker.tentacle_worker import TentacleWorker
 from octobot_tentacles_manager.constants import PYTHON_INIT_FILE, TENTACLE_MODULE_FOLDERS
 from octobot_tentacles_manager.tentacle_data.tentacle_data import TentacleData
+from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
 
 
 class InstallWorker(TentacleWorker):
@@ -29,7 +30,7 @@ class InstallWorker(TentacleWorker):
         await self.create_missing_tentacles_arch()
         self.reset_worker()
         self.progress = 1
-        all_tentacle_data = await self.load_tentacle_with_metadata(self.reference_tentacles_root)
+        all_tentacle_data = await load_tentacle_with_metadata(self.reference_tentacles_root)
         to_install_tentacles = [tentacle_data
                                 for tentacle_data in all_tentacle_data
                                 if self._should_tentacle_data_be_processed(tentacle_data, name_filter)]

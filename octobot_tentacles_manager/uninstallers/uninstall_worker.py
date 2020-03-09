@@ -18,8 +18,9 @@ from os import path
 from shutil import rmtree
 from asyncio import gather
 
-from octobot_tentacles_manager.base.tentacle_worker import TentacleWorker
+from octobot_tentacles_manager.base_worker.tentacle_worker import TentacleWorker
 from octobot_tentacles_manager.constants import PYTHON_INIT_FILE
+from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
 from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
 
 
@@ -33,7 +34,7 @@ class UninstallWorker(TentacleWorker):
                 delete_tentacles_arch()
             else:
                 self.progress = 1
-                all_tentacle_data = await self.load_tentacle_with_metadata(self.tentacle_path)
+                all_tentacle_data = await load_tentacle_with_metadata(self.tentacle_path)
                 to_uninstall_tentacles = [tentacle_data
                                           for tentacle_data in all_tentacle_data
                                           if tentacle_data.name in name_filter]
