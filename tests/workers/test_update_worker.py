@@ -14,11 +14,10 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import json
+import pytest
 from logging import INFO
 from shutil import rmtree
 from os import walk, path
-
-import pytest
 
 from octobot_commons.logging.logging_util import set_logging_level
 from octobot_tentacles_manager import TENTACLES_PATH
