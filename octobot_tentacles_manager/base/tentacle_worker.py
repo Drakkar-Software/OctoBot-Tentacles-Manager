@@ -108,6 +108,18 @@ class TentacleWorker:
         await self.load_all_metadata(loaded_tentacle_data)
         return loaded_tentacle_data
 
+    def confirm_action(self, action):
+        if not self.use_confirm_prompt:
+            return True
+        else:
+            confirmations = ["yes", "ye", "y", "oui", "o", "1"]
+            user_input = input(f"{action} Y/N").lower()
+            if user_input in confirmations:
+                return True
+            else:
+                self.logger.info("Action aborted.")
+                return False
+
     def _parse_all_tentacle_data(self, root):
         factory = TentacleDataFactory(root)
         return [factory.create_tentacle_data_from_type(tentacle_name, tentacle_type)
