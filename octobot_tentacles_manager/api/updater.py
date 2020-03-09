@@ -18,15 +18,14 @@ from octobot_tentacles_manager.updaters.update_worker import UpdateWorker
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles, cleanup_temp_dirs
 
 
-async def update_all_tentacles(tentacles_path_or_url, tentacle_path=TENTACLES_PATH,
-                               use_confirm_prompt=False, aiohttp_session=None) -> int:
-    return await _update_tentacles(None, tentacles_path_or_url, tentacle_path, use_confirm_prompt, aiohttp_session)
+async def update_all_tentacles(tentacles_path_or_url, tentacle_path=TENTACLES_PATH, aiohttp_session=None) -> int:
+    return await _update_tentacles(None, tentacles_path_or_url, tentacle_path, aiohttp_session=aiohttp_session)
 
 
 async def update_tentacles(tentacle_names, tentacles_path_or_url, tentacle_path=TENTACLES_PATH,
-                           use_confirm_prompt=False, aiohttp_session=None) -> int:
+                           aiohttp_session=None) -> int:
     return await _update_tentacles(tentacle_names, tentacles_path_or_url,
-                                   tentacle_path, use_confirm_prompt, aiohttp_session)
+                                   tentacle_path, aiohttp_session=aiohttp_session)
 
 
 async def _update_tentacles(tentacle_names, tentacles_path_or_url, tentacle_path=TENTACLES_PATH,

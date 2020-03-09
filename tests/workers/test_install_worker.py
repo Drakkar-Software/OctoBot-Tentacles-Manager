@@ -14,16 +14,15 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import json
+import aiohttp
+import pytest
 from logging import INFO
 from shutil import rmtree
 from os import walk, path
 
-import aiohttp
-import pytest
-
 from octobot_commons.logging.logging_util import set_logging_level
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, USER_TENTACLE_SPECIFIC_CONFIG_PATH, \
-    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH
+    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH
 from octobot_tentacles_manager.installers.install_worker import InstallWorker
 
 # All test coroutines will be treated as marked.
@@ -32,15 +31,14 @@ from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_t
 
 pytestmark = pytest.mark.asyncio
 
-test_tentacle_path = "tentacles"
 temp_dir = "temp_tests"
 
 
 async def test_create_missing_tentacles_arch():
     _cleanup()
-    worker = InstallWorker("", test_tentacle_path, False, None)
+    worker = InstallWorker("", TENTACLES_PATH, False, None)
     await worker.create_missing_tentacles_arch()
-    trading_mode_files_count = sum(1 for _ in walk(test_tentacle_path))
+    trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert trading_mode_files_count == 25
     assert path.exists(USER_TENTACLE_CONFIG_PATH)
     _cleanup()
@@ -50,14 +48,14 @@ async def test_install_two_tentacles():
     _cleanup()
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, test_tentacle_path, False, None)
+    worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
     worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.install_tentacles(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
 
     # test installed files
-    trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 1
-    backtesting_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Backtesting", "importers")))
+    backtesting_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Backtesting", "importers")))
     assert backtesting_mode_files_count == 7
     config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
@@ -81,12 +79,12 @@ async def test_install_one_tentacle_with_requirement():
         _cleanup()
         _enable_loggers()
         await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-        worker = InstallWorker(temp_dir, test_tentacle_path, False, session)
+        worker = InstallWorker(temp_dir, TENTACLES_PATH, False, session)
         worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
         assert await worker.install_tentacles(["reddit_service_feed"]) == 0
 
     # test installed files
-    trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 1
     config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
     assert len(config_files) == 1
@@ -105,12 +103,12 @@ async def test_install_all_tentacles():
     _cleanup()
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, test_tentacle_path, False, None)
+    worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
     worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.install_tentacles() == 0
 
     # test installed files
-    trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
     config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
@@ -134,11 +132,11 @@ async def test_install_all_tentacles():
 async def test_install_all_tentacles_twice():
     _cleanup()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, test_tentacle_path, False, None)
+    worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
     worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.install_tentacles() == 0
     assert await worker.install_tentacles() == 0
-    trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
     _cleanup()
 
@@ -148,11 +146,11 @@ async def test_install_all_tentacles_fetching_requirements():
         _cleanup()
         _enable_loggers()
         await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "requirements_tentacles.zip"), None)
-        worker = InstallWorker(temp_dir, test_tentacle_path, False, session)
+        worker = InstallWorker(temp_dir, TENTACLES_PATH, False, session)
         worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
         assert await worker.install_tentacles() == 0
 
-    trading_mode_files_count = sum(1 for _ in walk(path.join(test_tentacle_path, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
     config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
@@ -175,7 +173,7 @@ def _cleanup():
         rmtree(temp_dir)
     if path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR):
         rmtree(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
-    if path.exists(test_tentacle_path):
-        rmtree(test_tentacle_path)
+    if path.exists(TENTACLES_PATH):
+        rmtree(TENTACLES_PATH)
     if path.exists(USER_TENTACLE_CONFIG_PATH):
         rmtree(USER_TENTACLE_CONFIG_PATH)
