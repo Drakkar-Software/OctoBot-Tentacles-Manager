@@ -17,6 +17,10 @@ from octobot_tentacles_manager import TENTACLES_PATH
 from octobot_tentacles_manager.uninstallers.uninstall_worker import UninstallWorker
 
 
+USER_HELP = """Uninstall the given tentacle modules. 
+    Does not delete the associated tentacle configuration."""
+
+
 async def uninstall_all_tentacles(tentacle_path=TENTACLES_PATH, use_confirm_prompt=False) -> int:
     return await _uninstall_tentacles(None, tentacle_path, use_confirm_prompt)
 
