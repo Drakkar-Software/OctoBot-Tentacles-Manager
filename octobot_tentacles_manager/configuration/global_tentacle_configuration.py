@@ -13,12 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import json
-import aiofiles
 from copy import copy
-from os.path import exists
 
-from octobot_commons.config_manager import dump_json
+from octobot_tentacles_manager.configuration.config_file import read_config, write_config
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_TENTACLE_CONFIG, \
     ACTIVATABLE_TENTACLES
 
@@ -32,7 +29,7 @@ class GlobalTentacleConfiguration:
 
     async def fill_tentacle_config(self, tentacle_data_list, default_tentacle_config=DEFAULT_TENTACLE_CONFIG,
                                    remove_missing_tentacles=True):
-        default_config = await self._read_config(default_tentacle_config)
+        default_config = await read_config(default_tentacle_config)
         activation_config = default_config[self.TENTACLE_ACTIVATION_KEY] \
             if self.TENTACLE_ACTIVATION_KEY in default_config else {}
         activatable_tentacles_in_list = [tentacle
@@ -52,18 +49,10 @@ class GlobalTentacleConfiguration:
         self.tentacles_activation = copy(new_config)
 
     async def read_config(self):
-        self._from_dict(await self._read_config(self.config_path))
+        self._from_dict(await read_config(self.config_path))
 
     async def save_config(self):
-        async with aiofiles.open(self.config_path, "w+") as config_file_w:
-            await config_file_w.write(dump_json(self._to_dict()))
-
-    @staticmethod
-    async def _read_config(config_file):
-        if exists(config_file):
-            async with aiofiles.open(config_file, "r") as config_file_r:
-                return json.loads(await config_file_r.read())
-        return {}
+        await write_config(self.config_path, self._to_dict())
 
     def _update_tentacle_activation(self, tentacle, default_config):
         if tentacle not in self.tentacles_activation:
