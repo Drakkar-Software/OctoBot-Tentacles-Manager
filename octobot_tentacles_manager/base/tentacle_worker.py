@@ -21,10 +21,11 @@ from asyncio import gather, Event, wait_for
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.configuration.global_tentacle_configuration import GlobalTentacleConfiguration
 from octobot_tentacles_manager.constants import TENTACLES_ARCHIVE_ROOT, \
-    TENTACLE_MAX_SUB_FOLDERS_LEVEL, TENTACLE_CONFIG, CONFIG_SCHEMA_EXT, USER_TENTACLE_SPECIFIC_CONFIG_PATH, CONFIG_EXT, \
-    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, DEFAULT_TENTACLES_URL, PYTHON_EXT, DEFAULT_TENTACLE_CONFIG, \
-    PYTHON_INIT_FILE
+    TENTACLE_MAX_SUB_FOLDERS_LEVEL, TENTACLE_CONFIG, CONFIG_SCHEMA_EXT, USER_TENTACLE_SPECIFIC_CONFIG_PATH, \
+    CONFIG_EXT, TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, DEFAULT_TENTACLES_URL, PYTHON_EXT, DEFAULT_TENTACLE_CONFIG, \
+    PYTHON_INIT_FILE, TENTACLES_FOLDERS_ARCH
 from octobot_tentacles_manager.tentacle_data.tentacle_data_factory import TentacleDataFactory
+from octobot_tentacles_manager.util.file_util import find_or_create
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
 
 
@@ -37,7 +38,8 @@ class TentacleWorker:
         self.use_confirm_prompt = use_confirm_prompt
         self.default_tentacle_config = DEFAULT_TENTACLE_CONFIG
 
-        self.reference_tentacles_root = join(reference_tentacles_dir, TENTACLES_ARCHIVE_ROOT)
+        self.reference_tentacles_root = join(reference_tentacles_dir, TENTACLES_ARCHIVE_ROOT) \
+            if reference_tentacles_dir is not None else TENTACLES_ARCHIVE_ROOT
         self.tentacle_path = tentacle_path
 
         self.total_steps = 0
@@ -139,6 +141,41 @@ class TentacleWorker:
     async def load_all_metadata(tentacle_data_list):
         await gather(*[tentacle_data.load_metadata() for tentacle_data in tentacle_data_list])
 
+    async def create_missing_tentacles_arch(self):
+        # tentacle user config folder
+        await find_or_create(USER_TENTACLE_SPECIFIC_CONFIG_PATH)
+        # tentacles folder
+        found_existing_installation = not await find_or_create(self.tentacle_path)
+        # tentacle mail python init file
+        await find_or_create(path.join(self.tentacle_path, PYTHON_INIT_FILE), False,
+                             self._get_module_init_file_content(TENTACLES_FOLDERS_ARCH.keys()))
+        # tentacle inner architecture
+        await self._rec_create_missing_files(self.tentacle_path, TENTACLES_FOLDERS_ARCH)
+        return found_existing_installation
+
+    @staticmethod
+    async def _rec_create_missing_files(root_folder, files_arch):
+        sub_dir_to_create_coroutines = []
+        for root, subdir in files_arch.items():
+            current_root = path.join(root_folder, root)
+            await find_or_create(current_root)
+            if isinstance(subdir, dict):
+                # create python init file
+                await find_or_create(path.join(current_root, PYTHON_INIT_FILE), False,
+                                     TentacleWorker._get_module_init_file_content(subdir))
+                sub_dir_to_create_coroutines.append(TentacleWorker._rec_create_missing_files(current_root, subdir))
+            else:
+                # create python init file
+                await find_or_create(path.join(current_root, PYTHON_INIT_FILE), False,
+                                     TentacleWorker._get_module_init_file_content(subdir))
+                sub_dir_to_create_coroutines += [find_or_create(path.join(current_root, directory))
+                                                 for directory in subdir]
+        await gather(*sub_dir_to_create_coroutines)
+
+    @staticmethod
+    def _get_module_init_file_content(modules):
+        return "\n".join(f"from .{module} import *" for module in modules)
+
     def _find_tentacles_missing_requirements(self, tentacle_data, version_by_modules):
         missing_requirements = {}
         if tentacle_data.tentacles_requirements:
@@ -189,3 +226,7 @@ class TentacleWorker:
                    if isdir(join(directory, sub_directory))
                    for file_name in listdir(join(directory, sub_directory))
                    )
+
+    @staticmethod
+    def _get_single_module_init_line(tentacle_data):
+        return f"from .{tentacle_data.name} import *"
