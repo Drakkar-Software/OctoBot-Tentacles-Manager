@@ -18,6 +18,10 @@ from octobot_tentacles_manager.installers.install_worker import InstallWorker
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles, cleanup_temp_dirs
 
 
+USER_HELP = """Install or re-install the given tentacles modules with their requirements if any.
+    Does not edit tentacles configuration files and creates it if missing."""
+
+
 async def install_all_tentacles(tentacles_path_or_url, tentacle_path=TENTACLES_PATH, aiohttp_session=None) -> int:
     return await _install_tentacles(None, tentacles_path_or_url, tentacle_path, aiohttp_session=aiohttp_session)
 
