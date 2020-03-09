@@ -13,13 +13,20 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_data_by_tentacle_class
-from octobot_tentacles_manager.util.tentacle_util import is_tentacles_arch_valid
+import json
+import aiofiles
+from os.path import exists
+
+from octobot_commons.config_manager import dump_json
 
 
-def load_tentacles(verbose=True) -> bool:
-    return is_tentacles_arch_valid(verbose=verbose)
+async def read_config(config_file: str, raise_exception=False) -> dict:
+    if exists(config_file) or raise_exception:
+        async with aiofiles.open(config_file, "r") as config_file_r:
+            return json.loads(await config_file_r.read())
+    return {}
 
 
-async def reload_tentacle_data() -> None:
-    await reload_tentacle_data_by_tentacle_class()
+async def write_config(config_file: str, content: dict) -> None:
+    async with aiofiles.open(config_file, "w+") as config_file_w:
+        await config_file_w.write(dump_json(content))

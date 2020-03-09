@@ -17,6 +17,7 @@ from distutils.version import LooseVersion
 
 from octobot_tentacles_manager.installers.install_worker import InstallWorker
 from octobot_tentacles_manager.tentacle_data.tentacle_data import TentacleData
+from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
 
 
 class UpdateWorker(InstallWorker):
@@ -26,7 +27,7 @@ class UpdateWorker(InstallWorker):
         self.available_tentacle_data = []
 
     async def update_tentacles(self, name_filter=None) -> int:
-        self.available_tentacle_data = await self.load_tentacle_with_metadata(self.tentacle_path)
+        self.available_tentacle_data = await load_tentacle_with_metadata(self.tentacle_path)
         return await self.install_tentacles(name_filter)
 
     def _should_tentacle_data_be_processed(self, tentacle_data, name_filter):

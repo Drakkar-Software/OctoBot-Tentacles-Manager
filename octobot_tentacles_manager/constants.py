@@ -27,6 +27,7 @@ CONFIG_EVALUATOR_FILE = "evaluator_config.json"
 CONFIG_TRADING_FILE = "trading_config.json"
 CONFIG_TENTACLES_FILE = "tentacles_config.json"
 CONFIG_EXT = ".json"
+DOCUMENTATION_EXT = ".md"
 CONFIG_SCHEMA_EXT = "_schema.json"
 TENTACLE_METADATA = "metadata.json"
 DEFAULT_TENTACLE_CONFIG = join(CONFIG_FOLDER, "default_tentacles_config.json")

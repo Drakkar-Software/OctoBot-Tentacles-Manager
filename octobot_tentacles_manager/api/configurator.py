@@ -13,13 +13,21 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_data_by_tentacle_class
-from octobot_tentacles_manager.util.tentacle_util import is_tentacles_arch_valid
+from octobot_tentacles_manager.configuration.tentacle_configuration import update_config, get_config, \
+    factory_reset_config, get_config_schema_path
 
 
-def load_tentacles(verbose=True) -> bool:
-    return is_tentacles_arch_valid(verbose=verbose)
+async def update_tentacle_config(tentacle_class: object, config_data: dict) -> None:
+    await update_config(tentacle_class, config_data)
 
 
-async def reload_tentacle_data() -> None:
-    await reload_tentacle_data_by_tentacle_class()
+async def get_tentacle_config(klass, raise_exception=True) -> dict:
+    return await get_config(klass, raise_exception)
+
+
+def factory_tentacle_reset_config(klass) -> None:
+    return factory_reset_config(klass)
+
+
+def get_tentacle_config_schema_path(klass) -> str:
+    return get_config_schema_path(klass)
