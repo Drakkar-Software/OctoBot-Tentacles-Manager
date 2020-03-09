@@ -35,7 +35,7 @@ from octobot_tentacles_manager import EVALUATOR_DEFAULT_FOLDER, TENTACLE_TYPES, 
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH
 
 
-def tentacles_arch_exists(verbose=True) -> bool:
+def is_tentacles_arch_valid(verbose=True) -> bool:
     try:
         import tentacles
         return os.path.exists(TENTACLES_PATH)
@@ -46,7 +46,7 @@ def tentacles_arch_exists(verbose=True) -> bool:
 
 
 def delete_tentacles_arch():
-    if tentacles_arch_exists(verbose=False):
+    if is_tentacles_arch_valid(verbose=False):
         rmtree(TENTACLES_PATH)
     if path.exists(USER_TENTACLE_CONFIG_PATH):
         rmtree(USER_TENTACLE_CONFIG_PATH)

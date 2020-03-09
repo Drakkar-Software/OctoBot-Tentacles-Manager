@@ -18,11 +18,6 @@ from distutils.version import LooseVersion
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import DEFAULT_TENTACLES_PACKAGE, \
     TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION
-from octobot_tentacles_manager.util.tentacle_util import tentacles_arch_exists as util_tentacles_arch_exists
-
-
-def tentacles_arch_exists():
-    return util_tentacles_arch_exists()
 
 
 def check_tentacle(version, name, origin_package, verbose=True):
