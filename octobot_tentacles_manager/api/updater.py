@@ -18,6 +18,12 @@ from octobot_tentacles_manager.updaters.update_worker import UpdateWorker
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles, cleanup_temp_dirs
 
 
+USER_HELP = """Update the given tentacle modules and install missing requirements if any. 
+Does not update already filled requirements regardless of their version to avoid conflicts. 
+Prefer a full tentacles update if a requirement version is creating conflicts.
+    Does not edit tentacles configuration files."""
+
+
 async def update_all_tentacles(tentacles_path_or_url, tentacle_path=TENTACLES_PATH, aiohttp_session=None) -> int:
     return await _update_tentacles(None, tentacles_path_or_url, tentacle_path, aiohttp_session=aiohttp_session)
 
