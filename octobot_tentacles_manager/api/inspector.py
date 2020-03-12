@@ -42,7 +42,7 @@ def get_tentacle_documentation_path(klass) -> str:
     return get_documentation_file_path(klass)
 
 
-def check_tentacle(version, name, origin_package, verbose=True) -> bool:
+def check_tentacle_version(version, name, origin_package, verbose=True) -> bool:
     logger = get_logger("TentacleChecker")
     try:
         if origin_package == DEFAULT_TENTACLES_PACKAGE:
