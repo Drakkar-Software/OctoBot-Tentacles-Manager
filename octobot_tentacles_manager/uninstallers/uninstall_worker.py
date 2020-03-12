@@ -18,13 +18,14 @@ from os import path
 from shutil import rmtree
 from asyncio import gather
 
-from octobot_tentacles_manager.base_worker.tentacle_worker import TentacleWorker
+from octobot_tentacles_manager.base_worker.tentacles_worker import TentaclesWorker
 from octobot_tentacles_manager.constants import PYTHON_INIT_FILE
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
 from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
+from octobot_tentacles_manager.base_worker.tentacle_worker import get_single_module_init_line
 
 
-class UninstallWorker(TentacleWorker):
+class UninstallWorker(TentaclesWorker):
 
     async def uninstall_tentacles(self, name_filter=None) -> int:
         self.reset_worker()
@@ -40,7 +41,7 @@ class UninstallWorker(TentacleWorker):
                                           if tentacle_data.name in name_filter]
                 await gather(*[self._uninstall_tentacle(tentacle_data) for tentacle_data in to_uninstall_tentacles])
             await self.create_missing_tentacles_arch()
-            await self.refresh_tentacle_config_file()
+            await self.refresh_tentacles_config_file()
             self.log_summary()
         return len(self.errors)
 
@@ -62,7 +63,7 @@ class UninstallWorker(TentacleWorker):
         if path.isfile(init_file):
             async with aiofiles.open(init_file, "r") as init_file_r:
                 init_content = await init_file_r.read()
-            to_remove_line = f"{TentacleWorker._get_single_module_init_line(tentacle_data)}\n"
+            to_remove_line = f"{get_single_module_init_line(tentacle_data)}\n"
             if to_remove_line in init_content:
                 init_content = init_content.replace(to_remove_line, "")
                 async with aiofiles.open(init_file, "w+") as init_file_w:

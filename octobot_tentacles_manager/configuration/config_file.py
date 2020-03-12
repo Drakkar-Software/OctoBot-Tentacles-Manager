@@ -20,8 +20,8 @@ from os.path import exists
 from octobot_commons.config_manager import dump_json
 
 
-async def read_config(config_file: str, raise_exception=False) -> dict:
-    if exists(config_file) or raise_exception:
+async def read_config(config_file: str) -> dict:
+    if exists(config_file):
         async with aiofiles.open(config_file, "r") as config_file_r:
             return json.loads(await config_file_r.read())
     return {}
