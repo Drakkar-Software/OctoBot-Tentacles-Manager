@@ -22,13 +22,8 @@ from octobot_tentacles_manager.constants import USER_TENTACLE_SPECIFIC_CONFIG_PA
 from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_module_path
 
 
-async def get_config(klass, raise_exception=False) -> dict:
-    try:
-        return await read_config(_get_config_file_path(klass), raise_exception=raise_exception)
-    except Exception as e:
-        if raise_exception:
-            raise e
-    return {}
+async def get_config(klass) -> dict:
+    return await read_config(_get_config_file_path(klass))
 
 
 async def update_config(klass, config_update) -> None:

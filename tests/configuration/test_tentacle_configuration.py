@@ -41,8 +41,6 @@ async def test_get_config():
     }
     from tentacles.Services import RedditService
     assert await get_config(RedditService) == {}
-    with pytest.raises(FileNotFoundError):
-        assert await get_config(RedditService, raise_exception=True) == {}
     _cleanup()
 
 

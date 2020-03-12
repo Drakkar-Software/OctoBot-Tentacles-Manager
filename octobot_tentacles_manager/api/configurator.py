@@ -21,8 +21,8 @@ async def update_tentacle_config(tentacle_class: object, config_data: dict) -> N
     await update_config(tentacle_class, config_data)
 
 
-async def get_tentacle_config(klass, raise_exception=True) -> dict:
-    return await get_config(klass, raise_exception)
+async def get_tentacle_config(klass) -> dict:
+    return await get_config(klass)
 
 
 def factory_tentacle_reset_config(klass) -> None:
