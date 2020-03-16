@@ -24,7 +24,7 @@ from octobot_tentacles_manager.api.installer import install_all_tentacles
 from octobot_tentacles_manager.configuration.tentacle_configuration import get_config, update_config, \
     factory_reset_config, get_config_schema_path
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, TENTACLES_PATH
-from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_data_by_tentacle_class
+from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_by_tentacle_class
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -70,7 +70,7 @@ async def test_factory_reset_config():
         "plop": 42
     }
     await update_config(InstantFluctuationsEvaluator, config_update)
-    await reload_tentacle_data_by_tentacle_class()
+    await reload_tentacle_by_tentacle_class()
     factory_reset_config(InstantFluctuationsEvaluator)
     assert await get_config(InstantFluctuationsEvaluator) == {
         "price_difference_threshold_percent": 1,

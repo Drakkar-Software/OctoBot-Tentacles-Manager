@@ -22,7 +22,7 @@ from octobot_tentacles_manager.constants import TENTACLE_METADATA, METADATA_VERS
     METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, TENTACLE_REQUIREMENT_VERSION_EQUALS
 
 
-class TentacleData:
+class Tentacle:
     def __init__(self, tentacle_root_path, name, tentacle_type):
         self.tentacle_root_path = tentacle_root_path
         self.name = name
@@ -34,7 +34,7 @@ class TentacleData:
         self.tentacles_requirements = None
         self.metadata = {}
 
-    async def load_metadata(self):
+    async def initialize(self):
         async with aiofiles.open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
             self.metadata = json.loads(await metadata_file.read())
             self.version = self.metadata[METADATA_VERSION]
@@ -48,9 +48,9 @@ class TentacleData:
 
     @staticmethod
     def find(iterable, name):
-        for tentacle_data in iterable:
-            if tentacle_data.name == name:
-                return tentacle_data
+        for tentacle in iterable:
+            if tentacle.name == name:
+                return tentacle
         return None
 
     def is_valid(self):
