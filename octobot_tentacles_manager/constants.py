@@ -87,6 +87,13 @@ TENTACLE_CONFIG = "config"
 TENTACLE_RESOURCES = "resources"
 TENTACLE_TESTS = "tests"
 
+# Tentacle creator
+TENTACLE_TEMPLATE_PATH = "templates"
+TENTACLE_TEMPLATE_DESCRIPTION = "description"
+TENTACLE_CONFIG_TEMPLATE_PRE_EXT = "_config"
+TENTACLE_TEMPLATE_EXT = ".template"
+TENTACLE_TEMPLATE_PRE_EXT = "_tentacle"
+
 # Tentacles that can be activated / deactivated
 ACTIVATABLE_TENTACLES = [
     TENTACLES_EVALUATOR_REALTIME_PATH,

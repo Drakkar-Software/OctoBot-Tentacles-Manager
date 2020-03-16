@@ -18,22 +18,22 @@ from os import listdir
 from os.path import isdir, join, sep
 
 from octobot_tentacles_manager.constants import PYTHON_EXT, PYTHON_INIT_FILE, TENTACLE_MAX_SUB_FOLDERS_LEVEL
-from octobot_tentacles_manager.tentacle_data.tentacle_data_factory import TentacleDataFactory
+from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 
 
 async def load_tentacle_with_metadata(tentacle_path):
-    loaded_tentacle_data = _parse_all_tentacle_data(tentacle_path)
-    await _load_all_metadata(loaded_tentacle_data)
-    return loaded_tentacle_data
+    loaded_tentacles = _parse_all_tentacles(tentacle_path)
+    await _load_all_metadata(loaded_tentacles)
+    return loaded_tentacles
 
 
-async def _load_all_metadata(tentacle_data_list):
-    await gather(*[tentacle_data.load_metadata() for tentacle_data in tentacle_data_list])
+async def _load_all_metadata(tentacles):
+    await gather(*[tentacle.initialize() for tentacle in tentacles])
 
 
-def _parse_all_tentacle_data(root):
-    factory = TentacleDataFactory(root)
-    return [factory.create_tentacle_data_from_type(tentacle_name, tentacle_type)
+def _parse_all_tentacles(root):
+    factory = TentacleFactory(root)
+    return [factory.create_tentacle_from_type(tentacle_name, tentacle_type)
             for tentacle_type in _get_tentacle_types(root)
             for tentacle_name in listdir(join(root, tentacle_type))
             if not tentacle_name == PYTHON_INIT_FILE]
