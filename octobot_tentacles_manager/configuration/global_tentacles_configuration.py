@@ -20,22 +20,22 @@ from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, 
     ACTIVATABLE_TENTACLES
 
 
-class GlobalTentacleConfiguration:
+class GlobalTentaclesConfiguration:
     TENTACLE_ACTIVATION_KEY = "tentacle_activation"
 
     def __init__(self, config_path=USER_TENTACLE_CONFIG_FILE_PATH):
         self.config_path = config_path
         self.tentacles_activation = {}
 
-    async def fill_tentacle_config(self, tentacle_data_list, default_tentacle_config=DEFAULT_TENTACLE_CONFIG,
+    async def fill_tentacle_config(self, tentacles, default_tentacle_config=DEFAULT_TENTACLE_CONFIG,
                                    remove_missing_tentacles=True):
         default_config = await read_config(default_tentacle_config)
         activation_config = default_config[self.TENTACLE_ACTIVATION_KEY] \
             if self.TENTACLE_ACTIVATION_KEY in default_config else {}
         activatable_tentacles_in_list = [tentacle
-                                         for tentacle_data in tentacle_data_list
-                                         if tentacle_data.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES
-                                         for tentacle in tentacle_data.tentacles]
+                                         for tentacle in tentacles
+                                         if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES
+                                         for tentacle in tentacle.tentacles]
         for tentacle in activatable_tentacles_in_list:
             self._update_tentacle_activation(tentacle, activation_config)
         if remove_missing_tentacles:

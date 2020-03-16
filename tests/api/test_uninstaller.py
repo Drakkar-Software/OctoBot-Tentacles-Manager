@@ -17,10 +17,10 @@ import aiohttp
 import pytest
 from os import path, walk
 
-from octobot_tentacles_manager import TENTACLES_PATH
+from octobot_tentacles_manager.constants import TENTACLES_PATH
 from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles
 from octobot_tentacles_manager.api.uninstaller import uninstall_all_tentacles, uninstall_tentacles
-from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
+from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -53,4 +53,4 @@ def _tentacles_local_path():
 
 
 def _cleanup():
-    delete_tentacles_arch()
+    TentaclesSetupManager.delete_tentacles_arch()

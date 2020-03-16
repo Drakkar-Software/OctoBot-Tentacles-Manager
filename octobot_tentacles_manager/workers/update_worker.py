@@ -15,8 +15,8 @@
 #  License along with this library.
 from distutils.version import LooseVersion
 
-from octobot_tentacles_manager.installers.install_worker import InstallWorker
-from octobot_tentacles_manager.tentacle_data.tentacle_data import TentacleData
+from octobot_tentacles_manager.workers.install_worker import InstallWorker
+from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
 
 
@@ -24,17 +24,17 @@ class UpdateWorker(InstallWorker):
 
     def __init__(self, reference_tentacles_dir, tentacle_path, use_confirm_prompt, aiohttp_session):
         super().__init__(reference_tentacles_dir, tentacle_path, use_confirm_prompt, aiohttp_session)
-        self.available_tentacle_data = []
+        self.available_tentacles = []
 
-    async def update_tentacles(self, name_filter=None) -> int:
-        self.available_tentacle_data = await load_tentacle_with_metadata(self.tentacle_path)
-        return await self.install_tentacles(name_filter)
+    async def process(self, name_filter=None) -> int:
+        self.available_tentacles = await load_tentacle_with_metadata(self.tentacle_path)
+        return await super().process(name_filter)
 
-    def _should_tentacle_data_be_processed(self, tentacle_data, name_filter):
-        name = tentacle_data.name
+    def _should_tentacle_be_processed(self, tentacle, name_filter):
+        name = tentacle.name
         if name_filter is None or name in name_filter:
-            installed_tentacle = TentacleData.find(self.available_tentacle_data, name)
+            installed_tentacle = Tentacle.find(self.available_tentacles, name)
             if installed_tentacle is not None:
                 installed_version = installed_tentacle.version
-                return LooseVersion(installed_version) < LooseVersion(tentacle_data.version)
+                return LooseVersion(installed_version) < LooseVersion(tentacle.version)
         return False

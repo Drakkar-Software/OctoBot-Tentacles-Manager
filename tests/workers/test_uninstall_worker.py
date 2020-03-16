@@ -22,11 +22,11 @@ from os import walk, path
 from octobot_commons.logging.logging_util import set_logging_level
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, TENTACLES_PATH, \
     TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH
-from octobot_tentacles_manager.installers.install_worker import InstallWorker
+from octobot_tentacles_manager.workers.install_worker import InstallWorker
 
 # All test coroutines will be treated as marked.
-from octobot_tentacles_manager.tentacle_data.tentacle_data import TentacleData
-from octobot_tentacles_manager.uninstallers.uninstall_worker import UninstallWorker
+from octobot_tentacles_manager.models.tentacle import Tentacle
+from octobot_tentacles_manager.workers.uninstall_worker import UninstallWorker
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
 
 pytestmark = pytest.mark.asyncio
@@ -39,14 +39,16 @@ async def test_uninstall_two_tentacles():
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
     install_worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
-    install_worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await install_worker.install_tentacles() == 0
+    install_worker.tentacles_setup_manager.default_tentacle_config \
+        = path.join("tests", "static", "default_tentacle_config.json")
+    assert await install_worker.process() == 0
     tentacles_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert tentacles_files_count > 60
 
     uninstall_worker = UninstallWorker(None, TENTACLES_PATH, False, None)
-    uninstall_worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await uninstall_worker.uninstall_tentacles(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
+    uninstall_worker.tentacles_setup_manager.default_tentacle_config = \
+        path.join("tests", "static", "default_tentacle_config.json")
+    assert await uninstall_worker.process(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
     tentacles_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert tentacles_files_count < 60
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
@@ -65,14 +67,16 @@ async def test_uninstall_all_tentacles():
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
     install_worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
-    install_worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await install_worker.install_tentacles() == 0
+    install_worker.tentacles_setup_manager.default_tentacle_config = \
+        path.join("tests", "static", "default_tentacle_config.json")
+    assert await install_worker.process() == 0
     tentacles_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert tentacles_files_count > 60
 
     uninstall_worker = UninstallWorker(None, TENTACLES_PATH, False, None)
-    uninstall_worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await uninstall_worker.uninstall_tentacles() == 0
+    uninstall_worker.tentacles_setup_manager.default_tentacle_config = \
+        path.join("tests", "static", "default_tentacle_config.json")
+    assert await uninstall_worker.process() == 0
     tentacles_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert tentacles_files_count == 25
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
@@ -83,7 +87,7 @@ async def test_uninstall_all_tentacles():
 
 
 def _enable_loggers():
-    for clazz in [InstallWorker, TentacleData]:
+    for clazz in [InstallWorker, Tentacle]:
         set_logging_level(clazz.__name__, INFO)
 
 

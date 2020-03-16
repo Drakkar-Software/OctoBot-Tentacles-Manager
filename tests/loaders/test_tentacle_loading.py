@@ -22,31 +22,32 @@ from os import path
 
 from octobot_tentacles_manager.api.installer import install_all_tentacles
 import octobot_tentacles_manager.loaders.tentacle_loading as tentacle_loading
-from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
 
 # All test coroutines will be treated as marked.
+from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
+
 pytestmark = pytest.mark.asyncio
 
 
-async def test_get_tentacle_data_without_loading():
+async def test_get_tentacle_without_loading():
     # reload tentacle_loading module to force reset of cached tentacle data
     reload(tentacle_loading)
     async with aiohttp.ClientSession() as session:
         await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
     with pytest.raises(RuntimeError):
         from tentacles.Services import RedditService
-        tentacle_loading.get_tentacle_data(RedditService)
+        tentacle_loading.get_tentacle(RedditService)
     _cleanup()
 
 
-async def test_with_reload_tentacle_data_by_tentacle_class_installed_tentacles():
+async def test_with_reload_tentacle_by_tentacle_class_installed_tentacles():
     async with aiohttp.ClientSession() as session:
         await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
-    await tentacle_loading.reload_tentacle_data_by_tentacle_class()
+    await tentacle_loading.reload_tentacle_by_tentacle_class()
     from tentacles.Services import RedditService
     from tentacles.Trading.Mode import DailyTradingMode
-    assert tentacle_loading.get_tentacle_data(RedditService) is not None
-    assert tentacle_loading.get_tentacle_data(DailyTradingMode) is not None
+    assert tentacle_loading.get_tentacle(RedditService) is not None
+    assert tentacle_loading.get_tentacle(DailyTradingMode) is not None
     assert isdir(tentacle_loading.get_resources_path(DailyTradingMode))
     assert isdir(tentacle_loading.get_resources_path(RedditService))
     assert isfile(tentacle_loading.get_documentation_file_path(DailyTradingMode))
@@ -58,4 +59,4 @@ def _tentacles_local_path():
 
 
 def _cleanup():
-    delete_tentacles_arch()
+    TentaclesSetupManager.delete_tentacles_arch()

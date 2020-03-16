@@ -13,33 +13,36 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import aiohttp
 import pytest
-from os import path
+from shutil import rmtree
+from os import walk, path
 
-from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles
+from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, \
+    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, TENTACLES_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
+temp_dir = "temp_tests"
 
-async def test_install_all_tentacles():
-    async with aiohttp.ClientSession() as session:
-        assert await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session) == 0
+
+async def test_create_missing_tentacles_arch():
     _cleanup()
-
-
-async def test_install_one_tentacle_with_requirement():
-    async with aiohttp.ClientSession() as session:
-        assert await install_tentacles(["reddit_service_feed"], _tentacles_local_path(), aiohttp_session=session) == 0
-        assert path.exists(path.join("tentacles", "Services", "reddit_service", "reddit_service.py"))
+    tentacles_setup_manager = TentaclesSetupManager(TENTACLES_PATH)
+    await tentacles_setup_manager.create_missing_tentacles_arch()
+    trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
+    assert trading_mode_files_count == 25
+    assert path.exists(USER_TENTACLE_CONFIG_PATH)
     _cleanup()
-
-
-def _tentacles_local_path():
-    return path.join("tests", "static", "tentacles.zip")
 
 
 def _cleanup():
-    TentaclesSetupManager.delete_tentacles_arch()
+    if path.exists(temp_dir):
+        rmtree(temp_dir)
+    if path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR):
+        rmtree(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
+    if path.exists(TENTACLES_PATH):
+        rmtree(TENTACLES_PATH)
+    if path.exists(USER_TENTACLE_CONFIG_PATH):
+        rmtree(USER_TENTACLE_CONFIG_PATH)

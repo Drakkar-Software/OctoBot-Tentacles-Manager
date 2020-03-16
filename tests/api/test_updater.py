@@ -17,11 +17,11 @@ import aiohttp
 import pytest
 from os import path
 
-from octobot_tentacles_manager import TENTACLES_PATH
+from octobot_tentacles_manager.constants import TENTACLES_PATH
 from octobot_tentacles_manager.api.installer import install_tentacles
 from octobot_tentacles_manager.api.updater import update_all_tentacles, update_tentacles
-from octobot_tentacles_manager.tentacle_data.tentacle_data_factory import TentacleDataFactory
-from octobot_tentacles_manager.util.tentacle_util import delete_tentacles_arch
+from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
+from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -37,14 +37,14 @@ async def test_update_one_tentacle_with_requirement():
     async with aiohttp.ClientSession() as session:
         assert await install_tentacles(["reddit_service_feed"], _tentacles_local_path(),
                                        aiohttp_session=session) == 0
-        factory = TentacleDataFactory(TENTACLES_PATH)
+        factory = TentacleFactory(TENTACLES_PATH)
         assert path.exists(path.join("tentacles", "Services", "reddit_service", "reddit_service.py"))
         import tentacles.Services_feeds.reddit_service_feed as feed
-        dtm_tentacle_data = await factory.create_and_load_tentacle_data_from_module(feed)
+        dtm_tentacle_data = await factory.create_and_load_tentacle_from_module(feed)
         assert dtm_tentacle_data.version == "1.2.0"
         assert await update_tentacles(["reddit_service_feed"], _tentacles_update_local_path(),
                                       aiohttp_session=session) == 0
-        dtm_tentacle_data = await factory.create_and_load_tentacle_data_from_module(feed)
+        dtm_tentacle_data = await factory.create_and_load_tentacle_from_module(feed)
         assert dtm_tentacle_data.version == "1.3.0"
     _cleanup()
 
@@ -58,4 +58,4 @@ def _tentacles_update_local_path():
 
 
 def _cleanup():
-    delete_tentacles_arch()
+    TentaclesSetupManager.delete_tentacles_arch()

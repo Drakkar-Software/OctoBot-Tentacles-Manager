@@ -18,20 +18,20 @@ from distutils.version import LooseVersion
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import DEFAULT_TENTACLES_PACKAGE, \
     TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION
-from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_data, get_resources_path, \
+from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle, get_resources_path, \
     get_documentation_file_path
 
 
 def get_tentacle_version(klass) -> str:
-    return get_tentacle_data(klass).version
+    return get_tentacle(klass).version
 
 
 def get_tentacle_origin_package(klass) -> str:
-    return get_tentacle_data(klass).origin_package
+    return get_tentacle(klass).origin_package
 
 
 def get_tentacle_module_name(klass) -> str:
-    return get_tentacle_data(klass).name
+    return get_tentacle(klass).name
 
 
 def get_tentacle_resources_path(klass) -> str:

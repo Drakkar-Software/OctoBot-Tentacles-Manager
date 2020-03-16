@@ -13,12 +13,11 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager import TENTACLES_PATH
-from octobot_tentacles_manager.uninstallers.uninstall_worker import UninstallWorker
+from octobot_tentacles_manager.constants import TENTACLES_PATH
+from octobot_tentacles_manager.api.util.tentacles_management import manage_tentacles
+from octobot_tentacles_manager.workers.uninstall_worker import UninstallWorker
 
 
-LOGGER = get_logger(__name__)
 USER_HELP = """Uninstall the given tentacle modules. 
     Does not delete the associated tentacle configuration."""
 
@@ -32,10 +31,5 @@ async def uninstall_tentacles(tentacle_names, tentacle_path=TENTACLES_PATH, use_
 
 
 async def _uninstall_tentacles(tentacle_names, tentacle_path=TENTACLES_PATH, use_confirm_prompt=False) -> int:
-    errors_count = 0
-    try:
-        install_worker = UninstallWorker(None, tentacle_path, use_confirm_prompt, None)
-        errors_count = await install_worker.uninstall_tentacles(tentacle_names)
-    except Exception as e:
-        LOGGER.exception(e, True, f"Exception when uninstalling tentacles: {e}")
-    return errors_count
+    uninstall_worker = UninstallWorker(None, tentacle_path, use_confirm_prompt, None)
+    return await manage_tentacles(uninstall_worker, tentacle_names)

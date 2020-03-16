@@ -20,15 +20,14 @@ from shutil import rmtree
 from os import walk, path
 
 from octobot_commons.logging.logging_util import set_logging_level
-from octobot_tentacles_manager import TENTACLES_PATH
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, USER_TENTACLE_SPECIFIC_CONFIG_PATH, \
-    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH
-from octobot_tentacles_manager.installers.install_worker import InstallWorker
-from octobot_tentacles_manager.tentacle_data.tentacle_data_factory import TentacleDataFactory
-from octobot_tentacles_manager.updaters.update_worker import UpdateWorker
+    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH
+from octobot_tentacles_manager.workers.install_worker import InstallWorker
+from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
+from octobot_tentacles_manager.workers.update_worker import UpdateWorker
 
 # All test coroutines will be treated as marked.
-from octobot_tentacles_manager.tentacle_data.tentacle_data import TentacleData
+from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
 
 pytestmark = pytest.mark.asyncio
@@ -41,10 +40,11 @@ async def test_update_two_tentacles():
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
     install_worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
-    install_worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    await install_worker.install_tentacles(["instant_fluctuations_evaluator",
-                                            "generic_exchange_importer",
-                                            "text_analysis"])
+    install_worker.tentacles_setup_manager.default_tentacle_config = \
+        path.join("tests", "static", "default_tentacle_config.json")
+    await install_worker.process(["instant_fluctuations_evaluator",
+                                  "generic_exchange_importer",
+                                  "text_analysis"])
     rmtree(temp_dir)
 
     # edit instant_fluctuations_evaluator config to ensure file is not replaced
@@ -54,8 +54,9 @@ async def test_update_two_tentacles():
         config_f.write(",")
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "update_tentacles.zip"), None)
     update_worker = UpdateWorker(temp_dir, TENTACLES_PATH, False, None)
-    update_worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await update_worker.update_tentacles(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
+    update_worker.tentacles_setup_manager.default_tentacle_config = \
+        path.join("tests", "static", "default_tentacle_config.json")
+    assert await update_worker.process(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
 
     # ensure instant_fluctuations_evaluator file is not replaced
     with open(config_path, "r") as config_f:
@@ -82,16 +83,16 @@ async def test_update_two_tentacles():
         }
 
     # check updated versions
-    factory = TentacleDataFactory("tentacles")
+    factory = TentacleFactory("tentacles")
     from tentacles.Evaluator.RealTime import instant_fluctuations_evaluator
-    ife_tentacle_data = await factory.create_and_load_tentacle_data_from_module(instant_fluctuations_evaluator)
+    ife_tentacle_data = await factory.create_and_load_tentacle_from_module(instant_fluctuations_evaluator)
     assert ife_tentacle_data.version == "1.3.0"
     # not updated because update version is "1.1.9"
     import tentacles.Backtesting.importers.exchanges.generic_exchange_importer as gei
-    gei_tentacle_data = await factory.create_and_load_tentacle_data_from_module(gei)
+    gei_tentacle_data = await factory.create_and_load_tentacle_from_module(gei)
     assert gei_tentacle_data.version == "1.2.0"
     import tentacles.Evaluator.Util.text_analysis
-    ta_tentacle_data = await factory.create_and_load_tentacle_data_from_module(tentacles.Evaluator.Util.text_analysis)
+    ta_tentacle_data = await factory.create_and_load_tentacle_from_module(tentacles.Evaluator.Util.text_analysis)
     assert ta_tentacle_data.version == "1.2.0"
     _cleanup()
 
@@ -101,34 +102,36 @@ async def test_update_all_tentacles():
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
     install_worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
-    install_worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    await install_worker.install_tentacles()
+    install_worker.tentacles_setup_manager.default_tentacle_config = \
+        path.join("tests", "static", "default_tentacle_config.json")
+    await install_worker.process()
     rmtree(temp_dir)
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "update_tentacles.zip"), None)
     update_worker = UpdateWorker(temp_dir, TENTACLES_PATH, False, None)
-    update_worker.default_tentacle_config = path.join("tests", "static", "default_tentacle_config.json")
-    assert await update_worker.update_tentacles() == 0
+    update_worker.tentacles_setup_manager.default_tentacle_config = \
+        path.join("tests", "static", "default_tentacle_config.json")
+    assert await update_worker.process() == 0
 
     # check updated versions
-    factory = TentacleDataFactory(TENTACLES_PATH)
+    factory = TentacleFactory(TENTACLES_PATH)
     from tentacles.Evaluator.RealTime import instant_fluctuations_evaluator
-    ife_tentacle_data = await factory.create_and_load_tentacle_data_from_module(instant_fluctuations_evaluator)
+    ife_tentacle_data = await factory.create_and_load_tentacle_from_module(instant_fluctuations_evaluator)
     assert ife_tentacle_data.version == "1.3.0"
     import tentacles.Backtesting.importers.exchanges.generic_exchange_importer as gei
-    gei_tentacle_data = await factory.create_and_load_tentacle_data_from_module(gei)
+    gei_tentacle_data = await factory.create_and_load_tentacle_from_module(gei)
     # not updated because update version is "1.1.9"
     assert gei_tentacle_data.version == "1.2.0"
     import tentacles.Evaluator.Util.text_analysis
-    ta_tentacle_data = await factory.create_and_load_tentacle_data_from_module(tentacles.Evaluator.Util.text_analysis)
+    ta_tentacle_data = await factory.create_and_load_tentacle_from_module(tentacles.Evaluator.Util.text_analysis)
     assert ta_tentacle_data.version == "1.3.0"
     import tentacles.Trading.Mode.daily_trading_mode as dtm
-    dtm_tentacle_data = await factory.create_and_load_tentacle_data_from_module(dtm)
+    dtm_tentacle_data = await factory.create_and_load_tentacle_from_module(dtm)
     assert dtm_tentacle_data.version == "1.3.0"
     _cleanup()
 
 
 def _enable_loggers():
-    for clazz in [InstallWorker, TentacleData]:
+    for clazz in [InstallWorker, Tentacle]:
         set_logging_level(clazz.__name__, INFO)
 
 
