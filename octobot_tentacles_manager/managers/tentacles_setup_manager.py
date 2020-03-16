@@ -20,7 +20,7 @@ from shutil import rmtree
 import aiofiles
 
 from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.configuration.global_tentacles_configuration import GlobalTentaclesConfiguration
+from octobot_tentacles_manager.configuration.tentacles_setup_configuration import TentaclesSetupConfiguration
 from octobot_tentacles_manager.constants import USER_TENTACLE_SPECIFIC_CONFIG_PATH, PYTHON_INIT_FILE, \
     TENTACLES_FOLDERS_ARCH, DEFAULT_TENTACLE_CONFIG, TENTACLES_PATH, USER_TENTACLE_CONFIG_PATH, \
     TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR
@@ -36,10 +36,10 @@ class TentaclesSetupManager:
 
     async def refresh_tentacles_config_file(self):
         available_tentacle = await load_tentacle_with_metadata(self.tentacle_path)
-        tentacle_global_config = GlobalTentaclesConfiguration()
-        await tentacle_global_config.read_config()
-        await tentacle_global_config.fill_tentacle_config(available_tentacle, self.default_tentacle_config)
-        await tentacle_global_config.save_config()
+        tentacle_setup_config = TentaclesSetupConfiguration()
+        await tentacle_setup_config.read_config()
+        await tentacle_setup_config.fill_tentacle_config(available_tentacle, self.default_tentacle_config)
+        await tentacle_setup_config.save_config()
 
     async def create_missing_tentacles_arch(self):
         # tentacle user config folder

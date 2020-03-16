@@ -20,7 +20,7 @@ from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, 
     ACTIVATABLE_TENTACLES
 
 
-class GlobalTentaclesConfiguration:
+class TentaclesSetupConfiguration:
     TENTACLE_ACTIVATION_KEY = "tentacle_activation"
 
     def __init__(self, config_path=USER_TENTACLE_CONFIG_FILE_PATH):
