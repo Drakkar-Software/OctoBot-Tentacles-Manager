@@ -4,57 +4,95 @@ sudo: enabled
 os: linux
 language: python
 cache: pip
-python: 3.7-dev
+python: 3.8-dev
+env:
+  global:
+     - GH_REPO=Drakkar-Software/OctoBot-Tentacles-Manager
+     - DEPLOY_BRANCH=master
+     - PACKAGE_FOLDER=octobot_tentacles_manager
+     - secure: hV7CzUekkPr2BPNmjnTERvWUD6taGN10NvEy2MemX1znXEWQUTp/VFZYXPtunOH4mrEPP8dBF61kdLA+uaSble6Us3pWL6VWRgXf0LjDGngaK+So98rxGbrf+NX9/+u8rRb0IRqTGPFPOXMRKCNmWmcnEXlUZLjcUx7NSs2/Jn3hf5x2lf0+l9TXgolaV7/W+eRTrI3vMY05dT+T9fOwZ7Qlg/cWvenaB8KgmDxpjnfgyYsaYJmO+XrNq/Iq+rXZX4TkIjQdCCAX7CYYeOcoNJi/tTBPbzDQR3ehL+1i/oUhk9iEjpjSSso7o7sMeSI1v1z7DyRzVvcZ5+RsCDuY9gSUP95TvBUl7E+J1pQt7qPoqJz8lHpBeKGIoXm0KTisNu/0wlRdCH85SFQPAxu/uwpqFAXroFinItTgBQ20fyOoYmHGNIs6N8QKB8fXI33HZusdt7XM9D9HgsZeuX2NaKDuqrn7d2gP+H6YEv4ekKtmvbey9d4uzxpBSqVccwe4hsPPWrUJ0SDWW3NWrw+ozJAmL6Exs5iIka/+T1fxj1pqF6wsiEb4t3AhK/Rpuq8vZgkgRUs/o9gtrBYkLxugUBVThaWeleBx+suXxp+IznZ7NGwpq6XHYol22E66OIYalrYNfYh/RekW+f/L/sWZyc2MeTO863odudJslfvrMpA=
+     - secure: ceZNP0fRW5F9+lZrFvrGgmqK5a9yzLJpP3kEEyEu+ISpQ4By/NUkCDoVTZivx4wh6rEtv3wh6CgbbJV/ydTLNeHKi21H7tv8YPr1Hq/Hvsh4pdjL+M/ii3l9VtS6CnXhDNKwn0Sqp4b9PeUC7UcUeJeNv915b1A7nMRee32iGbm3ToILGVApWzMLp0+dWtYdJ4ZKyfyJqbzl6414jkCqdCWz7o6Lf7dO9xe/Sl6Tnop6893d1XaoZ07eSVTrTmmvWpSEIaJrX+Fj9TBUnWqc3GqqYXwhmZGIOxE+qwgX/LIIBDSiW31TwJRRIZt76+5xjtjzFuwlz0J2LlT3fBbpX5Q7afFbWsfrEdqYOhvkG0lyDDiKNngp2UffnS5KRRTHgjMoeXmS4yOwE3N+kF/LGw+4htzcobkZ8b5L9+I+aD2M4a8BpTI2zXokyCIOg/QSK0gK3P6pCHXkLYnHEbHXeodzUogKbd42DTgqsNK9P1ne4WHE2WkqNu6n2yJBgBta3C7owkYvfRJ4UuaQX6eASH19BsgGzJ0N0rcB9/3mVKIXcAG4QAN9OmWZem6i8f/uc4JWtFcHhb7vfpTWeo0qCpxi7lZuZXQsC+sSa+E/JqELtC4wb4WZVYMzFzt3Wa/q9I+F6rPYx03RxAieU0q8emhfpksePc0obHJsO/ABsmA=
+
 install:
   - python3 -m pip install -r requirements.txt -r dev_requirements.txt
 
 matrix:
   include:
-#    - name: "OS X - Python 3"
-#      os: osx
-#      osx_image: xcode8.3
-#      language: generic
-#      before_cache:
-#        - brew cleanup
-#      cache:
-#        directories:
-#          - $HOME/Library/Caches/Homebrew
-#      before_install:
-#        - brew update || travis_terminate 1;
-#        - brew upgrade python || brew install python || travis_terminate 1;
-#        - python3 -m venv venv || travis_terminate 1;
-#        - source venv/bin/activate;
-#
-#      script:
-#        - pytest tests
-
-    - name: "Linux - Python 3.6"
+    - name: "Linux - Python 3.8-dev - Python sources"
+      stage: test
       os: linux
-      python: 3.6
       language: python
       script:
-        - pytest tests
-        - python3 setup.py sdist bdist_wheel && python3 -m twine check dist/*
+        - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
+      after_success:
+        - if [ $TRAVIS_PULL_REQUEST == "false" ]; then coveralls; fi
 
-    - name: "Linux - Python 3 nightly"
+    - name: "Linux - Python 3.8-dev - Installed"
+      stage: test
       os: linux
-      python: nightly
       language: python
       script:
+        - python3 setup.py build_ext --inplace
+        - python3 setup.py install
+        - rm -rf $PACKAGE_FOLDER
         - pytest tests
-        - python3 setup.py sdist bdist_wheel && python3 -m twine check dist/*
 
-deploy:
-  - provider: pypi
-    user:
-      secure: hV7CzUekkPr2BPNmjnTERvWUD6taGN10NvEy2MemX1znXEWQUTp/VFZYXPtunOH4mrEPP8dBF61kdLA+uaSble6Us3pWL6VWRgXf0LjDGngaK+So98rxGbrf+NX9/+u8rRb0IRqTGPFPOXMRKCNmWmcnEXlUZLjcUx7NSs2/Jn3hf5x2lf0+l9TXgolaV7/W+eRTrI3vMY05dT+T9fOwZ7Qlg/cWvenaB8KgmDxpjnfgyYsaYJmO+XrNq/Iq+rXZX4TkIjQdCCAX7CYYeOcoNJi/tTBPbzDQR3ehL+1i/oUhk9iEjpjSSso7o7sMeSI1v1z7DyRzVvcZ5+RsCDuY9gSUP95TvBUl7E+J1pQt7qPoqJz8lHpBeKGIoXm0KTisNu/0wlRdCH85SFQPAxu/uwpqFAXroFinItTgBQ20fyOoYmHGNIs6N8QKB8fXI33HZusdt7XM9D9HgsZeuX2NaKDuqrn7d2gP+H6YEv4ekKtmvbey9d4uzxpBSqVccwe4hsPPWrUJ0SDWW3NWrw+ozJAmL6Exs5iIka/+T1fxj1pqF6wsiEb4t3AhK/Rpuq8vZgkgRUs/o9gtrBYkLxugUBVThaWeleBx+suXxp+IznZ7NGwpq6XHYol22E66OIYalrYNfYh/RekW+f/L/sWZyc2MeTO863odudJslfvrMpA=
-    password:
-      secure: ceZNP0fRW5F9+lZrFvrGgmqK5a9yzLJpP3kEEyEu+ISpQ4By/NUkCDoVTZivx4wh6rEtv3wh6CgbbJV/ydTLNeHKi21H7tv8YPr1Hq/Hvsh4pdjL+M/ii3l9VtS6CnXhDNKwn0Sqp4b9PeUC7UcUeJeNv915b1A7nMRee32iGbm3ToILGVApWzMLp0+dWtYdJ4ZKyfyJqbzl6414jkCqdCWz7o6Lf7dO9xe/Sl6Tnop6893d1XaoZ07eSVTrTmmvWpSEIaJrX+Fj9TBUnWqc3GqqYXwhmZGIOxE+qwgX/LIIBDSiW31TwJRRIZt76+5xjtjzFuwlz0J2LlT3fBbpX5Q7afFbWsfrEdqYOhvkG0lyDDiKNngp2UffnS5KRRTHgjMoeXmS4yOwE3N+kF/LGw+4htzcobkZ8b5L9+I+aD2M4a8BpTI2zXokyCIOg/QSK0gK3P6pCHXkLYnHEbHXeodzUogKbd42DTgqsNK9P1ne4WHE2WkqNu6n2yJBgBta3C7owkYvfRJ4UuaQX6eASH19BsgGzJ0N0rcB9/3mVKIXcAG4QAN9OmWZem6i8f/uc4JWtFcHhb7vfpTWeo0qCpxi7lZuZXQsC+sSa+E/JqELtC4wb4WZVYMzFzt3Wa/q9I+F6rPYx03RxAieU0q8emhfpksePc0obHJsO/ABsmA=
-    skip_existing: true
-    skip_cleanup: true
-    distributions: "sdist bdist_wheel"
-    on:
-      repo: Drakkar-Software/OctoBot-Tentacles-Manager
-      branch: master
-      tags: true
-      condition: $TRAVIS_OS_NAME = 'linux'
+    - name: "Linux - Python 3 - Deploy"
+      stage: deploy
+      script:
+        - ls
+      deploy:
+        - provider: pypi
+          user:
+            secure: hV7CzUekkPr2BPNmjnTERvWUD6taGN10NvEy2MemX1znXEWQUTp/VFZYXPtunOH4mrEPP8dBF61kdLA+uaSble6Us3pWL6VWRgXf0LjDGngaK+So98rxGbrf+NX9/+u8rRb0IRqTGPFPOXMRKCNmWmcnEXlUZLjcUx7NSs2/Jn3hf5x2lf0+l9TXgolaV7/W+eRTrI3vMY05dT+T9fOwZ7Qlg/cWvenaB8KgmDxpjnfgyYsaYJmO+XrNq/Iq+rXZX4TkIjQdCCAX7CYYeOcoNJi/tTBPbzDQR3ehL+1i/oUhk9iEjpjSSso7o7sMeSI1v1z7DyRzVvcZ5+RsCDuY9gSUP95TvBUl7E+J1pQt7qPoqJz8lHpBeKGIoXm0KTisNu/0wlRdCH85SFQPAxu/uwpqFAXroFinItTgBQ20fyOoYmHGNIs6N8QKB8fXI33HZusdt7XM9D9HgsZeuX2NaKDuqrn7d2gP+H6YEv4ekKtmvbey9d4uzxpBSqVccwe4hsPPWrUJ0SDWW3NWrw+ozJAmL6Exs5iIka/+T1fxj1pqF6wsiEb4t3AhK/Rpuq8vZgkgRUs/o9gtrBYkLxugUBVThaWeleBx+suXxp+IznZ7NGwpq6XHYol22E66OIYalrYNfYh/RekW+f/L/sWZyc2MeTO863odudJslfvrMpA=
+          password:
+            secure: ceZNP0fRW5F9+lZrFvrGgmqK5a9yzLJpP3kEEyEu+ISpQ4By/NUkCDoVTZivx4wh6rEtv3wh6CgbbJV/ydTLNeHKi21H7tv8YPr1Hq/Hvsh4pdjL+M/ii3l9VtS6CnXhDNKwn0Sqp4b9PeUC7UcUeJeNv915b1A7nMRee32iGbm3ToILGVApWzMLp0+dWtYdJ4ZKyfyJqbzl6414jkCqdCWz7o6Lf7dO9xe/Sl6Tnop6893d1XaoZ07eSVTrTmmvWpSEIaJrX+Fj9TBUnWqc3GqqYXwhmZGIOxE+qwgX/LIIBDSiW31TwJRRIZt76+5xjtjzFuwlz0J2LlT3fBbpX5Q7afFbWsfrEdqYOhvkG0lyDDiKNngp2UffnS5KRRTHgjMoeXmS4yOwE3N+kF/LGw+4htzcobkZ8b5L9+I+aD2M4a8BpTI2zXokyCIOg/QSK0gK3P6pCHXkLYnHEbHXeodzUogKbd42DTgqsNK9P1ne4WHE2WkqNu6n2yJBgBta3C7owkYvfRJ4UuaQX6eASH19BsgGzJ0N0rcB9/3mVKIXcAG4QAN9OmWZem6i8f/uc4JWtFcHhb7vfpTWeo0qCpxi7lZuZXQsC+sSa+E/JqELtC4wb4WZVYMzFzt3Wa/q9I+F6rPYx03RxAieU0q8emhfpksePc0obHJsO/ABsmA=
+          skip_existing: true
+          skip_cleanup: true
+          distributions: "sdist"
+          on:
+            repo: $GH_REPO
+            branch: $DEPLOY_BRANCH
+            tags: true
+            condition: $TRAVIS_OS_NAME = 'linux'
+        - provider: script
+          script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/octobot-pypi-deploy:i686 "i686" "cp37-cp37m" "cp37"
+          skip_cleanup: true
+          on:
+            repo: "$GH_REPO"
+            branch: "$DEPLOY_BRANCH"
+            tags: true
+            condition: "$TRAVIS_OS_NAME = 'linux'"
+        - provider: script
+          script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/octobot-pypi-deploy:x86_64 "x86_64" "cp37-cp37m" "cp37"
+          skip_cleanup: true
+          on:
+            repo: "$GH_REPO"
+            branch: "$DEPLOY_BRANCH"
+            tags: true
+            condition: "$TRAVIS_OS_NAME = 'linux'"
+
+    - name: "OSX - Python 3.7 - Deploy"
+      stage: deploy
+      os: osx
+      osx_image: xcode11    # Python 3.7.2 running on macOS 10.14.3
+      language: shell       # 'language: python' is an error on Travis CI macOS
+      # python: 3.7         # 'python:' is ignored on Travis CI macOS
+      before_install: python3 --version ; pip3 --version ; sw_vers
+      before_cache:
+        - rm -f "$HOME/Library/Caches/pip/log/debug.log"
+      cache:
+        directories:
+          - "$HOME/Library/Caches/pip"
+      script:
+        - python3 setup.py build_ext --inplace
+        - pytest tests
+      deploy:
+        - provider: script
+          script: python3 setup.py bdist_wheel && python3 -m twine upload dist/* -u $PYPI_USERNAME -p $PYPI_PASSWORD --skip-existing
+          skip_cleanup: true
+          on:
+            repo: "$GH_REPO"
+            branch: "$DEPLOY_BRANCH"
+            tags: true
+            condition: "$TRAVIS_OS_NAME = 'osx'"
