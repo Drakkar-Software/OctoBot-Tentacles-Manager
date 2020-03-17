@@ -36,8 +36,8 @@ class TentaclesSetupConfiguration:
                                          for tentacle in tentacles
                                          if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES
                                          for tentacle in tentacle.tentacles]
-        for tentacle in activatable_tentacles_in_list:
-            self._update_tentacle_activation(tentacle, activation_config)
+        for activatable_tentacle in activatable_tentacles_in_list:
+            self._update_tentacle_activation(activatable_tentacle, activation_config)
         if remove_missing_tentacles:
             self._filter_tentacle_activation(activatable_tentacles_in_list)
 
