@@ -29,7 +29,7 @@ async def reload_tentacle_by_tentacle_class():
     _tentacle_by_tentacle_class = {
         klass: tentacle
         for tentacle in loaded_tentacles
-        for klass in tentacle.tentacles
+        for klass in tentacle.tentacle_class_names
     }
 
 

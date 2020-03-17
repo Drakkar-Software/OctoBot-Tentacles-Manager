@@ -32,12 +32,12 @@ class TentaclesSetupConfiguration:
         default_config = await read_config(default_tentacle_config)
         activation_config = default_config[self.TENTACLE_ACTIVATION_KEY] \
             if self.TENTACLE_ACTIVATION_KEY in default_config else {}
-        activatable_tentacles_in_list = [tentacle
+        activatable_tentacles_in_list = [tentacle_class_name
                                          for tentacle in tentacles
                                          if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES
-                                         for tentacle in tentacle.tentacles]
-        for activatable_tentacle in activatable_tentacles_in_list:
-            self._update_tentacle_activation(activatable_tentacle, activation_config)
+                                         for tentacle_class_name in tentacle.tentacle_class_names]
+        for tentacle in activatable_tentacles_in_list:
+            self._update_tentacle_activation(tentacle, activation_config)
         if remove_missing_tentacles:
             self._filter_tentacle_activation(activatable_tentacles_in_list)
 

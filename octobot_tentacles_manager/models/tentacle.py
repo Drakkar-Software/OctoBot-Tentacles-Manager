@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import json
-from os.path import join, sep
+from os.path import join
 
 import aiofiles
 
@@ -27,9 +27,9 @@ class Tentacle:
         self.tentacle_root_path = tentacle_root_path
         self.name = name
         self.tentacle_type = tentacle_type
-        self.tentacle_path = join(self.tentacle_root_path, self.tentacle_type)
+        self.tentacle_path = join(self.tentacle_root_path, self.tentacle_type.to_path())
         self.version = None
-        self.tentacles = None
+        self.tentacle_class_names = None
         self.origin_package = None
         self.tentacles_requirements = None
         self.metadata = {}
@@ -39,12 +39,8 @@ class Tentacle:
             self.metadata = json.loads(await metadata_file.read())
             self.version = self.metadata[METADATA_VERSION]
             self.origin_package = self.metadata[METADATA_ORIGIN_PACKAGE]
-            self.tentacles = self.metadata[METADATA_TENTACLES]
+            self.tentacle_class_names = self.metadata[METADATA_TENTACLES]
             self.tentacles_requirements = self.metadata[METADATA_TENTACLES_REQUIREMENTS]
-
-    @staticmethod
-    def to_import_path(path):
-        return path.replace(sep, ".")
 
     @staticmethod
     def find(iterable, name):
@@ -57,7 +53,7 @@ class Tentacle:
         return self.version is not None
 
     def get_simple_tentacle_type(self):
-        return self.tentacle_type.split(sep)[-1]
+        return self.tentacle_type.get_last_element()
 
     def __str__(self):
         str_rep = f"{self.name} tentacle [type: {self.tentacle_type}"
