@@ -13,19 +13,28 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_tentacles_manager.models.tentacle import Tentacle
-from octobot_tentacles_manager.models.tentacle_type import TentacleType
+from os.path import sep
 
 
-class TentacleFactory:
-    def __init__(self, tentacle_root_path):
-        self.tentacle_root_path = tentacle_root_path
+class TentacleType:
 
-    def create_tentacle_from_type(self, name, tentacle_type):
-        return Tentacle(self.tentacle_root_path, name, tentacle_type)
+    def __init__(self, type_path, module_name=None):
+        self.path = type_path
+        self.module_name = module_name
 
-    async def create_and_load_tentacle_from_module(self, tentacle_module):
-        tentacle_type = TentacleType.from_import_path(self.tentacle_root_path, tentacle_module.__name__)
-        tentacle = Tentacle(self.tentacle_root_path, tentacle_type.module_name, tentacle_type)
-        await tentacle.initialize()
-        return tentacle
+    @staticmethod
+    def from_import_path(root, import_path):
+        module_name = import_path.split(".")[-1]
+        tentacle_type_path = import_path.split(f"{root}.")[-1]\
+            .replace(f".{module_name}", "")\
+            .replace(f".", sep)
+        return TentacleType(tentacle_type_path, module_name)
+
+    def get_last_element(self):
+        return self.path.split(sep)[-1]
+
+    def to_path(self):
+        return self.path
+
+    def __str__(self):
+        return self.path.replace(sep, ".")

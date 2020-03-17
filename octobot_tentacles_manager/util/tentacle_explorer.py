@@ -19,6 +19,7 @@ from os.path import isdir, join, sep
 
 from octobot_tentacles_manager.constants import PYTHON_EXT, PYTHON_INIT_FILE, TENTACLE_MAX_SUB_FOLDERS_LEVEL
 from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
+from octobot_tentacles_manager.models.tentacle_type import TentacleType
 
 
 async def load_tentacle_with_metadata(tentacle_path):
@@ -35,7 +36,7 @@ def _parse_all_tentacles(root):
     factory = TentacleFactory(root)
     return [factory.create_tentacle_from_type(tentacle_name, tentacle_type)
             for tentacle_type in _get_tentacle_types(root)
-            for tentacle_name in listdir(join(root, tentacle_type))
+            for tentacle_name in listdir(join(root, tentacle_type.to_path()))
             if not tentacle_name == PYTHON_INIT_FILE]
 
 
@@ -51,14 +52,14 @@ def _rec_get_tentacles_type(ref_tentacles_root, tentacle_types, current_level, m
         for tentacle_type in listdir(ref_tentacles_root):
             tentacle_dir = join(ref_tentacles_root, tentacle_type)
             if isdir(tentacle_dir):
-                full_tentacle_type = join(*tentacle_dir.split(sep)[-current_level:])
-                if not _add_tentacle_type_if_is_valid(tentacle_dir, full_tentacle_type, tentacle_types):
+                full_tentacle_type_path = join(*tentacle_dir.split(sep)[-current_level:])
+                if not _add_tentacle_type_if_is_valid(tentacle_dir, full_tentacle_type_path, tentacle_types):
                     _rec_get_tentacles_type(tentacle_dir, tentacle_types, current_level + 1, max_level)
 
 
-def _add_tentacle_type_if_is_valid(tentacle_type_dir, tentacle_type, tentacle_types):
+def _add_tentacle_type_if_is_valid(tentacle_type_dir, full_tentacle_type_path, tentacle_types):
     if _has_tentacle_in_direct_sub_directories(tentacle_type_dir):
-        tentacle_types.append(tentacle_type)
+        tentacle_types.append(TentacleType(full_tentacle_type_path))
         return True
     return False
 
