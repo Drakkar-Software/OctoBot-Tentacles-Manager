@@ -55,6 +55,8 @@ async def test_uninstall_two_tentacles():
         assert json.load(config_f) == {
             'tentacle_activation': {
                 'DailyTradingMode': True,
+                'OtherInstantFluctuationsEvaluator': False,
+                'SecondOtherInstantFluctuationsEvaluator': False,
                 'RedditForumEvaluator': False,
                 'SimpleMixedStrategyEvaluator': True
             }
