@@ -30,6 +30,10 @@ from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_
 
 class TentaclesSetupManager:
 
+    TENTACLE_IMPORT_HEADER = """from octobot_tentacles_manager.api.inspector import check_tentacle_version
+from octobot_commons.logging.logging_util import get_logger
+"""
+
     def __init__(self, tentacle_path):
         self.tentacle_path = tentacle_path
         self.default_tentacle_config = DEFAULT_TENTACLE_CONFIG
@@ -64,14 +68,16 @@ class TentaclesSetupManager:
         if remove_import:
             # remove import line
             if init_content:
-                to_remove_line = f"{TentaclesSetupManager._get_single_module_init_line(tentacle)}\n"
+                to_remove_line = f"{TentaclesSetupManager._get_tentacle_import_block(tentacle)}\n"
                 if to_remove_line in init_content:
                     init_content = init_content.replace(to_remove_line, "")
                     async with aiofiles.open(init_file, "w+") as init_file_w:
                         await init_file_w.write(init_content)
         elif tentacle.name not in init_content:
             # add import line
-            init_content = f"{init_content}{TentaclesSetupManager._get_single_module_init_line(tentacle)}\n"
+            if TentaclesSetupManager.TENTACLE_IMPORT_HEADER not in init_content:
+                init_content = f"{TentaclesSetupManager.TENTACLE_IMPORT_HEADER}{init_content}"
+            init_content = f"{init_content}{TentaclesSetupManager._get_tentacle_import_block(tentacle)}"
             async with aiofiles.open(init_file, "w+") as init_file_w:
                 await init_file_w.write(init_content)
 
@@ -121,3 +127,13 @@ class TentaclesSetupManager:
     @staticmethod
     def _get_single_module_init_line(tentacle):
         return f"from .{tentacle.name} import *"
+
+    @staticmethod
+    def _get_tentacle_import_block(tentacle):
+        return f"""
+if check_tentacle_version('{tentacle.version}', '{tentacle.name}', '{tentacle.origin_package}'):
+    try:
+        {TentaclesSetupManager._get_single_module_init_line(tentacle)}
+    except Exception as e:
+        get_logger('TentacleLoader').exception(e, True, f'Error when loading {tentacle.name}: {{e}}')
+"""
