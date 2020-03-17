@@ -16,12 +16,11 @@
 from os import listdir
 from os.path import join, isfile, exists
 from shutil import copyfile, rmtree, copytree
-import aiofiles
 
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import TENTACLE_MODULE_FOLDERS, PYTHON_INIT_FILE, \
     USER_TENTACLE_SPECIFIC_CONFIG_PATH, CONFIG_SCHEMA_EXT, TENTACLE_CONFIG, CONFIG_EXT
-from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
+from octobot_tentacles_manager.util.file_util import find_or_create
 
 
 class TentacleManager:
@@ -34,7 +33,7 @@ class TentacleManager:
         self.target_tentacle_path = join(tentacle_path, self.tentacle.tentacle_type)
         tentacle_module_path = join(self.target_tentacle_path, self.tentacle.name)
         self._update_tentacle_folder(tentacle_path)
-        await self._create_tentacle_init_file(tentacle_module_path)
+        await self._create_tentacle_init_file_if_necessary(tentacle_module_path)
         self._import_tentacle_config_if_any(tentacle_module_path)
 
     async def uninstall_tentacle(self):
@@ -87,19 +86,9 @@ class TentacleManager:
                 if replace or not exists(target_user_path):
                     copyfile(join(target_tentacle_config_path, config_file), target_user_path)
 
-    async def _create_tentacle_init_file(self, tentacle_module_path):
+    async def _create_tentacle_init_file_if_necessary(self, tentacle_module_path):
         init_file = join(tentacle_module_path, PYTHON_INIT_FILE)
-        init_content = self._get_init_block()
-        async with aiofiles.open(init_file, "w+") as init_file_w:
-            await init_file_w.write(init_content)
+        await find_or_create(init_file, is_directory=False, file_content=self._get_default_init_file_content())
 
-    def _get_init_block(self):
-        return f"""from octobot_tentacles_manager.api.inspector import check_tentacle_version
-from octobot_commons.logging.logging_util import get_logger
-
-if check_tentacle_version('{self.tentacle.version}', '{self.tentacle.name}', '{self.tentacle.origin_package}'):
-    try:
-        {TentaclesSetupManager._get_single_module_init_line(self.tentacle)}
-    except Exception as e:
-        get_logger('TentacleLoader').exception(e, True, f'Error when loading {self.tentacle.name}: {{e}}')
-"""
+    def _get_default_init_file_content(self):
+        return f"from .{self.tentacle.name} import {', '.join(self.tentacle.tentacles)}"

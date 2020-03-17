@@ -107,13 +107,15 @@ async def test_install_all_tentacles():
     config_files_count = len(config_files)
     assert config_files_count == 1
     assert "DailyTradingMode.json" in config_files[0][2]
-    assert len(config_files[0][2]) == 4
+    assert len(config_files[0][2]) == 5
 
     # test tentacles config
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'tentacle_activation': {
                 'InstantFluctuationsEvaluator': True,
+                'OtherInstantFluctuationsEvaluator': False,
+                'SecondOtherInstantFluctuationsEvaluator': False,
                 'RedditForumEvaluator': False,
                 'SimpleMixedStrategyEvaluator': True,
                 'DailyTradingMode': True
