@@ -13,11 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
-
 import os
 from logging import INFO
-
 from jinja2.nativetypes import NativeEnvironment
 
 from octobot_commons.logging.logging_util import get_logger, set_global_logger_level
@@ -25,6 +22,8 @@ from octobot_tentacles_manager.constants import TENTACLE_TEMPLATE_PATH, \
     TENTACLE_TEMPLATE_DESCRIPTION, TENTACLE_TEMPLATE_EXT, TENTACLE_TEMPLATE_PRE_EXT, \
     TENTACLES_PATH, TENTACLE_CONFIG_TEMPLATE_PRE_EXT, CONFIG_EXT, \
     TENTACLE_CONFIG, TENTACLES_FOLDERS_ARCH
+
+# TODO: remove from to .coveragerc when adapted
 
 
 class TentacleCreator:
