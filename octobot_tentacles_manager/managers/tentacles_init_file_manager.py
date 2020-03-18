@@ -29,6 +29,11 @@ async def find_or_create_module_init_file(module_root, modules):
     await find_or_create(join(module_root, PYTHON_INIT_FILE), False, get_module_init_file_content(modules))
 
 
+async def create_tentacle_init_file_if_necessary(tentacle_module_path, tentacle):
+    init_file = join(tentacle_module_path, PYTHON_INIT_FILE)
+    await find_or_create(init_file, is_directory=False, file_content=_get_default_init_file_content(tentacle))
+
+
 async def update_tentacle_type_init_file(tentacle, target_tentacle_path, remove_import=False):
     init_content = ""
     init_file = join(target_tentacle_path, PYTHON_INIT_FILE)
@@ -68,7 +73,11 @@ def get_module_init_file_content(modules):
     return "\n".join(f"from .{module} import *" for module in modules)
 
 
-def get_single_module_init_line(tentacle):
+def _get_default_init_file_content(tentacle):
+    return f"from .{tentacle.name} import {', '.join(tentacle.tentacle_class_names)}"
+
+
+def _get_single_module_init_line(tentacle):
     return f"from .{tentacle.name} import *"
 
 
@@ -76,7 +85,7 @@ def get_tentacle_import_block(tentacle):
     return f"""
 if check_tentacle_version('{tentacle.version}', '{tentacle.name}', '{tentacle.origin_package}'):
     try:
-        {get_single_module_init_line(tentacle)}
+        {_get_single_module_init_line(tentacle)}
     except Exception as e:
         get_logger('TentacleLoader').exception(e, True, f'Error when loading {tentacle.name}: {{e}}')
 """
