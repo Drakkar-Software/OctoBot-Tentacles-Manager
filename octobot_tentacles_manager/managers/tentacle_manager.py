@@ -79,8 +79,8 @@ class TentacleManager:
                     copytree(file_or_dir, target_file_or_dir)
 
     @staticmethod
-    def _import_tentacle_config_if_any(target_tentacle_path, replace=False):
-        target_tentacle_config_path = join(target_tentacle_path, TENTACLE_CONFIG)
+    def _import_tentacle_config_if_any(tentacle_module_path, replace=False):
+        target_tentacle_config_path = join(tentacle_module_path, TENTACLE_CONFIG)
         for config_file in listdir(target_tentacle_config_path):
             if config_file.endswith(CONFIG_EXT) and not config_file.endswith(CONFIG_SCHEMA_EXT):
                 target_user_path = join(USER_TENTACLE_SPECIFIC_CONFIG_PATH, config_file)

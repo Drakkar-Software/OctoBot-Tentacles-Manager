@@ -16,6 +16,7 @@
 from asyncio import gather
 
 from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
+from octobot_tentacles_manager.managers.tentacles_init_file_manager import update_tentacle_type_init_file
 from octobot_tentacles_manager.workers.tentacles_worker import TentaclesWorker
 from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
@@ -34,7 +35,7 @@ class InstallWorker(TentaclesWorker):
         self.total_steps = len(to_install_tentacles)
         self.register_to_process_tentacles_modules(to_install_tentacles)
         await gather(*[self._install_tentacle(tentacle) for tentacle in to_install_tentacles])
-        await self.tentacles_setup_manager.refresh_tentacles_config_file()
+        await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file()
         self.log_summary()
         return len(self.errors)
 
@@ -48,8 +49,7 @@ class InstallWorker(TentaclesWorker):
                 await self.handle_requirements(tentacle, self._try_install_from_requirements)
                 tentacle_manager = TentacleManager(tentacle)
                 await tentacle_manager.install_tentacle(self.tentacle_path)
-                await self.tentacles_setup_manager.update_tentacle_type_init_file(tentacle,
-                                                                                  tentacle_manager.target_tentacle_path)
+                await update_tentacle_type_init_file(tentacle, tentacle_manager.target_tentacle_path)
                 self.logger.info(f"[{self.progress}/{self.total_steps}] installed {tentacle}")
         except Exception as e:
             message = f"Error when installing {tentacle.name}: {e}"
