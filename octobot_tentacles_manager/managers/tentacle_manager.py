@@ -18,8 +18,9 @@ from os.path import join, isfile, exists
 from shutil import copyfile, rmtree, copytree
 
 from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.constants import TENTACLE_MODULE_FOLDERS, PYTHON_INIT_FILE, \
+from octobot_tentacles_manager.constants import TENTACLE_MODULE_FOLDERS, \
     USER_TENTACLE_SPECIFIC_CONFIG_PATH, CONFIG_SCHEMA_EXT, TENTACLE_CONFIG, CONFIG_EXT
+from octobot_tentacles_manager.managers.tentacles_init_file_manager import create_tentacle_init_file_if_necessary
 from octobot_tentacles_manager.util.file_util import find_or_create
 
 
@@ -33,7 +34,7 @@ class TentacleManager:
         self.target_tentacle_path = join(tentacle_path, self.tentacle.tentacle_type.to_path())
         tentacle_module_path = join(self.target_tentacle_path, self.tentacle.name)
         await self._update_tentacle_folder(tentacle_path)
-        await self._create_tentacle_init_file_if_necessary(tentacle_module_path)
+        await create_tentacle_init_file_if_necessary(tentacle_module_path, self.tentacle)
         self._import_tentacle_config_if_any(tentacle_module_path)
 
     async def uninstall_tentacle(self):
@@ -86,10 +87,3 @@ class TentacleManager:
                 target_user_path = join(USER_TENTACLE_SPECIFIC_CONFIG_PATH, config_file)
                 if replace or not exists(target_user_path):
                     copyfile(join(target_tentacle_config_path, config_file), target_user_path)
-
-    async def _create_tentacle_init_file_if_necessary(self, tentacle_module_path):
-        init_file = join(tentacle_module_path, PYTHON_INIT_FILE)
-        await find_or_create(init_file, is_directory=False, file_content=self._get_default_init_file_content())
-
-    def _get_default_init_file_content(self):
-        return f"from .{self.tentacle.name} import {', '.join(self.tentacle.tentacle_class_names)}"
