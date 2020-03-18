@@ -43,18 +43,27 @@ def _parse_all_tentacles(root):
 def _get_tentacle_types(ref_tentacles_root):
     tentacle_types = []
     if isdir(ref_tentacles_root):
-        _rec_get_tentacles_type(ref_tentacles_root, tentacle_types, 1, TENTACLE_MAX_SUB_FOLDERS_LEVEL)
+        _find_tentacles_type_in_directories(ref_tentacles_root, tentacle_types)
     return tentacle_types
 
 
-def _rec_get_tentacles_type(ref_tentacles_root, tentacle_types, current_level, max_level):
-    if current_level <= max_level:
+def _find_tentacles_type_in_directories(ref_tentacles_root, tentacle_types, current_level=1):
+    if current_level <= TENTACLE_MAX_SUB_FOLDERS_LEVEL:
         for tentacle_type in listdir(ref_tentacles_root):
             tentacle_dir = join(ref_tentacles_root, tentacle_type)
             if isdir(tentacle_dir):
-                full_tentacle_type_path = join(*tentacle_dir.split(sep)[-current_level:])
-                if not _add_tentacle_type_if_is_valid(tentacle_dir, full_tentacle_type_path, tentacle_types):
-                    _rec_get_tentacles_type(tentacle_dir, tentacle_types, current_level + 1, max_level)
+                _explore_tentacle_dir(tentacle_dir, tentacle_types, current_level)
+
+
+def _explore_tentacle_dir(tentacle_dir, tentacle_types, nesting_level):
+    # full_tentacle_type_path is the path to the current directory starting from the most global Tentacle type without
+    # anything before it:
+    # ex: with a at tentacle_dir="downloaded_tentacles/xyz/Backtesting/importers" then
+    # full_tentacle_type_path will be "Backtesting/importers"
+    full_tentacle_type_path = tentacle_dir.split(sep)[-nesting_level:]
+    if not _add_tentacle_type_if_is_valid(tentacle_dir, join(*full_tentacle_type_path), tentacle_types):
+        # no tentacle in this folder, look into nested folders
+        _find_tentacles_type_in_directories(tentacle_dir, tentacle_types, nesting_level + 1)
 
 
 def _add_tentacle_type_if_is_valid(tentacle_type_dir, full_tentacle_type_path, tentacle_types):
