@@ -27,6 +27,7 @@ from octobot_commons.os_util import get_octobot_type
 # (ex: compiled binary). However these dynamic imports work with Python / Docker environment.
 # code from pip POC (https://github.com/Drakkar-Software/OctoBot-Tentacles-Manager/tree/pip-usage-poc)
 
+# TODO: remove from to .coveragerc when adapted
 
 """
 Tentacles management
