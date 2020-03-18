@@ -13,10 +13,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from os.path import exists
+
 import aiohttp
 import pytest
 from os import path
 
+from octobot_commons.constants import TENTACLES_PATH
 from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 
@@ -25,6 +28,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_install_all_tentacles():
+    _cleanup(False)
     async with aiohttp.ClientSession() as session:
         assert await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session) == 0
     _cleanup()
@@ -41,5 +45,6 @@ def _tentacles_local_path():
     return path.join("tests", "static", "tentacles.zip")
 
 
-def _cleanup():
-    TentaclesSetupManager.delete_tentacles_arch()
+def _cleanup(raises=True):
+    if exists(TENTACLES_PATH):
+        TentaclesSetupManager.delete_tentacles_arch(force=True, raises=raises)
