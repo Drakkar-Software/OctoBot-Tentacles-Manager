@@ -20,7 +20,7 @@ from shutil import copyfile, rmtree, copytree
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import TENTACLE_MODULE_FOLDERS, \
     USER_TENTACLE_SPECIFIC_CONFIG_PATH, CONFIG_SCHEMA_EXT, TENTACLE_CONFIG, CONFIG_EXT
-from octobot_tentacles_manager.managers.tentacles_init_file_manager import create_tentacle_init_file_if_necessary
+from octobot_tentacles_manager.managers.tentacles_init_files_manager import create_tentacle_init_file_if_necessary
 from octobot_tentacles_manager.util.file_util import find_or_create
 
 
