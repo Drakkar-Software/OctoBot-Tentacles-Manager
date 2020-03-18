@@ -16,6 +16,7 @@
 from asyncio import gather
 
 from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
+from octobot_tentacles_manager.managers.tentacles_init_file_manager import update_tentacle_type_init_file
 from octobot_tentacles_manager.workers.tentacles_worker import TentaclesWorker
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
 
@@ -27,7 +28,7 @@ class UninstallWorker(TentaclesWorker):
         if self.confirm_action("Remove all installed tentacles ?"
                                if name_filter is None else "Remove {', '.join(name_filter)} tentacles ?"):
             if name_filter is None:
-                self.tentacles_setup_manager.delete_tentacles_arch()
+                self.tentacles_setup_manager.delete_tentacles_arch(force=True)
             else:
                 self.progress = 1
                 all_tentacles = await load_tentacle_with_metadata(self.tentacle_path)
@@ -36,7 +37,7 @@ class UninstallWorker(TentaclesWorker):
                                           if tentacle.name in name_filter]
                 await gather(*[self._uninstall_tentacle(tentacle) for tentacle in to_uninstall_tentacles])
             await self.tentacles_setup_manager.create_missing_tentacles_arch()
-            await self.tentacles_setup_manager.refresh_tentacles_config_file()
+            await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file()
             self.log_summary()
         return len(self.errors)
 
@@ -44,9 +45,7 @@ class UninstallWorker(TentaclesWorker):
         try:
             tentacle_manager = TentacleManager(tentacle)
             await tentacle_manager.uninstall_tentacle()
-            await self.tentacles_setup_manager.update_tentacle_type_init_file(tentacle,
-                                                                              tentacle.tentacle_path,
-                                                                              remove_import=True)
+            await update_tentacle_type_init_file(tentacle, tentacle.tentacle_path, remove_import=True)
             self.logger.info(f"[{self.progress}/{self.total_steps}] uninstalled {tentacle}")
         except Exception as e:
             message = f"Error when uninstalling {tentacle.name}: {e}"
