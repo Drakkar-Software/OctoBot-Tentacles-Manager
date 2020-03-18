@@ -32,7 +32,7 @@ class TentacleManager:
     async def install_tentacle(self, tentacle_path):
         self.target_tentacle_path = join(tentacle_path, self.tentacle.tentacle_type.to_path())
         tentacle_module_path = join(self.target_tentacle_path, self.tentacle.name)
-        self._update_tentacle_folder(tentacle_path)
+        await self._update_tentacle_folder(tentacle_path)
         await self._create_tentacle_init_file_if_necessary(tentacle_module_path)
         self._import_tentacle_config_if_any(tentacle_module_path)
 
@@ -63,9 +63,10 @@ class TentacleManager:
                 satisfied = True
         return satisfied
 
-    def _update_tentacle_folder(self, tentacle_path):
+    async def _update_tentacle_folder(self, tentacle_path):
         reference_tentacle_path = join(self.tentacle.tentacle_path, self.tentacle.name)
         target_tentacle_path = join(tentacle_path, self.tentacle.tentacle_type.to_path(), self.tentacle.name)
+        await find_or_create(target_tentacle_path)
         for tentacle_file in listdir(reference_tentacle_path):
             file_or_dir = join(reference_tentacle_path, tentacle_file)
             target_file_or_dir = join(target_tentacle_path, tentacle_file)
