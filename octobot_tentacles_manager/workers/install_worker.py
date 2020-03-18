@@ -16,7 +16,7 @@
 from asyncio import gather
 
 from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
-from octobot_tentacles_manager.managers.tentacles_init_file_manager import update_tentacle_type_init_file
+from octobot_tentacles_manager.managers.tentacles_init_files_manager import update_tentacle_type_init_file
 from octobot_tentacles_manager.workers.tentacles_worker import TentaclesWorker
 from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata

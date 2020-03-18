@@ -22,7 +22,7 @@ from octobot_tentacles_manager.configuration.tentacles_setup_configuration impor
 from octobot_tentacles_manager.constants import USER_TENTACLE_SPECIFIC_CONFIG_PATH, PYTHON_INIT_FILE, \
     TENTACLES_FOLDERS_ARCH, DEFAULT_TENTACLE_CONFIG, TENTACLES_PATH, USER_TENTACLE_CONFIG_PATH, \
     TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR
-from octobot_tentacles_manager.managers.tentacles_init_file_manager import find_or_create_module_init_file, \
+from octobot_tentacles_manager.managers.tentacles_init_files_manager import find_or_create_module_init_file, \
     get_module_init_file_content
 from octobot_tentacles_manager.util.file_util import find_or_create
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
