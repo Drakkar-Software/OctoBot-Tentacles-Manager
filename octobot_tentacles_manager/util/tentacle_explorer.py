@@ -17,7 +17,8 @@ from asyncio import gather
 from os import listdir
 from os.path import isdir, join, sep
 
-from octobot_tentacles_manager.constants import PYTHON_EXT, PYTHON_INIT_FILE, TENTACLE_MAX_SUB_FOLDERS_LEVEL
+from octobot_tentacles_manager.constants import PYTHON_EXT, PYTHON_INIT_FILE, TENTACLE_MAX_SUB_FOLDERS_LEVEL, \
+    FOLDERS_BLACK_LIST
 from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 from octobot_tentacles_manager.models.tentacle_type import TentacleType
 
@@ -37,7 +38,7 @@ def _parse_all_tentacles(root):
     return [factory.create_tentacle_from_type(tentacle_name, tentacle_type)
             for tentacle_type in _get_tentacle_types(root)
             for tentacle_name in listdir(join(root, tentacle_type.to_path()))
-            if not tentacle_name == PYTHON_INIT_FILE]
+            if not (tentacle_name == PYTHON_INIT_FILE or tentacle_name in FOLDERS_BLACK_LIST)]
 
 
 def _get_tentacle_types(ref_tentacles_root):

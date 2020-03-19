@@ -18,8 +18,8 @@ from os.path import join, isfile, exists
 from shutil import copyfile, rmtree, copytree
 
 from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.constants import TENTACLE_MODULE_FOLDERS, \
-    USER_TENTACLE_SPECIFIC_CONFIG_PATH, CONFIG_SCHEMA_EXT, TENTACLE_CONFIG, CONFIG_EXT
+from octobot_tentacles_manager.constants import USER_TENTACLE_SPECIFIC_CONFIG_PATH, CONFIG_SCHEMA_EXT, \
+    TENTACLE_CONFIG, CONFIG_EXT
 from octobot_tentacles_manager.managers.tentacles_init_files_manager import create_tentacle_init_file_if_necessary
 from octobot_tentacles_manager.util.file_util import find_or_create
 
@@ -74,10 +74,9 @@ class TentacleManager:
             if isfile(file_or_dir):
                 copyfile(file_or_dir, target_file_or_dir)
             else:
-                if tentacle_file in TENTACLE_MODULE_FOLDERS:
-                    if exists(target_file_or_dir):
-                        rmtree(target_file_or_dir)
-                    copytree(file_or_dir, target_file_or_dir)
+                if exists(target_file_or_dir):
+                    rmtree(target_file_or_dir)
+                copytree(file_or_dir, target_file_or_dir)
 
     @staticmethod
     def _import_tentacle_config_if_any(tentacle_module_path, replace=False):

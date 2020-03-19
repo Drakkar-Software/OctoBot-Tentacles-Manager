@@ -15,6 +15,18 @@
 #  License along with this library.
 from octobot_tentacles_manager.configuration.tentacle_configuration import update_config, get_config, \
     factory_reset_config, get_config_schema_path
+from octobot_tentacles_manager.configuration.tentacles_setup_configuration import TentaclesSetupConfiguration
+from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH
+
+
+async def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH) -> TentaclesSetupConfiguration:
+    setup_config = TentaclesSetupConfiguration(config_path=config_path)
+    await setup_config.read_config()
+    return setup_config
+
+
+def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, klass_name) -> bool:
+    return tentacles_setup_config.tentacles_activation[klass_name]
 
 
 async def update_tentacle_config(tentacle_class: object, config_data: dict) -> None:

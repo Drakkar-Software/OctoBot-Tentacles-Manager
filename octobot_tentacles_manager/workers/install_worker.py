@@ -49,7 +49,7 @@ class InstallWorker(TentaclesWorker):
                 await self.handle_requirements(tentacle, self._try_install_from_requirements)
                 tentacle_manager = TentacleManager(tentacle)
                 await tentacle_manager.install_tentacle(self.tentacle_path)
-                await update_tentacle_type_init_file(tentacle, tentacle_manager.target_tentacle_path)
+                update_tentacle_type_init_file(tentacle, tentacle_manager.target_tentacle_path)
                 self.logger.info(f"[{self.progress}/{self.total_steps}] installed {tentacle}")
         except Exception as e:
             message = f"Error when installing {tentacle.name}: {e}"
