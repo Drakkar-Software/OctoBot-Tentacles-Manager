@@ -31,6 +31,8 @@ DOCUMENTATION_EXT = ".md"
 CONFIG_SCHEMA_EXT = "_schema.json"
 TENTACLE_METADATA = "metadata.json"
 DEFAULT_TENTACLE_CONFIG = join(CONFIG_FOLDER, "default_tentacles_config.json")
+# tentacles setup folders back list
+FOLDERS_BLACK_LIST = ["__pycache__"]
 
 # Metadata keys
 METADATA_VERSION = "version"

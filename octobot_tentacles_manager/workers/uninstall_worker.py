@@ -45,7 +45,7 @@ class UninstallWorker(TentaclesWorker):
         try:
             tentacle_manager = TentacleManager(tentacle)
             await tentacle_manager.uninstall_tentacle()
-            await update_tentacle_type_init_file(tentacle, tentacle.tentacle_path, remove_import=True)
+            update_tentacle_type_init_file(tentacle, tentacle.tentacle_path, remove_import=True)
             self.logger.info(f"[{self.progress}/{self.total_steps}] uninstalled {tentacle}")
         except Exception as e:
             message = f"Error when uninstalling {tentacle.name}: {e}"
