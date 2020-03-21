@@ -50,7 +50,7 @@ class TentaclesSetupManager:
         await find_or_create(join(self.tentacle_setup_root_path, PYTHON_INIT_FILE), False,
                              get_module_init_file_content(TENTACLES_FOLDERS_ARCH.keys()))
         # tentacle inner architecture
-        await self._rec_create_missing_files(self.tentacle_setup_root_path, TENTACLES_FOLDERS_ARCH)
+        await self._create_missing_files_and_folders(self.tentacle_setup_root_path, TENTACLES_FOLDERS_ARCH)
         return found_existing_installation
 
     @staticmethod
@@ -79,7 +79,7 @@ class TentaclesSetupManager:
         return [TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR]
 
     @staticmethod
-    async def _rec_create_missing_files(root_folder, files_arch):
+    async def _create_missing_files_and_folders(root_folder, files_arch):
         sub_dir_to_create_coroutines = []
         for root, modules in files_arch.items():
             current_root = join(root_folder, root)
@@ -88,7 +88,7 @@ class TentaclesSetupManager:
             await find_or_create_module_init_file(current_root, modules)
             if isinstance(modules, dict):
                 sub_dir_to_create_coroutines.append(
-                    TentaclesSetupManager._rec_create_missing_files(current_root, modules))
+                    TentaclesSetupManager._create_missing_files_and_folders(current_root, modules))
             else:
                 sub_dir_to_create_coroutines += [find_or_create(join(current_root, directory))
                                                  for directory in modules]
