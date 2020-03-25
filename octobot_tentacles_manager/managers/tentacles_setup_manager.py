@@ -66,11 +66,11 @@ class TentaclesSetupManager:
             return False
 
     @staticmethod
-    def delete_tentacles_arch(force=False, raises=False):
+    def delete_tentacles_arch(force=False, raises=False, with_user_config=False):
         if TentaclesSetupManager.is_tentacles_arch_valid(verbose=False, raises=raises) \
           or (force and exists(TENTACLES_PATH)):
             rmtree(TENTACLES_PATH)
-        if exists(USER_TENTACLE_CONFIG_PATH):
+        if with_user_config and exists(USER_TENTACLE_CONFIG_PATH):
             rmtree(USER_TENTACLE_CONFIG_PATH)
 
     @staticmethod
