@@ -33,6 +33,10 @@ async def reload_tentacle_by_tentacle_class():
     }
 
 
+def get_tentacle_classes() -> dict:
+    return _tentacle_by_tentacle_class
+
+
 def get_resources_path(klass) -> str:
     return join(get_tentacle_module_path(klass), TENTACLE_RESOURCES)
 

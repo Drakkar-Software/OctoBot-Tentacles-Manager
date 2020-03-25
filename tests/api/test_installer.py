@@ -19,8 +19,8 @@ import aiohttp
 import pytest
 from os import path
 
-from octobot_commons.constants import TENTACLES_PATH
 from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles
+from octobot_tentacles_manager.constants import TENTACLES_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 
 # All test coroutines will be treated as marked.

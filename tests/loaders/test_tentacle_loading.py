@@ -34,6 +34,8 @@ async def test_get_tentacle_without_loading():
     reload(tentacle_loading)
     async with aiohttp.ClientSession() as session:
         await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+    # force tentacle data reset
+    tentacle_loading._tentacle_by_tentacle_class = None
     with pytest.raises(RuntimeError):
         from tentacles.Services import RedditService
         tentacle_loading.get_tentacle(RedditService)
