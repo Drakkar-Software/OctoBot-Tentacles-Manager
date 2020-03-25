@@ -35,20 +35,20 @@ async def create_tentacle_init_file_if_necessary(tentacle_module_path, tentacle)
 
 def update_tentacle_type_init_file(tentacle, target_tentacle_path, remove_import=False):
     # Not async function to avoid conflict between read and write
-    init_content = ""
     init_file = join(target_tentacle_path, PYTHON_INIT_FILE)
+    if remove_import:
+        # remove import line
+        _remove_tentacle_from_tentacle_type_init_file(tentacle, init_file)
+    else:
+        _add_tentacle_to_tentacle_type_init_file(tentacle, init_file)
+
+
+def _add_tentacle_to_tentacle_type_init_file(tentacle, init_file):
+    init_content = ""
     if isfile(init_file):
         # load import file
         with open(init_file, "r") as init_file_r:
             init_content = init_file_r.read()
-    if remove_import:
-        # remove import line
-        _remove_tentacle_from_tentacle_type_init_file(init_content, tentacle, init_file)
-    else:
-        _add_tentacle_to_tentacle_type_init_file(init_content, tentacle, init_file)
-
-
-def _add_tentacle_to_tentacle_type_init_file(init_content, tentacle, init_file):
     if tentacle.name not in init_content:
         # add import headers if missing
         if TENTACLE_IMPORT_HEADER not in init_content:
@@ -59,14 +59,30 @@ def _add_tentacle_to_tentacle_type_init_file(init_content, tentacle, init_file):
             init_file_w.write(init_content)
 
 
-def _remove_tentacle_from_tentacle_type_init_file(init_content, tentacle, init_file):
-    if init_content:
+def _remove_tentacle_from_tentacle_type_init_file(tentacle, init_file):
+    init_content_lines = []
+    if isfile(init_file):
+        # load import file
+        with open(init_file, "r") as init_file_r:
+            init_content_lines = init_file_r.readlines()
+    if init_content_lines:
         # remove import line
-        to_remove_line = f"{get_tentacle_import_block(tentacle)}\n"
-        if to_remove_line in init_content:
-            init_content = init_content.replace(to_remove_line, "")
+        to_remove_lines_count = len(get_tentacle_import_block(tentacle).split("\n")) - 2
+        to_remove_start_index = None
+        tentacle_name_identifier = f"'{tentacle.name}'"
+        for index, line in enumerate(init_content_lines):
+            if tentacle_name_identifier in line:
+                if index > 1 and init_content_lines[index - 1] == "\n":
+                    # if possible, also remove additional newline
+                    to_remove_start_index = index - 1
+                    to_remove_lines_count = to_remove_lines_count + 1
+                else:
+                    to_remove_start_index = index
+                break
+        if to_remove_start_index is not None:
+            del init_content_lines[to_remove_start_index:to_remove_start_index + to_remove_lines_count]
             with open(init_file, "w+") as init_file_w:
-                init_file_w.write(init_content)
+                init_file_w.writelines(init_content_lines)
 
 
 def get_module_init_file_content(modules):

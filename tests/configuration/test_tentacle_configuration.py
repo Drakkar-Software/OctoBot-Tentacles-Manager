@@ -35,12 +35,12 @@ async def test_get_config():
     async with aiohttp.ClientSession() as session:
         await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
     from tentacles.Evaluator.RealTime import InstantFluctuationsEvaluator
-    assert await get_config(InstantFluctuationsEvaluator) == {
+    assert get_config(InstantFluctuationsEvaluator) == {
         "price_difference_threshold_percent": 1,
         "volume_difference_threshold_percent": 400
     }
     from tentacles.Services import RedditService
-    assert await get_config(RedditService) == {}
+    assert get_config(RedditService) == {}
     _cleanup()
 
 
@@ -52,8 +52,8 @@ async def test_update_config():
         "price_difference_threshold_percent": 2,
         "plop": 42
     }
-    await update_config(InstantFluctuationsEvaluator, config_update)
-    assert await get_config(InstantFluctuationsEvaluator) == {
+    update_config(InstantFluctuationsEvaluator, config_update)
+    assert get_config(InstantFluctuationsEvaluator) == {
         "price_difference_threshold_percent": 2,
         "volume_difference_threshold_percent": 400,
         "plop": 42
@@ -69,10 +69,10 @@ async def test_factory_reset_config():
         "price_difference_threshold_percent": 2,
         "plop": 42
     }
-    await update_config(InstantFluctuationsEvaluator, config_update)
+    update_config(InstantFluctuationsEvaluator, config_update)
     await reload_tentacle_by_tentacle_class()
     factory_reset_config(InstantFluctuationsEvaluator)
-    assert await get_config(InstantFluctuationsEvaluator) == {
+    assert get_config(InstantFluctuationsEvaluator) == {
         "price_difference_threshold_percent": 1,
         "volume_difference_threshold_percent": 400
     }

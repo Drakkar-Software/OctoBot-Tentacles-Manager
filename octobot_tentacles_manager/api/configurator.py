@@ -13,8 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_tentacles_manager.configuration.tentacle_configuration import update_config, get_config, \
-    factory_reset_config, get_config_schema_path
+from octobot_tentacles_manager.configuration.tentacle_configuration import get_config, \
+    factory_reset_config, get_config_schema_path, update_config
 from octobot_tentacles_manager.configuration.tentacles_setup_configuration import TentaclesSetupConfiguration
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH
 
@@ -25,16 +25,44 @@ async def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH)
     return setup_config
 
 
-def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, klass_name) -> bool:
-    return tentacles_setup_config.tentacles_activation[klass_name]
+def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, klass_name, default_value=False,
+                                                    raise_errors=False) -> bool:
+    try:
+        return tentacles_setup_config.tentacles_activation[klass_name]
+    except KeyError as e:
+        if raise_errors:
+            raise e
+        return default_value
 
 
-async def update_tentacle_config(tentacle_class: object, config_data: dict) -> None:
-    await update_config(tentacle_class, config_data)
+def get_tentacles_activation(tentacles_setup_config) -> dict:
+    return tentacles_setup_config.tentacles_activation
 
 
-async def get_tentacle_config(klass) -> dict:
-    return await get_config(klass)
+def upsert_tentacle_activation(tentacles_setup_config, tentacle_activation) -> None:
+    tentacles_setup_config.upsert_tentacle_activation(tentacle_activation)
+
+
+def get_user_tentacles_packages(tentacles_setup_config) -> dict:
+    return tentacles_setup_config.user_tentacles
+
+
+async def save_tentacles_setup_configuration(tentacles_setup_config) -> None:
+    await tentacles_setup_config.save_config()
+
+
+def get_activated_tentacles(tentacles_setup_config) -> list:
+    return [tentacle_class
+            for tentacle_class, activated in tentacles_setup_config.tentacles_activation.items()
+            if activated]
+
+
+def update_tentacle_config(tentacle_class: object, config_data: dict) -> None:
+    update_config(tentacle_class, config_data)
+
+
+def get_tentacle_config(klass) -> dict:
+    return get_config(klass)
 
 
 def factory_tentacle_reset_config(klass) -> None:

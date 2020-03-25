@@ -19,7 +19,11 @@ from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import DEFAULT_TENTACLES_PACKAGE, \
     TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION
 from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle, get_resources_path, \
-    get_documentation_file_path
+    get_documentation_file_path, get_tentacle_classes
+
+
+def get_installed_tentacles() -> dict:
+    return get_tentacle_classes()
 
 
 def get_tentacle_version(klass) -> str:

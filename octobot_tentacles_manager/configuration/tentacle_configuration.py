@@ -16,23 +16,23 @@
 from os.path import join
 from shutil import copy
 
-from octobot_tentacles_manager.configuration.config_file import write_config, read_config
+from octobot_tentacles_manager.configuration.config_file import sync_read_config, sync_write_config
 from octobot_tentacles_manager.constants import USER_TENTACLE_SPECIFIC_CONFIG_PATH, CONFIG_EXT, CONFIG_SCHEMA_EXT, \
     TENTACLE_CONFIG
 from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_module_path
 
 
-async def get_config(klass) -> dict:
-    return await read_config(_get_config_file_path(klass))
+def get_config(klass) -> dict:
+    return sync_read_config(_get_config_file_path(klass))
 
 
-async def update_config(klass, config_update) -> None:
+def update_config(klass, config_update) -> None:
     config_file = _get_config_file_path(klass)
-    current_config = await read_config(config_file)
+    current_config = sync_read_config(config_file)
     # only update values in config update not to erase values in root config (might not be editable)
     for key, val in config_update.items():
         current_config[key] = val
-    await write_config(config_file, current_config)
+    sync_write_config(config_file, current_config)
 
 
 def factory_reset_config(klass) -> None:

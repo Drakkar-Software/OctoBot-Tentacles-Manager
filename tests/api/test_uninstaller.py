@@ -20,6 +20,7 @@ from os import path, walk
 from octobot_tentacles_manager.constants import TENTACLES_PATH
 from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles
 from octobot_tentacles_manager.api.uninstaller import uninstall_all_tentacles, uninstall_tentacles
+from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 
 # All test coroutines will be treated as marked.
@@ -42,9 +43,11 @@ async def test_uninstall_one_tentacle():
         assert await install_tentacles(["reddit_service"], _tentacles_local_path(), aiohttp_session=session) == 0
         trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
         assert trading_mode_files_count > 25
+    assert "RedditService" in get_tentacle_classes()
     assert await uninstall_tentacles(["reddit_service"]) == 0
     trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert trading_mode_files_count == 25
+    assert "RedditService" not in get_tentacle_classes()
     _cleanup()
 
 
