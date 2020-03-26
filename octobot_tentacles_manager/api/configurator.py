@@ -39,8 +39,8 @@ def get_tentacles_activation(tentacles_setup_config) -> dict:
     return tentacles_setup_config.tentacles_activation
 
 
-def upsert_tentacle_activation(tentacles_setup_config, tentacle_activation) -> None:
-    tentacles_setup_config.upsert_tentacle_activation(tentacle_activation)
+def update_tentacle_activation(tentacles_setup_config, new_config, deactivate_others) -> bool:
+    return tentacles_setup_config.update_tentacle_activation(new_config, deactivate_others)
 
 
 def get_user_tentacles_packages(tentacles_setup_config) -> dict:
