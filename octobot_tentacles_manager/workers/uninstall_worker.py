@@ -32,6 +32,7 @@ class UninstallWorker(TentaclesWorker):
             else:
                 self.progress = 1
                 all_tentacles = await load_tentacle_with_metadata(self.tentacle_path)
+                self.register_error_on_missing_tentacles(all_tentacles, name_filter)
                 to_uninstall_tentacles = [tentacle
                                           for tentacle in all_tentacles
                                           if tentacle.name in name_filter]
