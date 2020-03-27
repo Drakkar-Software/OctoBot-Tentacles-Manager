@@ -78,9 +78,11 @@ class TentacleCreator:
                 self.logger.warning("TENTACLE CREATOR IS IN DEVELOPMENT")
                 for command in commands:
                     self.create_tentacle(command)
+            return 0
         else:
             arguments_help = "-c: activates the tentacle creators."
             self.logger.error(f"Invalid arguments, arguments are: {arguments_help}")
+            return 1
 
     def create_tentacle(self, tentacle_type):
         if tentacle_type in TENTACLES_FOLDERS_ARCH:

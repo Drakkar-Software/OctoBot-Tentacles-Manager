@@ -16,6 +16,6 @@
 from octobot_tentacles_manager.creators.tentacle_creator import TentacleCreator
 
 
-def start_tentacle_creator(config, commands):
+def start_tentacle_creator(config, commands) -> int:
     tentacle_creator_inst = TentacleCreator(config)
-    tentacle_creator_inst.parse_commands(commands)
+    return tentacle_creator_inst.parse_commands(commands)

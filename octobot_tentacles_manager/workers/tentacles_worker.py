@@ -71,6 +71,15 @@ class TentaclesWorker:
     def register_to_process_tentacles_modules(self, to_process_tentacle):
         self.to_process_tentacle_modules = self._get_version_by_tentacle(to_process_tentacle)
 
+    def register_error_on_missing_tentacles(self, all_tentacles, name_filter):
+        if name_filter is not None:
+            all_tentacles_names = [tentacle.name for tentacle in all_tentacles]
+            missing_tentacles = [tentacle_name
+                                 for tentacle_name in name_filter
+                                 if tentacle_name not in all_tentacles_names]
+            if missing_tentacles:
+                self.errors.append(f"Tentacles: {', '.join(missing_tentacles)} can't be found.")
+
     async def handle_requirements(self, tentacle, callback):
         if tentacle.tentacles_requirements:
             await self._handle_tentacles_requirements(tentacle, callback)
