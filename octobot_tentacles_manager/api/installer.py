@@ -16,6 +16,7 @@
 from octobot_tentacles_manager.api.util.tentacles_management import manage_tentacles
 from octobot_tentacles_manager.constants import TENTACLES_INSTALL_TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
+from octobot_tentacles_manager.workers.single_install_worker import SingleInstallWorker
 
 USER_HELP = """Install or re-install the given tentacles modules with their requirements if any.
     Does not edit tentacles configuration files and creates it if missing."""
@@ -33,6 +34,15 @@ async def install_tentacles(tentacle_names, tentacles_path_or_url,
                             bot_path=DEFAULT_BOT_PATH, tentacle_path=TENTACLES_PATH, aiohttp_session=None) -> int:
     return await _install_tentacles(tentacle_names, tentacles_path_or_url,
                                     tentacle_path, bot_path, aiohttp_session=aiohttp_session)
+
+
+async def install_single_tentacle(single_tentacle_path, single_tentacle_type, tentacle_path=TENTACLES_PATH,
+                                  bot_path=DEFAULT_BOT_PATH, aiohttp_session=None) -> int:
+    single_install_worker = SingleInstallWorker(TENTACLES_INSTALL_TEMP_DIR, tentacle_path,
+                                                bot_path, False, aiohttp_session)
+    single_install_worker.single_tentacle_path = single_tentacle_path
+    single_install_worker.single_tentacle_type = single_tentacle_type
+    return await manage_tentacles(single_install_worker, None, None, aiohttp_session)
 
 
 async def _install_tentacles(tentacle_names, tentacles_path_or_url, tentacle_path=TENTACLES_PATH,

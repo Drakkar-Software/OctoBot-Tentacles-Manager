@@ -75,6 +75,9 @@ async def test_install_one_tentacle_with_requirement():
             path.join("tests", "static", "default_tentacle_config.json")
         assert await worker.process(["reddit_service_feed"]) == 0
 
+    # test removed temporary requirements files
+    assert not path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
+
     # test installed files
     trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 1
@@ -168,8 +171,6 @@ def _enable_loggers():
 def _cleanup():
     if path.exists(temp_dir):
         rmtree(temp_dir)
-    if path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR):
-        rmtree(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
     if path.exists(TENTACLES_PATH):
         rmtree(TENTACLES_PATH)
     if path.exists(USER_TENTACLE_CONFIG_PATH):
