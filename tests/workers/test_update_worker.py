@@ -21,7 +21,7 @@ from os import walk, path
 
 from octobot_commons.logging.logging_util import set_logging_level
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, USER_TENTACLE_SPECIFIC_CONFIG_PATH, \
-    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH
+    USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 from octobot_tentacles_manager.workers.update_worker import UpdateWorker
@@ -138,8 +138,6 @@ def _enable_loggers():
 def _cleanup():
     if path.exists(temp_dir):
         rmtree(temp_dir)
-    if path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR):
-        rmtree(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
     if path.exists(TENTACLES_PATH):
         rmtree(TENTACLES_PATH)
     if path.exists(USER_TENTACLE_CONFIG_PATH):

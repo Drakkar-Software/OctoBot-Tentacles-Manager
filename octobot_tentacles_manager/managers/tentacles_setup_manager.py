@@ -55,6 +55,11 @@ class TentaclesSetupManager:
         return found_existing_installation
 
     @staticmethod
+    def cleanup_temp_dirs():
+        if exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR):
+            rmtree(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
+
+    @staticmethod
     def is_tentacles_arch_valid(verbose=True, raises=False) -> bool:
         try:
             import tentacles
