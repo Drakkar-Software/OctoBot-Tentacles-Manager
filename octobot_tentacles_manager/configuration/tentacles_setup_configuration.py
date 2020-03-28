@@ -44,7 +44,7 @@ class TentaclesSetupConfiguration:
                                                   default_tentacle_config_file=default_tentacle_config,
                                                   remove_missing_tentacles=remove_missing_tentacles)
 
-    def update_tentacle_activation(self, new_config, deactivate_other_evaluators):
+    def update_activation_configuration(self, new_config, deactivate_other_evaluators):
         something_changed = False
         for element_name, activated in new_config.items():
             if element_name in self.tentacles_activation:
@@ -87,10 +87,6 @@ class TentaclesSetupConfiguration:
                             self.tentacles_activation[element_name] = False
                             something_changed = True
         return something_changed
-
-    def upsert_tentacle_activation(self, new_config):
-        # merge new_config into self.tentacles_activation (also replace conflicting values)
-        self.tentacles_activation = {**self.tentacles_activation, **new_config}
 
     def replace_tentacle_activation(self, new_config):
         self.tentacles_activation = copy(new_config)

@@ -17,7 +17,7 @@ import pytest
 from copy import copy
 from os.path import exists, join
 
-from octobot_tentacles_manager.api.configurator import get_tentacles_setup_config, update_tentacle_activation, \
+from octobot_tentacles_manager.api.configurator import get_tentacles_setup_config, update_activation_configuration, \
     get_tentacles_activation
 from octobot_tentacles_manager.constants import TENTACLES_PATH, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
@@ -30,7 +30,7 @@ pytestmark = pytest.mark.asyncio
 temp_dir = "temp_tests"
 
 
-async def test_update_tentacle_activation():
+async def test_update_activation_configuration():
     _cleanup(False)
     await fetch_and_extract_tentacles(temp_dir, join("tests", "static", "tentacles.zip"), None)
     worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
@@ -47,15 +47,15 @@ async def test_update_tentacle_activation():
         'SimpleMixedStrategyEvaluator': True
     }
     # Did not add OtherTentacle since it is not in original activation
-    assert update_tentacle_activation(setup_config, {"OtherTentacle": True}, False) is False
+    assert update_activation_configuration(setup_config, {"OtherTentacle": True}, False) is False
     assert default_activation == get_tentacles_activation(setup_config)
 
     # No change
-    assert update_tentacle_activation(setup_config, {"InstantFluctuationsEvaluator": True}, False) is False
+    assert update_activation_configuration(setup_config, {"InstantFluctuationsEvaluator": True}, False) is False
     assert default_activation == get_tentacles_activation(setup_config)
 
     # One change
-    assert update_tentacle_activation(setup_config, {"InstantFluctuationsEvaluator": False}, False) is True
+    assert update_activation_configuration(setup_config, {"InstantFluctuationsEvaluator": False}, False) is True
     assert get_tentacles_activation(setup_config) == {
         'DailyTradingMode': True,
         'InstantFluctuationsEvaluator': False,
@@ -66,12 +66,12 @@ async def test_update_tentacle_activation():
     }
 
     # Two changes
-    assert update_tentacle_activation(setup_config,
-                                      {
-                                          "InstantFluctuationsEvaluator": True,
-                                          'RedditForumEvaluator': True
-                                      },
-                                      False) is True
+    assert update_activation_configuration(setup_config,
+                                           {
+                                              "InstantFluctuationsEvaluator": True,
+                                              'RedditForumEvaluator': True
+                                           },
+                                           False) is True
     assert get_tentacles_activation(setup_config) == {
         'DailyTradingMode': True,
         'InstantFluctuationsEvaluator': True,
@@ -82,12 +82,12 @@ async def test_update_tentacle_activation():
     }
 
     # Two changes with deactivate others evaluators
-    assert update_tentacle_activation(setup_config,
-                                      {
-                                          "InstantFluctuationsEvaluator": True,
-                                          'RedditForumEvaluator': True
-                                      },
-                                      True) is False
+    assert update_activation_configuration(setup_config,
+                                           {
+                                              "InstantFluctuationsEvaluator": True,
+                                              'RedditForumEvaluator': True
+                                           },
+                                           True) is False
     assert get_tentacles_activation(setup_config) == {
         'DailyTradingMode': True,
         'InstantFluctuationsEvaluator': True,

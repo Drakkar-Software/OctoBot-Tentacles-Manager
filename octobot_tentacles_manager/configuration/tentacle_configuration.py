@@ -30,8 +30,7 @@ def update_config(klass, config_update) -> None:
     config_file = _get_config_file_path(klass)
     current_config = sync_read_config(config_file)
     # only update values in config update not to erase values in root config (might not be editable)
-    for key, val in config_update.items():
-        current_config[key] = val
+    current_config.update(config_update)
     sync_write_config(config_file, current_config)
 
 

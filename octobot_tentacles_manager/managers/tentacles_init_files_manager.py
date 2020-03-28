@@ -23,6 +23,8 @@ TENTACLE_IMPORT_HEADER = """from octobot_tentacles_manager.api.inspector import 
 from octobot_commons.logging.logging_util import get_logger
 """
 
+NEW_LINE = "\n"
+
 
 async def find_or_create_module_init_file(module_root, modules):
     await find_or_create(join(module_root, PYTHON_INIT_FILE), False, get_module_init_file_content(modules))
@@ -67,12 +69,12 @@ def _remove_tentacle_from_tentacle_type_init_file(tentacle, init_file):
             init_content_lines = init_file_r.readlines()
     if init_content_lines:
         # remove import line
-        to_remove_lines_count = len(get_tentacle_import_block(tentacle).split("\n")) - 2
+        to_remove_lines_count = len(get_tentacle_import_block(tentacle).split(NEW_LINE)) - 2
         to_remove_start_index = None
         tentacle_name_identifier = f"'{tentacle.name}'"
         for index, line in enumerate(init_content_lines):
             if tentacle_name_identifier in line:
-                if index > 1 and init_content_lines[index - 1] == "\n":
+                if index > 1 and init_content_lines[index - 1] == NEW_LINE:
                     # if possible, also remove additional newline
                     to_remove_start_index = index - 1
                     to_remove_lines_count = to_remove_lines_count + 1
@@ -86,7 +88,7 @@ def _remove_tentacle_from_tentacle_type_init_file(tentacle, init_file):
 
 
 def get_module_init_file_content(modules):
-    return "\n".join(f"from .{module} import *" for module in modules)
+    return NEW_LINE.join(f"from .{module} import *" for module in modules)
 
 
 def _get_default_init_file_content(tentacle):
