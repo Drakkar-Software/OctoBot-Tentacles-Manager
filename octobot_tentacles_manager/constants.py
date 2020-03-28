@@ -59,6 +59,7 @@ TENTACLES_ARCHIVE_ROOT = "reference_tentacles"
 
 # Tentacles folders
 TENTACLES_PATH = "tentacles"
+DEFAULT_BOT_PATH = "."
 TENTACLES_BACKTESTING_PATH = "Backtesting"
 TENTACLES_EVALUATOR_PATH = "Evaluator"
 TENTACLES_INTERFACES_PATH = "Interfaces"

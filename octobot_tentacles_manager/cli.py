@@ -26,11 +26,11 @@ from octobot_tentacles_manager.api.uninstaller import uninstall_all_tentacles, u
     USER_HELP as UNINSTALL_USER_HELP
 from octobot_tentacles_manager.api.updater import update_all_tentacles, update_tentacles, \
     USER_HELP as UPDATE_USER_HELP
-from octobot_tentacles_manager.constants import DEFAULT_TENTACLES_URL
+from octobot_tentacles_manager.constants import DEFAULT_TENTACLES_URL, DEFAULT_BOT_PATH
 from octobot_tentacles_manager import PROJECT_NAME
 
 
-async def _handle_package_manager_command(starting_args, tentacles_url):
+async def _handle_package_manager_command(starting_args, tentacles_url, target_dir):
     error_count = 0
     LOGGER = get_logger(f"{PROJECT_NAME}-CLI")
     async with aiohttp.ClientSession() as aiohttp_session:
@@ -41,23 +41,31 @@ async def _handle_package_manager_command(starting_args, tentacles_url):
             return 1
         elif starting_args.install:
             if starting_args.all:
-                error_count = await install_all_tentacles(tentacles_url, aiohttp_session=aiohttp_session)
+                error_count = await install_all_tentacles(tentacles_url,
+                                                          bot_path=target_dir,
+                                                          aiohttp_session=aiohttp_session)
             else:
                 error_count = await install_tentacles(starting_args.tentacle_names,
                                                       tentacles_url,
+                                                      bot_path=target_dir,
                                                       aiohttp_session=aiohttp_session)
         elif starting_args.update:
             if starting_args.all:
-                error_count = await update_all_tentacles(tentacles_url, aiohttp_session=aiohttp_session)
+                error_count = await update_all_tentacles(tentacles_url,
+                                                         bot_path=target_dir,
+                                                         aiohttp_session=aiohttp_session)
             else:
                 error_count = await update_tentacles(starting_args.tentacle_names,
                                                      tentacles_url,
+                                                     bot_path=target_dir,
                                                      aiohttp_session=aiohttp_session)
         elif starting_args.uninstall:
             if starting_args.all:
-                error_count = await uninstall_all_tentacles(use_confirm_prompt=starting_args.force)
+                error_count = await uninstall_all_tentacles(bot_path=target_dir,
+                                                            use_confirm_prompt=starting_args.force)
             else:
                 error_count = await uninstall_tentacles(starting_args.tentacle_names,
+                                                        bot_path=target_dir,
                                                         use_confirm_prompt=starting_args.force)
     if error_count > 0:
         LOGGER.error(f"{error_count} errors occurred while processing tentacles.")
@@ -66,7 +74,9 @@ async def _handle_package_manager_command(starting_args, tentacles_url):
 
 
 def handle_tentacles_manager_command(starting_args, tentacles_url=DEFAULT_TENTACLES_URL) -> int:
-    return asyncio.run(_handle_package_manager_command(starting_args, tentacles_url))
+    tentacles_url = starting_args.location[0] if starting_args.location else tentacles_url
+    target_bot_dir = starting_args.directory[0] if starting_args.directory else "."
+    return asyncio.run(_handle_package_manager_command(starting_args, tentacles_url, target_bot_dir))
 
 
 def register_tentacles_manager_arguments(tentacles_parser) -> None:
@@ -75,6 +85,11 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-ui", "--uninstall", help=UNINSTALL_USER_HELP, action='store_true')
     tentacles_parser.add_argument("-a", "--all", help="Apply command to all available Tentacles", action='store_true')
     tentacles_parser.add_argument("-f", "--force", help="Skip user confirmations", action='store_true')
+    tentacles_parser.add_argument("-l", "--location", help="Tentacles package local path or url to find the "
+                                                           "tentacles package to process.", nargs=1)
+    tentacles_parser.add_argument("-d", "--directory", help=f"Path to the root of the octobot installation folder "
+                                                            f"to operate on. Default is '{DEFAULT_BOT_PATH}'.",
+                                  nargs=1)
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator. examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help", nargs='+')
