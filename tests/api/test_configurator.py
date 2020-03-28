@@ -19,7 +19,7 @@ from os.path import exists, join
 
 from octobot_tentacles_manager.api.configurator import get_tentacles_setup_config, update_tentacle_activation, \
     get_tentacles_activation
-from octobot_tentacles_manager.constants import TENTACLES_PATH
+from octobot_tentacles_manager.constants import TENTACLES_PATH, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
@@ -33,7 +33,7 @@ temp_dir = "temp_tests"
 async def test_update_tentacle_activation():
     _cleanup(False)
     await fetch_and_extract_tentacles(temp_dir, join("tests", "static", "tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
+    worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     worker.tentacles_setup_manager.default_tentacle_config = join("tests", "static", "default_tentacle_config.json")
     assert await worker.process() == 0
     setup_config = await get_tentacles_setup_config()

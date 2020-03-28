@@ -48,7 +48,7 @@ class InstallWorker(TentaclesWorker):
             if tentacle.name not in self.processed_tentacles_modules:
                 self.processed_tentacles_modules.append(tentacle.name)
                 await self.handle_requirements(tentacle, self._try_install_from_requirements)
-                tentacle_manager = TentacleManager(tentacle)
+                tentacle_manager = TentacleManager(tentacle, self.bot_installation_path)
                 await tentacle_manager.install_tentacle(self.tentacle_path)
                 update_tentacle_type_init_file(tentacle, tentacle_manager.target_tentacle_path)
                 self.logger.info(f"[{self.progress}/{self.total_steps}] installed {tentacle}")
