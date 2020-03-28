@@ -15,8 +15,6 @@
 #  License along with this library.
 from os.path import split
 
-from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
-from octobot_tentacles_manager.managers.tentacles_init_files_manager import update_tentacle_type_init_file
 from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 from octobot_tentacles_manager.models.tentacle_type import TentacleType
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
