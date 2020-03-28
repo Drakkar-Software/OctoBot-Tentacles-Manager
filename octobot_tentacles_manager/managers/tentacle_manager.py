@@ -19,15 +19,16 @@ from shutil import copyfile, rmtree, copytree
 
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import USER_TENTACLE_SPECIFIC_CONFIG_PATH, CONFIG_SCHEMA_EXT, \
-    TENTACLE_CONFIG, CONFIG_EXT
+    TENTACLE_CONFIG, CONFIG_EXT, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.managers.tentacles_init_files_manager import create_tentacle_init_file_if_necessary
 from octobot_tentacles_manager.util.file_util import find_or_create
 
 
 class TentacleManager:
 
-    def __init__(self, tentacle):
+    def __init__(self, tentacle, bot_installation_path=DEFAULT_BOT_PATH):
         self.tentacle = tentacle
+        self.bot_installation_path = bot_installation_path
         self.target_tentacle_path = None
 
     async def install_tentacle(self, tentacle_path):
@@ -38,7 +39,7 @@ class TentacleManager:
         self._import_tentacle_config_if_any(tentacle_module_path)
 
     async def uninstall_tentacle(self):
-        rmtree(join(self.tentacle.tentacle_path, self.tentacle.name))
+        rmtree(join(self.bot_installation_path, self.tentacle.tentacle_path, self.tentacle.name))
 
     @staticmethod
     def find_tentacles_missing_requirements(tentacle, version_by_modules):
@@ -78,11 +79,10 @@ class TentacleManager:
                     rmtree(target_file_or_dir)
                 copytree(file_or_dir, target_file_or_dir)
 
-    @staticmethod
-    def _import_tentacle_config_if_any(tentacle_module_path, replace=False):
+    def _import_tentacle_config_if_any(self, tentacle_module_path, replace=False):
         target_tentacle_config_path = join(tentacle_module_path, TENTACLE_CONFIG)
         for config_file in listdir(target_tentacle_config_path):
             if config_file.endswith(CONFIG_EXT) and not config_file.endswith(CONFIG_SCHEMA_EXT):
-                target_user_path = join(USER_TENTACLE_SPECIFIC_CONFIG_PATH, config_file)
+                target_user_path = join(self.bot_installation_path, USER_TENTACLE_SPECIFIC_CONFIG_PATH, config_file)
                 if replace or not exists(target_user_path):
                     copyfile(join(target_tentacle_config_path, config_file), target_user_path)

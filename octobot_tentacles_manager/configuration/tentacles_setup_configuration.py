@@ -14,20 +14,21 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 from copy import copy
+from os.path import join
 
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.configuration.config_file import read_config, write_config
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_TENTACLE_CONFIG, \
-    ACTIVATABLE_TENTACLES
+    ACTIVATABLE_TENTACLES, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes
 
 
 class TentaclesSetupConfiguration:
     TENTACLE_ACTIVATION_KEY = "tentacle_activation"
 
-    def __init__(self, config_path=USER_TENTACLE_CONFIG_FILE_PATH):
+    def __init__(self, bot_installation_path=DEFAULT_BOT_PATH, config_path=USER_TENTACLE_CONFIG_FILE_PATH):
         self.logger = get_logger(self.__class__.__name__)
-        self.config_path = config_path
+        self.config_path = join(bot_installation_path, config_path)
         self.tentacles_activation = {}
 
         # TODO: add user tentacle packages (previously stored in config.json as an URL/path list)

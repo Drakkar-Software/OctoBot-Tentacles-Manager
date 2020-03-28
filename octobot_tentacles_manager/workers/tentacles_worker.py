@@ -27,15 +27,21 @@ from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_t
 class TentaclesWorker:
     TENTACLES_FETCHING_TIMEOUT = 120
 
-    def __init__(self, reference_tentacles_dir, tentacle_path, use_confirm_prompt, aiohttp_session):
+    def __init__(self,
+                 reference_tentacles_dir,
+                 tentacle_path,
+                 bot_installation_path,
+                 use_confirm_prompt,
+                 aiohttp_session):
         self.logger = get_logger(self.__class__.__name__)
         self.aiohttp_session = aiohttp_session
         self.use_confirm_prompt = use_confirm_prompt
 
         self.reference_tentacles_root = join(reference_tentacles_dir, TENTACLES_ARCHIVE_ROOT) \
             if reference_tentacles_dir is not None else TENTACLES_ARCHIVE_ROOT
-        self.tentacle_path = tentacle_path
-        self.tentacles_setup_manager = TentaclesSetupManager(self.tentacle_path)
+        self.bot_installation_path = bot_installation_path
+        self.tentacle_path = join(bot_installation_path, tentacle_path)
+        self.tentacles_setup_manager = TentaclesSetupManager(self.tentacle_path, self.bot_installation_path)
 
         self.total_steps = 0
         self.progress = 0

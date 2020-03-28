@@ -22,7 +22,7 @@ from os import walk, path
 
 from octobot_commons.logging.logging_util import set_logging_level
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, USER_TENTACLE_SPECIFIC_CONFIG_PATH, \
-    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH
+    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 
 # All test coroutines will be treated as marked.
@@ -38,7 +38,7 @@ async def test_install_two_tentacles():
     _cleanup()
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
+    worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.process(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
@@ -70,7 +70,7 @@ async def test_install_one_tentacle_with_requirement():
         _cleanup()
         _enable_loggers()
         await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-        worker = InstallWorker(temp_dir, TENTACLES_PATH, False, session)
+        worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, session)
         worker.tentacles_setup_manager.default_tentacle_config = \
             path.join("tests", "static", "default_tentacle_config.json")
         assert await worker.process(["reddit_service_feed"]) == 0
@@ -95,7 +95,7 @@ async def test_install_all_tentacles():
     _cleanup()
     _enable_loggers()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
+    worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.process() == 0
@@ -127,7 +127,7 @@ async def test_install_all_tentacles():
 async def test_install_all_tentacles_twice():
     _cleanup()
     await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, TENTACLES_PATH, False, None)
+    worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.process() == 0
@@ -142,7 +142,7 @@ async def test_install_all_tentacles_fetching_requirements():
         _cleanup()
         _enable_loggers()
         await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "requirements_tentacles.zip"), None)
-        worker = InstallWorker(temp_dir, TENTACLES_PATH, False, session)
+        worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, session)
         worker.tentacles_setup_manager.default_tentacle_config = \
             path.join("tests", "static", "default_tentacle_config.json")
         assert await worker.process() == 0

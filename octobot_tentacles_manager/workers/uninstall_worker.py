@@ -28,7 +28,8 @@ class UninstallWorker(TentaclesWorker):
         if self.confirm_action("Remove all installed tentacles ?"
                                if name_filter is None else "Remove {', '.join(name_filter)} tentacles ?"):
             if name_filter is None:
-                self.tentacles_setup_manager.delete_tentacles_arch(force=True, with_user_config=False)
+                self.tentacles_setup_manager.delete_tentacles_arch(force=True, with_user_config=False,
+                                                                   bot_installation_path=self.bot_installation_path)
             else:
                 self.progress = 1
                 all_tentacles = await load_tentacle_with_metadata(self.tentacle_path)
