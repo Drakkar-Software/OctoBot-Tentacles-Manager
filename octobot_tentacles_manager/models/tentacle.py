@@ -19,7 +19,7 @@ from os.path import join
 import aiofiles
 
 from octobot_tentacles_manager.constants import TENTACLE_METADATA, METADATA_VERSION, METADATA_ORIGIN_PACKAGE, \
-    METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, TENTACLE_REQUIREMENT_VERSION_EQUALS
+    METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, TENTACLE_REQUIREMENT_VERSION_EQUALS, METADATA_DEV_MODE
 
 
 class Tentacle:
@@ -32,6 +32,7 @@ class Tentacle:
         self.tentacle_class_names = None
         self.origin_package = None
         self.tentacles_requirements = None
+        self.in_dev_mode = False
         self.metadata = {}
 
     async def initialize(self):
@@ -41,6 +42,8 @@ class Tentacle:
             self.origin_package = self.metadata[METADATA_ORIGIN_PACKAGE]
             self.tentacle_class_names = self.metadata[METADATA_TENTACLES]
             self.tentacles_requirements = self.metadata[METADATA_TENTACLES_REQUIREMENTS]
+            if METADATA_DEV_MODE in self.metadata:
+                self.in_dev_mode = self.metadata[METADATA_DEV_MODE]
 
     @staticmethod
     def find(iterable, name):
