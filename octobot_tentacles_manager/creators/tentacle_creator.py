@@ -65,7 +65,7 @@ class TentacleCreator:
             except FileNotFoundError:
                 pass
 
-    def parse_commands(self, commands):
+    def parse_commands(self, commands) -> int:
         command_help = ""
         for tentacle_type in TENTACLES_FOLDERS_ARCH:
             command_help += f"- {tentacle_type}: Create a new {tentacle_type} tentacle\n"
