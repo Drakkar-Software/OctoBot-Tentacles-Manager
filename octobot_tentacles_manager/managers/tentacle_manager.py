@@ -36,7 +36,7 @@ class TentacleManager:
         tentacle_module_path = join(self.target_tentacle_path, self.tentacle.name)
         await self._update_tentacle_folder(tentacle_module_path)
         await create_tentacle_init_file_if_necessary(tentacle_module_path, self.tentacle)
-        self._import_tentacle_config_if_any(tentacle_module_path)
+        self.import_tentacle_config_if_any(tentacle_module_path)
 
     async def uninstall_tentacle(self):
         rmtree(join(self.bot_installation_path, self.tentacle.tentacle_path, self.tentacle.name))
@@ -78,7 +78,7 @@ class TentacleManager:
                     rmtree(target_file_or_dir)
                 copytree(file_or_dir, target_file_or_dir)
 
-    def _import_tentacle_config_if_any(self, tentacle_module_path, replace=False):
+    def import_tentacle_config_if_any(self, tentacle_module_path, replace=False):
         target_tentacle_config_path = join(tentacle_module_path, TENTACLE_CONFIG)
         for config_file in listdir(target_tentacle_config_path):
             if config_file.endswith(CONFIG_EXT) and not config_file.endswith(CONFIG_SCHEMA_EXT):
