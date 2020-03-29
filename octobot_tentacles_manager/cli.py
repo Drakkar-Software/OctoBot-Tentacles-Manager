@@ -31,7 +31,7 @@ from octobot_tentacles_manager import PROJECT_NAME
 
 
 async def _handle_package_manager_command(starting_args, tentacles_url, target_dir,
-                                          single_tentacle_path, single_tentacle_type):
+                                          single_tentacle_path, single_tentacle_type) -> int:
     error_count = 0
     LOGGER = get_logger(f"{PROJECT_NAME}-CLI")
     async with aiohttp.ClientSession() as aiohttp_session:
@@ -82,7 +82,7 @@ async def _handle_package_manager_command(starting_args, tentacles_url, target_d
 def handle_tentacles_manager_command(starting_args, tentacles_url=DEFAULT_TENTACLES_URL,
                                      single_tentacle_path=None, single_tentacle_type=None) -> int:
     tentacles_url = starting_args.location[0] if starting_args.location else tentacles_url
-    target_bot_dir = starting_args.directory[0] if starting_args.directory else "."
+    target_bot_dir = starting_args.directory[0] if starting_args.directory else DEFAULT_BOT_PATH
     if starting_args.single_tentacle_install:
         single_tentacle_path = starting_args.single_tentacle_install[0]
         single_tentacle_type = starting_args.single_tentacle_install[1]
