@@ -20,7 +20,7 @@ from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.configuration.config_file import read_config, write_config
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_TENTACLE_CONFIG, \
     ACTIVATABLE_TENTACLES, DEFAULT_BOT_PATH
-from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes
+from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes, reload_tentacle_by_tentacle_class
 
 
 class TentaclesSetupConfiguration:
@@ -103,6 +103,8 @@ class TentaclesSetupConfiguration:
             self.logger.error(f"Error when reading tentacles global configuration file ({e}), "
                               "resetting this file with default values. This will not change "
                               "any specific tentacle configuration.")
+            if get_tentacle_classes() is None:
+                await reload_tentacle_by_tentacle_class()
             activatable_tentacles_in_list = [tentacle_class_name
                                              for tentacle_class_name, tentacle in get_tentacle_classes().items()
                                              if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES]
