@@ -16,6 +16,7 @@
 from octobot_tentacles_manager.api.util.tentacles_management import manage_tentacles
 from octobot_tentacles_manager.constants import TENTACLES_INSTALL_TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
+from octobot_tentacles_manager.workers.repair_worker import RepairWorker
 from octobot_tentacles_manager.workers.single_install_worker import SingleInstallWorker
 
 USER_HELP = """Install or re-install the given tentacles modules with their requirements if any.
@@ -43,6 +44,11 @@ async def install_single_tentacle(single_tentacle_path, single_tentacle_type, te
     single_install_worker.single_tentacle_path = single_tentacle_path
     single_install_worker.single_tentacle_type = single_tentacle_type
     return await manage_tentacles(single_install_worker, None, None, aiohttp_session)
+
+
+async def repair_installation(tentacle_path=TENTACLES_PATH, bot_path=DEFAULT_BOT_PATH) -> int:
+    repair_worker = RepairWorker(None, tentacle_path, bot_path, False, None)
+    return await manage_tentacles(repair_worker, None, None, None)
 
 
 async def _install_tentacles(tentacle_names, tentacles_path_or_url, tentacle_path=TENTACLES_PATH,

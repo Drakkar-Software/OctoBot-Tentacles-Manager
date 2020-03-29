@@ -21,7 +21,7 @@ import aiohttp
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.api.creator import start_tentacle_creator
 from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles, \
-    USER_HELP as INSTALL_USER_HELP, install_single_tentacle
+    USER_HELP as INSTALL_USER_HELP, install_single_tentacle, repair_installation
 from octobot_tentacles_manager.api.uninstaller import uninstall_all_tentacles, uninstall_tentacles, \
     USER_HELP as UNINSTALL_USER_HELP
 from octobot_tentacles_manager.api.updater import update_all_tentacles, update_tentacles, \
@@ -37,6 +37,8 @@ async def _handle_package_manager_command(starting_args, tentacles_url, target_d
     async with aiohttp.ClientSession() as aiohttp_session:
         if starting_args.creator:
             error_count = start_tentacle_creator({}, starting_args.creator)
+        if starting_args.repair:
+            error_count = await repair_installation(bot_path=target_dir)
         if single_tentacle_path:
             error_count = await install_single_tentacle(single_tentacle_path,
                                                         single_tentacle_type,
@@ -94,21 +96,24 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-i", "--install", help=INSTALL_USER_HELP, action='store_true')
     tentacles_parser.add_argument("-u", "--update", help=UPDATE_USER_HELP, action='store_true')
     tentacles_parser.add_argument("-ui", "--uninstall", help=UNINSTALL_USER_HELP, action='store_true')
-    tentacles_parser.add_argument("-a", "--all", help="Apply command to all available Tentacles", action='store_true')
-    tentacles_parser.add_argument("-f", "--force", help="Skip user confirmations", action='store_true')
+    tentacles_parser.add_argument("-r", "--repair", help="Repair a tentacles installation. "
+                                                         "Fixes __init__.py files, missing main folders "
+                                                         "and configuration files.", action='store_true')
+    tentacles_parser.add_argument("-a", "--all", help="Apply command to all available Tentacles.", action='store_true')
+    tentacles_parser.add_argument("-f", "--force", help="Skip user confirmations.", action='store_true')
     tentacles_parser.add_argument("-l", "--location", help="Tentacles package local path or url to find the "
                                                            "tentacles package to process.", nargs=1)
     tentacles_parser.add_argument("-sti", "--single-tentacle-install", help='Single tentacle to install identified by '
                                                                             'a local path and its tentacle type.\n'
                                                                             'Example: -sti "/bot/macd_eval" '
-                                                                            '"Evaluator/TA"',
+                                                                            '"Evaluator/TA".',
                                   nargs=2)
-    tentacles_parser.add_argument("-d", "--directory", help=f"Path to the root of the octobot installation folder "
+    tentacles_parser.add_argument("-d", "--directory", help=f"Path to the root of the OctoBot installation folder "
                                                             f"to operate on. Default is '{DEFAULT_BOT_PATH}'.",
                                   nargs=1)
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
-                                                          " Tentacle Creator help", nargs='+')
+                                                          " Tentacle Creator help.", nargs='+')
     tentacles_parser.add_argument("tentacle_names", nargs="*")
 
 

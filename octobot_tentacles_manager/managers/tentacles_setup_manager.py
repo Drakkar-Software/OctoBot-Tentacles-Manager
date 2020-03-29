@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 from asyncio import gather
+from os import remove
 from os.path import join, exists
 from shutil import rmtree
 
@@ -47,12 +48,21 @@ class TentaclesSetupManager:
         await find_or_create(join(self.bot_installation_path, USER_TENTACLE_SPECIFIC_CONFIG_PATH))
         # tentacles folder
         found_existing_installation = not await find_or_create(self.tentacle_setup_root_path)
-        # tentacle mail python init file
+        # tentacle maim python init file
         await find_or_create(join(self.tentacle_setup_root_path, PYTHON_INIT_FILE), False,
                              get_module_init_file_content(TENTACLES_FOLDERS_ARCH.keys()))
         # tentacle inner architecture
+        await TentaclesSetupManager._tentacle_arch_operation(self.tentacle_setup_root_path,
+                                                             TENTACLES_FOLDERS_ARCH,
+                                                             self._create_missing_files_and_folders)
         await self._create_missing_files_and_folders(self.tentacle_setup_root_path, TENTACLES_FOLDERS_ARCH)
         return found_existing_installation
+
+    async def remove_tentacle_arch_init_files(self):
+        await TentaclesSetupManager._remove_tentacles_arch_init_file(self.tentacle_setup_root_path, None)
+        await TentaclesSetupManager._tentacle_arch_operation(self.tentacle_setup_root_path,
+                                                             TENTACLES_FOLDERS_ARCH,
+                                                             self._remove_tentacles_arch_init_file)
 
     @staticmethod
     def cleanup_temp_dirs():
@@ -86,17 +96,27 @@ class TentaclesSetupManager:
         return [TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR]
 
     @staticmethod
-    async def _create_missing_files_and_folders(root_folder, files_arch):
-        sub_dir_to_create_coroutines = []
+    async def _tentacle_arch_operation(root_folder, files_arch, func):
+        sub_dir_to_handle_coroutines = []
         for root, modules in files_arch.items():
             current_root = join(root_folder, root)
-            await find_or_create(current_root)
-            # create python init file
-            await find_or_create_module_init_file(current_root, modules)
+            await func(current_root, modules)
             if isinstance(modules, dict):
-                sub_dir_to_create_coroutines.append(
-                    TentaclesSetupManager._create_missing_files_and_folders(current_root, modules))
+                sub_dir_to_handle_coroutines.append(
+                    TentaclesSetupManager._tentacle_arch_operation(current_root, modules, func))
             else:
-                sub_dir_to_create_coroutines += [find_or_create(join(current_root, directory))
+                sub_dir_to_handle_coroutines += [find_or_create(join(current_root, directory))
                                                  for directory in modules]
-        await gather(*sub_dir_to_create_coroutines)
+        await gather(*sub_dir_to_handle_coroutines)
+
+    @staticmethod
+    async def _create_missing_files_and_folders(current_root, modules):
+        await find_or_create(current_root)
+        # create python init file
+        await find_or_create_module_init_file(current_root, modules)
+
+    @staticmethod
+    async def _remove_tentacles_arch_init_file(current_root, _):
+        potential_init_file = join(current_root, PYTHON_INIT_FILE)
+        if exists(potential_init_file):
+            remove(potential_init_file)
