@@ -38,6 +38,7 @@ FOLDERS_BLACK_LIST = ["__pycache__"]
 METADATA_VERSION = "version"
 METADATA_TENTACLES = "tentacles"
 METADATA_ORIGIN_PACKAGE = "origin_package"
+METADATA_DEV_MODE = "dev_mode"
 METADATA_TENTACLES_REQUIREMENTS = "tentacles-requirements"
 
 # Requirements
@@ -91,6 +92,10 @@ TENTACLE_RESOURCES = "resources"
 TENTACLE_TESTS = "tests"
 
 # Tentacle creator
+TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER = "creator_tentacles_temp"
+TENTACLES_PACKAGE_FORMAT = "zip"
+PYTHON_GENERATED_ELEMENTS = ["__pycache__"]
+PYTHON_GENERATED_ELEMENTS_EXTENSION = ["pyc"]
 TENTACLE_TEMPLATE_PATH = "templates"
 TENTACLE_TEMPLATE_DESCRIPTION = "description"
 TENTACLE_CONFIG_TEMPLATE_PRE_EXT = "_config"

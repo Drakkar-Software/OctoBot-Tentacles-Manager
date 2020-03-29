@@ -13,9 +13,16 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from octobot_tentacles_manager.constants import TENTACLES_PATH
 from octobot_tentacles_manager.creators.tentacle_creator import TentacleCreator
+from octobot_tentacles_manager.creators.tentacles_package_creator import create_tentacles_package_from_local_tentacles
 
 
 def start_tentacle_creator(config, commands) -> int:
     tentacle_creator_inst = TentacleCreator(config)
     return tentacle_creator_inst.parse_commands(commands)
+
+
+async def create_tentacles_package(package_name, tentacles_folder=TENTACLES_PATH,
+                                   in_zip=True, with_dev_mode=False) -> int:
+    return await create_tentacles_package_from_local_tentacles(package_name, tentacles_folder, in_zip, with_dev_mode)
