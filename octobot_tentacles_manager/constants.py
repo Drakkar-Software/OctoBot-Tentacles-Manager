@@ -16,9 +16,8 @@
 from os.path import join
 from octobot_commons.constants import USER_FOLDER, CONFIG_FOLDER
 
-# Default tentacles URL
-# TODO: use real 0.4 tentacles url
-DEFAULT_TENTACLES_URL = "https://raw.githubusercontent.com/GuillaumeDSM/test_tentacles/master/0.4.0.zip"
+# Default tests tentacles URL
+DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/tests-tentacles/0.0.0-tests.zip"
 
 # Tentacles files
 PYTHON_INIT_FILE = "__init__.py"
