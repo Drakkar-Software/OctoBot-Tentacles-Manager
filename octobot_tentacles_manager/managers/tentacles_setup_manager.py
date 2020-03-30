@@ -48,7 +48,7 @@ class TentaclesSetupManager:
         await find_or_create(join(self.bot_installation_path, USER_TENTACLE_SPECIFIC_CONFIG_PATH))
         # tentacles folder
         found_existing_installation = not await find_or_create(self.tentacle_setup_root_path)
-        # tentacle maim python init file
+        # tentacle main python init file
         await find_or_create(join(self.tentacle_setup_root_path, PYTHON_INIT_FILE), False,
                              get_module_init_file_content(TENTACLES_FOLDERS_ARCH.keys()))
         # tentacle inner architecture

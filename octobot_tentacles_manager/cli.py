@@ -126,11 +126,11 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
                                   nargs=2)
     tentacles_parser.add_argument("-p", "--pack", help="Create a tentacle package containing all tentacles "
                                                        "in the given folder.\n"
-                                                       "Specify source folder using the --directory argument\n"
+                                                       "Specify source folder using the --directory argument.\n"
                                                        "Example: -p myTentaclesPackage.zip -d ./tentacles", nargs=1)
     tentacles_parser.add_argument("-e", "--export", help="Export tentacles into a folder containing all tentacles "
-                                                         "in the given folder. Removes installation generated files."
-                                                         "Specify source folder using the --directory argument\n"
+                                                         "in the given folder. Removes installation generated files. "
+                                                         "Specify source folder using the --directory argument.\n"
                                                          "Example: -e myTentaclesFolder -d ./tentacles", nargs=1)
     tentacles_parser.add_argument("-a", "--all", help="Apply command to all available Tentacles.", action='store_true')
     tentacles_parser.add_argument("-d", "--directory", help=f"Path to the root of the OctoBot installation folder "
