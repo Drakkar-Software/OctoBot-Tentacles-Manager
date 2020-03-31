@@ -1,3 +1,15 @@
+Changelog for 2.0.0
+====================
+*Released date : March 31 2020*
+
+Total rework of the OctoBot Tentacles Manager for OctoBot 0.4
+# New feature :
+    - APIs and CLI for each action
+    - Async file management
+    - Tentacles packages management
+    - Tentacles configuration management
+    - Tentacles loading management
+    
 Changelog for 1.0.13
 ====================
 *Released date : December 28 2019*
