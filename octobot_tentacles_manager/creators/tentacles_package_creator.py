@@ -25,6 +25,7 @@ from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_
 
 
 async def create_tentacles_package_from_local_tentacles(package_name, tentacles_folder, in_zip, with_dev_mode) -> int:
+    logger = get_logger("tentacles_package_creator")
     try:
         # create working folder
         working_folder = join(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, TENTACLES_ARCHIVE_ROOT) if in_zip else package_name
@@ -43,11 +44,14 @@ async def create_tentacles_package_from_local_tentacles(package_name, tentacles_
         _remove_python_generated_files(working_folder)
 
         if in_zip:
-            _zip_tentacles_package(package_name, working_folder)
+            _zip_tentacles_package(package_name, TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
+            logger.info(f"Zipped tentacles package available at: {package_name}")
+        else:
+            logger.info(f"Cleaned tentacles folder available at: {package_name}")
 
         return 0
     except Exception as e:
-        get_logger(__name__).exception(e, True, f"Error while creating tentacles archive: {e}")
+        logger.exception(e, True, f"Error while creating tentacles archive: {e}")
         return 1
 
 
