@@ -48,5 +48,6 @@ class SingleInstallWorker(InstallWorker):
             await self._install_tentacle(tentacle)
             await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file()
             self.tentacles_setup_manager.cleanup_temp_dirs()
+            self.logger.info(f"{tentacle_name} installed")
         self.log_summary()
         return len(self.errors)
