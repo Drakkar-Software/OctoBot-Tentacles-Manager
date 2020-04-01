@@ -22,7 +22,6 @@ import aiohttp
 import pytest
 from os import path, walk
 
-from octobot_commons.constants import USER_FOLDER
 from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles, install_single_tentacle, \
     repair_installation
 from octobot_tentacles_manager.configuration.tentacles_setup_configuration import TentaclesSetupConfiguration
