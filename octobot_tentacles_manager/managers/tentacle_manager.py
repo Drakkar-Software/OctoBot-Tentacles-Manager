@@ -13,8 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from os import listdir
-from os.path import join, isfile, exists
+from os import scandir
+from os.path import join, exists
 from shutil import copyfile, rmtree, copytree
 
 from octobot_commons.logging.logging_util import get_logger
@@ -68,20 +68,20 @@ class TentacleManager:
     async def _update_tentacle_folder(self, target_tentacle_path):
         reference_tentacle_path = join(self.tentacle.tentacle_path, self.tentacle.name)
         await find_or_create(target_tentacle_path)
-        for tentacle_file in listdir(reference_tentacle_path):
-            file_or_dir = join(reference_tentacle_path, tentacle_file)
-            target_file_or_dir = join(target_tentacle_path, tentacle_file)
-            if isfile(file_or_dir):
-                copyfile(file_or_dir, target_file_or_dir)
+        for tentacle_file_entry in scandir(reference_tentacle_path):
+            target_file_or_dir = join(target_tentacle_path, tentacle_file_entry.name)
+            if tentacle_file_entry.is_file():
+                copyfile(tentacle_file_entry, target_file_or_dir)
             else:
                 if exists(target_file_or_dir):
                     rmtree(target_file_or_dir)
-                copytree(file_or_dir, target_file_or_dir)
+                copytree(tentacle_file_entry, target_file_or_dir)
 
     def import_tentacle_config_if_any(self, tentacle_module_path, replace=False):
         target_tentacle_config_path = join(tentacle_module_path, TENTACLE_CONFIG)
-        for config_file in listdir(target_tentacle_config_path):
-            if config_file.endswith(CONFIG_EXT) and not config_file.endswith(CONFIG_SCHEMA_EXT):
-                target_user_path = join(self.bot_installation_path, USER_TENTACLE_SPECIFIC_CONFIG_PATH, config_file)
+        for config_file_entry in scandir(target_tentacle_config_path):
+            if config_file_entry.name.endswith(CONFIG_EXT) and not config_file_entry.name.endswith(CONFIG_SCHEMA_EXT):
+                target_user_path = \
+                    join(self.bot_installation_path, USER_TENTACLE_SPECIFIC_CONFIG_PATH, config_file_entry.name)
                 if replace or not exists(target_user_path):
-                    copyfile(join(target_tentacle_config_path, config_file), target_user_path)
+                    copyfile(join(target_tentacle_config_path, config_file_entry.name), target_user_path)
