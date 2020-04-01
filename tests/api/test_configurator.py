@@ -13,13 +13,15 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from shutil import rmtree
 import pytest
 from copy import copy
 from os.path import exists, join
 
+from octobot_commons.constants import USER_FOLDER
 from octobot_tentacles_manager.api.configurator import get_tentacles_setup_config, update_activation_configuration, \
     get_tentacles_activation
-from octobot_tentacles_manager.constants import TENTACLES_PATH, DEFAULT_BOT_PATH
+from octobot_tentacles_manager.constants import TENTACLES_PATH, DEFAULT_BOT_PATH, TENTACLES_INSTALL_TEMP_DIR
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
@@ -106,3 +108,7 @@ def _tentacles_local_path():
 def _cleanup(raises=True):
     if exists(TENTACLES_PATH):
         TentaclesSetupManager.delete_tentacles_arch(force=True, raises=raises, with_user_config=True)
+    if exists(USER_FOLDER):
+        rmtree(USER_FOLDER)
+    if exists(TENTACLES_INSTALL_TEMP_DIR):
+        rmtree(TENTACLES_INSTALL_TEMP_DIR)
