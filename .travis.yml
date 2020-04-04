@@ -46,28 +46,12 @@ jobs:
             secure: WLe4RnmHUhKe22ZawbMeGeuzE8ugbdl6QDS5pSbObX7pj5i7602fpB2gHHHnwxfZqa4GDlFvurJ98ldOv8MadUj4EFAaDAJoP20+Lx1OutmUMRRCvyWsxINjfo3Yg9ZrTboQh3+t8sBjOfV/3idzWM+k5mUcGHWNgU4LqGVil60ksJANYgXbaQh+A1ybz1ZZYOGCGcnf0mYWPG/WPuG4ObxrfdWqfxp7zC+XgRqHijtzREOfKaCyRf018OBPmno/CQFXcEGPLmTLyb403yY7Eeh0sm3DJRfcFuxPQpI+a/8Zjh6U9AuDzgZo7v+k0l/m1TqwmGIRrKSeb3sJWssxUaz5/6sPQO1sASQx+ciIBm4KUF2ENpKNHkucYbyy7lZh7i6K/j8hxGg18TopKgGcnfIr+lvGWw6qw6c9jkImJ63fWpOcX+hZAFR3MpthzDT6uMPOrV1F9BjFl7vPyhRiNjnsCoM2GTpBB4UZuVxZ8QbVCBY1+DvUH8l7DFlCVQcjktIsL+Ed15wLvfs1vTp/Wx+NKGAT6n4OeVFKjmLF8cx7WxHdulKVpXMJYWImzYM2x5sVERqg/K8a8CMQQfiocvgERSvXniwdCqnA10LCHZmMWVzP9wNbMhS/I+VCTjSfuwIJukjSWZi2WgvpnDxdK8R3geU7jET4RQRT15Iogkg=
           skip_existing: true
           cleanup: true
-          distributions: "sdist"
+          distributions: "bdist_wheel"
           on:
             repo: $GH_REPO
             branch: $DEPLOY_BRANCH
             tags: true
             condition: $TRAVIS_OS_NAME = 'linux'
-        - provider: script
-          script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/octobot-pypi-deploy:i686 "i686" "cp37-cp37m" "cp37"
-          cleanup: true
-          on:
-            repo: "$GH_REPO"
-            branch: "$DEPLOY_BRANCH"
-            tags: true
-            condition: "$TRAVIS_OS_NAME = 'linux'"
-        - provider: script
-          script: docker run -it -e PYPI_USERNAME=$PYPI_USERNAME -e PYPI_PASSWORD=$PYPI_PASSWORD -v $(pwd):/project drakkarsoftware/octobot-pypi-deploy:x86_64 "x86_64" "cp37-cp37m" "cp37"
-          cleanup: true
-          on:
-            repo: "$GH_REPO"
-            branch: "$DEPLOY_BRANCH"
-            tags: true
-            condition: "$TRAVIS_OS_NAME = 'linux'"
 
     - name: "OSX - Python 3.7 - Deploy"
       stage: deploy
