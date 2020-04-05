@@ -40,14 +40,17 @@ async def _handle_package_manager_command(starting_args,
     error_count = 0
     LOGGER = get_logger(f"{PROJECT_NAME}-CLI")
     async with aiohttp.ClientSession() as aiohttp_session:
+        include_dev_mode = starting_args.include_dev_mode
         if starting_args.creator:
             error_count = start_tentacle_creator({}, starting_args.creator)
         elif starting_args.repair:
             error_count = await repair_installation(bot_path=target_dir)
         elif starting_args.export:
-            error_count = await create_tentacles_package(export_tentacles_output, target_dir, in_zip=False)
+            error_count = await create_tentacles_package(export_tentacles_output, target_dir,
+                                                         in_zip=False, with_dev_mode=include_dev_mode)
         elif starting_args.pack:
-            error_count = await create_tentacles_package(packed_tentacles_output, target_dir, in_zip=True)
+            error_count = await create_tentacles_package(packed_tentacles_output, target_dir,
+                                                         in_zip=True, with_dev_mode=include_dev_mode)
         elif single_tentacle_path:
             error_count = await install_single_tentacle(single_tentacle_path,
                                                         single_tentacle_type,
@@ -139,6 +142,8 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-l", "--location", help="Tentacles package local path or url to find the "
                                                            "tentacles package to process.", nargs=1)
     tentacles_parser.add_argument("-f", "--force", help="Skip user confirmations.", action='store_true')
+    tentacles_parser.add_argument("-idm", "--include-dev-mode", help="Include tentacles in dev mode in export and "
+                                                                     "pack commands.", action='store_true')
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')
