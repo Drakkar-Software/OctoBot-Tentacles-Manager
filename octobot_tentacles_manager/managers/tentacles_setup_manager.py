@@ -74,8 +74,10 @@ class TentaclesSetupManager:
     @staticmethod
     def is_tentacles_arch_valid(verbose=True, raises=False) -> bool:
         try:
+            if not exists(TENTACLES_PATH):
+                return False
             import tentacles
-            return exists(TENTACLES_PATH)
+            return True
         except (ImportError, SyntaxError) as e:
             if verbose:
                 get_logger(TentaclesSetupManager.__name__).exception(e, True, f"Error when importing tentacles: {e}")
