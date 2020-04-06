@@ -18,17 +18,16 @@ from octobot_tentacles_manager.constants import TENTACLES_INSTALL_TEMP_DIR
 from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_by_tentacle_class
 from octobot_tentacles_manager.util.tentacle_fetching import cleanup_temp_dirs, fetch_and_extract_tentacles
 
-LOGGER = get_logger(__name__)
-
 
 async def manage_tentacles(worker, tentacle_names, tentacles_path_or_url=None, aiohttp_session=None) -> int:
     errors_count = 0
+    logger = get_logger(__name__)
     try:
         if tentacles_path_or_url is not None:
             await fetch_and_extract_tentacles(TENTACLES_INSTALL_TEMP_DIR, tentacles_path_or_url, aiohttp_session)
         errors_count = await worker.process(tentacle_names)
     except Exception as e:
-        LOGGER.exception(e, True, f"Exception during {worker.__class__.__name__} processing: {e}")
+        logger.exception(e, True, f"Exception during {worker.__class__.__name__} processing: {e}")
         # ensure error is taken into account
         if errors_count == 0:
             errors_count = 1
@@ -39,6 +38,6 @@ async def manage_tentacles(worker, tentacle_names, tentacles_path_or_url=None, a
             # reload tentacles data
             await reload_tentacle_by_tentacle_class()
         except Exception as e:
-            LOGGER.exception(e, True, f"Exception while reloading tentacles data: {e}")
+            logger.exception(e, True, f"Exception while reloading tentacles data: {e}")
             errors_count = 1
     return errors_count
