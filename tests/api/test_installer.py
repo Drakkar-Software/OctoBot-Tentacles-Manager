@@ -56,7 +56,7 @@ async def test_install_single_tentacle():
     assert path.exists(path.join(TENTACLES_PATH, "Evaluator", "TA", "momentum_evaluator", "momentum_evaluator.py"))
     assert not path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
     # check availability of tentacle arch, installed momentum_evaluator and its reddit_service fake requirement
-    assert len(list(walk(TENTACLES_PATH))) == 33
+    assert len(list(walk(TENTACLES_PATH))) == 31
     _cleanup()
 
 
