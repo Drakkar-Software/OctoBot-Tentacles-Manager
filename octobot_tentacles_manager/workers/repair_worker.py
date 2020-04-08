@@ -25,6 +25,19 @@ from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_
 
 class RepairWorker(TentaclesWorker):
 
+    def __init__(self,
+                 reference_tentacles_dir,
+                 tentacle_path,
+                 bot_installation_path,
+                 use_confirm_prompt,
+                 aiohttp_session):
+        super().__init__(reference_tentacles_dir,
+                 tentacle_path,
+                 bot_installation_path,
+                 use_confirm_prompt,
+                 aiohttp_session)
+        self.verbose = True
+
     async def process(self, name_filter=None) -> int:
         # force reset of all init files
         await self.tentacles_setup_manager.remove_tentacle_arch_init_files()
@@ -46,7 +59,8 @@ class RepairWorker(TentaclesWorker):
             await create_tentacle_init_file_if_necessary(tentacle_module_path, tentacle)
             tentacle_manager.import_tentacle_config_if_any(tentacle_module_path)
             update_tentacle_type_init_file(tentacle, tentacle.tentacle_path)
-            self.logger.info(f"[{self.progress}/{self.total_steps}] {tentacle} ready to use")
+            if self.verbose:
+                self.logger.info(f"[{self.progress}/{self.total_steps}] {tentacle} ready to use")
         except Exception as e:
             message = f"Error when repairing {tentacle.name}: {e}"
             self.errors.append(message)
