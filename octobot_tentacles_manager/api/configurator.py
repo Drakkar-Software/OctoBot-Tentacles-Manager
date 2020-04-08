@@ -13,10 +13,18 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+from os.path import exists, join
+
+from octobot_tentacles_manager.api.installer import repair_installation
 from octobot_tentacles_manager.configuration.tentacle_configuration import get_config, \
     factory_reset_config, get_config_schema_path, update_config
 from octobot_tentacles_manager.configuration.tentacles_setup_configuration import TentaclesSetupConfiguration
-from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH
+from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH, TENTACLES_PATH
+
+
+async def ensure_setup_configuration(tentacle_path=TENTACLES_PATH, bot_path=DEFAULT_BOT_PATH) -> None:
+    if not exists(join(bot_path, USER_TENTACLE_CONFIG_FILE_PATH)):
+        await repair_installation(tentacle_path, bot_path, verbose=False)
 
 
 async def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH) -> TentaclesSetupConfiguration:
