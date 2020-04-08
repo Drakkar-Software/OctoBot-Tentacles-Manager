@@ -14,7 +14,8 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 from copy import copy
-from os.path import join
+from os import makedirs
+from os.path import join, split, exists
 
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.configuration.config_file import read_config, write_config
@@ -112,6 +113,9 @@ class TentaclesSetupConfiguration:
             await self.save_config()
 
     async def save_config(self):
+        parent_dir, _ = split(self.config_path)
+        if not exists(parent_dir):
+            makedirs(parent_dir)
         await write_config(self.config_path, self._to_dict())
 
     async def _update_tentacles_setup_config(self,
