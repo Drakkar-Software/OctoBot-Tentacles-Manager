@@ -1,3 +1,14 @@
+## [2.0.1] - 2020-04-10
+### Added
+- Dev mode
+
+### Fixed
+- Import issues
+- Logger issues
+
+### Removed
+- Websocket tentacle type
+
 Changelog for 2.0.0
 ====================
 *Released date : March 31 2020*
