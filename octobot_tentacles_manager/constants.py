@@ -17,7 +17,7 @@ from os.path import join
 from octobot_commons.constants import USER_FOLDER, CONFIG_FOLDER
 
 # Default tests tentacles URL
-DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/tests-tentacles/0.0.0-tests.zip"
+DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/tests-tentacles/0.0.1-tests.zip"
 
 # Tentacles files
 PYTHON_INIT_FILE = "__init__.py"
@@ -65,6 +65,7 @@ TENTACLES_EVALUATOR_PATH = "Evaluator"
 TENTACLES_INTERFACES_PATH = "Interfaces"
 TENTACLES_NOTIFIERS_PATH = "Notifiers"
 TENTACLES_SERVICES_PATH = "Services"
+TENTACLES_SERVICES_BASES_PATH = "Services_bases"
 TENTACLES_SERVICES_FEEDS_PATH = "Services_feeds"
 TENTACLES_TRADING_PATH = "Trading"
 
@@ -133,8 +134,10 @@ TENTACLES_FOLDERS_ARCH = {
     ],
     TENTACLES_INTERFACES_PATH: [],
     TENTACLES_NOTIFIERS_PATH: [],
-    TENTACLES_SERVICES_PATH: [],
-    TENTACLES_SERVICES_FEEDS_PATH: [],
+    TENTACLES_SERVICES_PATH: [
+        TENTACLES_SERVICES_BASES_PATH,
+        TENTACLES_SERVICES_FEEDS_PATH
+    ],
     TENTACLES_TRADING_PATH: [
         TENTACLES_TRADING_MODE_PATH,
         TENTACLES_TRADING_EXCHANGE_PATH
@@ -155,6 +158,5 @@ TENTACLE_TYPES = [
     TENTACLES_INTERFACES_PATH,
     TENTACLES_NOTIFIERS_PATH,
     TENTACLES_SERVICES_PATH,
-    TENTACLES_SERVICES_FEEDS_PATH,
     TENTACLES_TRADING_PATH
 ]
