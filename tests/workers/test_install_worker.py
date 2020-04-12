@@ -90,7 +90,7 @@ async def test_install_one_tentacle_with_requirement():
         assert json.load(config_f) == {
             'tentacle_activation': {}
         }
-    assert path.exists(path.join("tentacles", "Services", "reddit_service", "reddit_service.py"))
+    assert path.exists(path.join("tentacles", "Services", "Services_bases", "reddit_service", "reddit_service.py"))
     _cleanup()
 
 

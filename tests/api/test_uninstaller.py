@@ -34,7 +34,7 @@ async def test_uninstall_all_tentacles():
         assert trading_mode_files_count > 50
     assert await uninstall_all_tentacles() == 0
     trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
-    assert trading_mode_files_count == 23
+    assert trading_mode_files_count == 24
     _cleanup()
 
 
@@ -46,7 +46,7 @@ async def test_uninstall_one_tentacle():
     assert "RedditService" in get_tentacle_classes()
     assert await uninstall_tentacles(["reddit_service"]) == 0
     trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
-    assert trading_mode_files_count == 23
+    assert trading_mode_files_count == 24
     assert "RedditService" not in get_tentacle_classes()
     _cleanup()
 
