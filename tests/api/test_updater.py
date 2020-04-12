@@ -38,15 +38,16 @@ async def test_update_one_tentacle_with_requirement():
         assert await install_tentacles(["reddit_service_feed"], _tentacles_local_path(),
                                        aiohttp_session=session) == 0
         factory = TentacleFactory(TENTACLES_PATH)
-        assert path.exists(path.join("tentacles", "Services", "reddit_service", "reddit_service.py"))
-        import tentacles.Services_feeds.reddit_service_feed as feed
+        assert path.exists(path.join("tentacles", "Services", "Services_bases", "reddit_service", "reddit_service.py"))
+        import tentacles.Services.Services_bases.reddit_service as red
+        import tentacles.Services.Services_feeds.reddit_service_feed as feed
         dtm_tentacle_data = await factory.create_and_load_tentacle_from_module(feed)
         assert dtm_tentacle_data.version == "1.2.0"
         assert await update_tentacles(["reddit_service_feed"], _tentacles_update_local_path(),
                                       aiohttp_session=session) == 0
         dtm_tentacle_data = await factory.create_and_load_tentacle_from_module(feed)
         assert dtm_tentacle_data.version == "1.3.0"
-    _cleanup()
+    # _cleanup()
 
 
 def _tentacles_local_path():
