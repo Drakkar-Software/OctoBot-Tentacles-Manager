@@ -44,7 +44,7 @@ async def test_install_all_tentacles():
 async def test_install_one_tentacle_with_requirement():
     async with aiohttp.ClientSession() as session:
         assert await install_tentacles(["reddit_service_feed"], _tentacles_local_path(), aiohttp_session=session) == 0
-    assert path.exists(path.join(TENTACLES_PATH, "Services", "reddit_service", "reddit_service.py"))
+    assert path.exists(path.join(TENTACLES_PATH, "Services", "Services_bases", "reddit_service", "reddit_service.py"))
     _cleanup()
 
 
@@ -56,7 +56,7 @@ async def test_install_single_tentacle():
     assert path.exists(path.join(TENTACLES_PATH, "Evaluator", "TA", "momentum_evaluator", "momentum_evaluator.py"))
     assert not path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
     # check availability of tentacle arch, installed momentum_evaluator and its reddit_service fake requirement
-    assert len(list(walk(TENTACLES_PATH))) == 31
+    assert len(list(walk(TENTACLES_PATH))) == 32
     _cleanup()
 
 
