@@ -1,3 +1,7 @@
+## [2.0.2] - 2020-04-13
+### Fixed
+- Crash when missing config folder
+
 ## [2.0.1] - 2020-04-10
 ### Added
 - Dev mode
