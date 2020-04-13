@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 from os import scandir
-from os.path import join, exists
+from os.path import join, exists, isdir
 from shutil import copyfile, rmtree, copytree
 
 from octobot_commons.logging.logging_util import get_logger
@@ -79,9 +79,10 @@ class TentacleManager:
 
     def import_tentacle_config_if_any(self, tentacle_module_path, replace=False):
         target_tentacle_config_path = join(tentacle_module_path, TENTACLE_CONFIG)
-        for config_file_entry in scandir(target_tentacle_config_path):
-            if config_file_entry.name.endswith(CONFIG_EXT) and not config_file_entry.name.endswith(CONFIG_SCHEMA_EXT):
-                target_user_path = \
-                    join(self.bot_installation_path, USER_TENTACLE_SPECIFIC_CONFIG_PATH, config_file_entry.name)
-                if replace or not exists(target_user_path):
-                    copyfile(join(target_tentacle_config_path, config_file_entry.name), target_user_path)
+        if isdir(target_tentacle_config_path):
+            for config_file_entry in scandir(target_tentacle_config_path):
+                if config_file_entry.name.endswith(CONFIG_EXT) and not config_file_entry.name.endswith(CONFIG_SCHEMA_EXT):
+                    target_user_path = \
+                        join(self.bot_installation_path, USER_TENTACLE_SPECIFIC_CONFIG_PATH, config_file_entry.name)
+                    if replace or not exists(target_user_path):
+                        copyfile(join(target_tentacle_config_path, config_file_entry.name), target_user_path)
