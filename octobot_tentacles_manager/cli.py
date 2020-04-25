@@ -60,6 +60,9 @@ async def _handle_package_manager_command(starting_args,
             LOGGER.error("Please provide at least one tentacle name or add the '--all' parameter")
             return 1
         elif starting_args.install:
+            if tentacles_url is None:
+                LOGGER.error("Please provide a tentacle path or URL")
+                return 1
             if starting_args.all:
                 error_count = await install_all_tentacles(tentacles_url,
                                                           bot_path=target_dir,
@@ -70,6 +73,9 @@ async def _handle_package_manager_command(starting_args,
                                                       bot_path=target_dir,
                                                       aiohttp_session=aiohttp_session)
         elif starting_args.update:
+            if tentacles_url is None:
+                LOGGER.error("Please provide a tentacle path or URL")
+                return 1
             if starting_args.all:
                 error_count = await update_all_tentacles(tentacles_url,
                                                          bot_path=target_dir,
@@ -94,7 +100,7 @@ async def _handle_package_manager_command(starting_args,
 
 
 def handle_tentacles_manager_command(starting_args,
-                                     tentacles_url=DEFAULT_TENTACLES_URL,
+                                     tentacles_url=None,
                                      single_tentacle_path=None,
                                      single_tentacle_type=None,
                                      export_tentacles_output=None,
