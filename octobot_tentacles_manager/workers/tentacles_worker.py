@@ -42,6 +42,7 @@ class TentaclesWorker:
         self.bot_installation_path = bot_installation_path
         self.tentacle_path = join(bot_installation_path, tentacle_path)
         self.tentacles_setup_manager = TentaclesSetupManager(self.tentacle_path, self.bot_installation_path)
+        self.tentacles_path_or_url = None
 
         self.total_steps = 0
         self.progress = 0
@@ -121,7 +122,8 @@ class TentaclesWorker:
         self.requirements_downloading_event.set()
 
     async def _fetch_tentacles_for_requirement(self, repo):
-        await fetch_and_extract_tentacles(repo, DEFAULT_TENTACLES_URL, self.aiohttp_session, merge_dirs=True)
+        await fetch_and_extract_tentacles(repo, self.tentacles_path_or_url or DEFAULT_TENTACLES_URL,
+                                          self.aiohttp_session, merge_dirs=True)
         requirements_tentacles_path = join(repo, TENTACLES_ARCHIVE_ROOT)
         self.fetched_for_requirements_tentacles = await load_tentacle_with_metadata(requirements_tentacles_path)
         self.fetched_for_requirements_tentacles_versions = \

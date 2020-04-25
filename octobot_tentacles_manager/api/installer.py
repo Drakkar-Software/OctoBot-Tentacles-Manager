@@ -56,4 +56,5 @@ async def _install_tentacles(tentacle_names, tentacles_path_or_url, tentacle_pat
                              bot_path=DEFAULT_BOT_PATH, use_confirm_prompt=False, aiohttp_session=None) -> int:
     install_worker = InstallWorker(TENTACLES_INSTALL_TEMP_DIR, tentacle_path,
                                    bot_path, use_confirm_prompt, aiohttp_session)
+    install_worker.tentacles_path_or_url = tentacles_path_or_url
     return await manage_tentacles(install_worker, tentacle_names, tentacles_path_or_url, aiohttp_session)
