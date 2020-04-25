@@ -1,3 +1,7 @@
+## [2.0.3] - 2020-04-25
+### Fixed
+- Use user path or url in tentacles requirements
+
 ## [2.0.2] - 2020-04-13
 ### Fixed
 - Crash when missing config folder
