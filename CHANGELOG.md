@@ -1,3 +1,7 @@
+## [2.0.4] - 2020-05-1
+### Fixed
+- Migrate interfaces and notification into services
+
 ## [2.0.3] - 2020-04-25
 ### Fixed
 - Use user path or url in tentacles requirements
