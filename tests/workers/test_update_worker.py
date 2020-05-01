@@ -131,8 +131,7 @@ async def test_update_all_tentacles():
 
 
 def _enable_loggers():
-    for clazz in [InstallWorker, Tentacle]:
-        set_logging_level(clazz.__name__, INFO)
+    set_logging_level([clazz.__name__ for clazz in [InstallWorker, Tentacle]], INFO)
 
 
 def _cleanup():
