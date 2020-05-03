@@ -42,6 +42,8 @@ def cleanup_temp_dirs(target_path):
 async def _download_tentacles(target_file, download_URL, aiohttp_session):
     async with aiohttp_session.get(download_URL) as resp:
         async with aiofiles.open(target_file, 'wb+') as downloaded_file:
+            if resp.status != 200:
+                raise RuntimeError(f"Can't find tentacle archive at: {download_URL} (status: {resp.status})")
             while True:
                 chunk = await resp.content.read(DOWNLOADED_DATA_CHUNK_SIZE)
                 if not chunk:
