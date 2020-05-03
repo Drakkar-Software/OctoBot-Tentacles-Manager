@@ -37,6 +37,16 @@ async def test_fetch_and_extract_tentacles_using_download():
     _cleanup()
 
 
+async def test_fetch_and_extract_tentacles_using_download_with_wrong_url():
+    _cleanup()
+    # ensure cleanup is working
+    assert not path.isdir(temp_dir)
+    session = aiohttp.ClientSession()
+    with pytest.raises(RuntimeError):
+        await fetch_and_extract_tentacles(temp_dir, DEFAULT_TENTACLES_URL+"1213113a", session)
+    _cleanup()
+
+
 async def test_fetch_and_extract_tentacles_using_download_without_session():
     _cleanup()
     with pytest.raises(RuntimeError):
