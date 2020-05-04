@@ -36,7 +36,8 @@ async def _handle_package_manager_command(starting_args,
                                           single_tentacle_path,
                                           single_tentacle_type,
                                           export_tentacles_output,
-                                          packed_tentacles_output) -> int:
+                                          packed_tentacles_output,
+                                          quite_mode) -> int:
     error_count = 0
     LOGGER = get_logger(f"{PROJECT_NAME}-CLI")
     async with aiohttp.ClientSession() as aiohttp_session:
@@ -66,12 +67,14 @@ async def _handle_package_manager_command(starting_args,
             if starting_args.all:
                 error_count = await install_all_tentacles(tentacles_url,
                                                           bot_path=target_dir,
-                                                          aiohttp_session=aiohttp_session)
+                                                          aiohttp_session=aiohttp_session,
+                                                          quite_mode=quite_mode)
             else:
                 error_count = await install_tentacles(starting_args.tentacle_names,
                                                       tentacles_url,
                                                       bot_path=target_dir,
-                                                      aiohttp_session=aiohttp_session)
+                                                      aiohttp_session=aiohttp_session,
+                                                      quite_mode=quite_mode)
         elif starting_args.update:
             if tentacles_url is None:
                 LOGGER.error("Please provide a tentacle path or URL")
@@ -79,20 +82,24 @@ async def _handle_package_manager_command(starting_args,
             if starting_args.all:
                 error_count = await update_all_tentacles(tentacles_url,
                                                          bot_path=target_dir,
-                                                         aiohttp_session=aiohttp_session)
+                                                         aiohttp_session=aiohttp_session,
+                                                         quite_mode=quite_mode)
             else:
                 error_count = await update_tentacles(starting_args.tentacle_names,
                                                      tentacles_url,
                                                      bot_path=target_dir,
-                                                     aiohttp_session=aiohttp_session)
+                                                     aiohttp_session=aiohttp_session,
+                                                     quite_mode=quite_mode)
         elif starting_args.uninstall:
             if starting_args.all:
                 error_count = await uninstall_all_tentacles(bot_path=target_dir,
-                                                            use_confirm_prompt=starting_args.force)
+                                                            use_confirm_prompt=starting_args.force,
+                                                            quite_mode=quite_mode)
             else:
                 error_count = await uninstall_tentacles(starting_args.tentacle_names,
                                                         bot_path=target_dir,
-                                                        use_confirm_prompt=starting_args.force)
+                                                        use_confirm_prompt=starting_args.force,
+                                                        quite_mode=quite_mode)
     if error_count > 0:
         LOGGER.error(f"{error_count} errors occurred while processing tentacles.")
         return 1
@@ -118,7 +125,8 @@ def handle_tentacles_manager_command(starting_args,
                                                        single_tentacle_path,
                                                        single_tentacle_type,
                                                        export_tentacles_output,
-                                                       packed_tentacles_output))
+                                                       packed_tentacles_output,
+                                                       starting_args.quite))
 
 
 def register_tentacles_manager_arguments(tentacles_parser) -> None:
@@ -153,6 +161,7 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')
+    tentacles_parser.add_argument("-q", "--quite", help="Only display errors in logs.", action='store_true')
     tentacles_parser.add_argument("tentacle_names", nargs="*")
 
 

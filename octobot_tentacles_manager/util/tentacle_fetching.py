@@ -26,12 +26,16 @@ DOWNLOADED_DATA_CHUNK_SIZE = 60000
 async def fetch_and_extract_tentacles(tentacles_temp_dir, tentacles_path_or_url, aiohttp_session, merge_dirs=False):
     compressed_file = tentacles_path_or_url
     should_download = _is_url(tentacles_path_or_url)
-    if should_download:
-        if aiohttp_session is None:
-            raise RuntimeError("Missing aiohttp_session argument")
-        compressed_file = f"downloaded_{tentacles_temp_dir}"
-        await _download_tentacles(compressed_file, tentacles_path_or_url, aiohttp_session)
-    await _extract_tentacles(compressed_file, tentacles_temp_dir, should_download, merge_dirs)
+    try:
+        if should_download:
+            if aiohttp_session is None:
+                raise RuntimeError("Missing aiohttp_session argument")
+            compressed_file = f"downloaded_{tentacles_temp_dir}"
+            await _download_tentacles(compressed_file, tentacles_path_or_url, aiohttp_session)
+        await _extract_tentacles(compressed_file, tentacles_temp_dir, merge_dirs)
+    finally:
+        if should_download and path.isfile(compressed_file):
+            remove(compressed_file)
 
 
 def cleanup_temp_dirs(target_path):
@@ -52,15 +56,13 @@ async def _download_tentacles(target_file, download_URL, aiohttp_session):
                 await downloaded_file.write(chunk)
 
 
-async def _extract_tentacles(source_path, target_path, remove_source_file, merge_dirs):
+async def _extract_tentacles(source_path, target_path, merge_dirs):
     if path.exists(target_path) and path.isdir(target_path) and not merge_dirs:
         rmtree(target_path)
     with ZipFile(source_path) as zipped_tentacles:
         for archive_member in zipped_tentacles.namelist():
             if _is_tentacle_valid_tentacle_file(archive_member):
                 zipped_tentacles.extract(archive_member, target_path)
-    if remove_source_file:
-        remove(source_path)
 
 
 def _is_tentacle_valid_tentacle_file(archive_member):
