@@ -52,7 +52,8 @@ class InstallWorker(TentaclesWorker):
                 tentacle_manager = TentacleManager(tentacle, self.bot_installation_path)
                 await tentacle_manager.install_tentacle(self.tentacle_path)
                 update_tentacle_type_init_file(tentacle, tentacle_manager.target_tentacle_path)
-                self.logger.info(f"[{self.progress}/{self.total_steps}] installed {tentacle}")
+                if not self.quite_mode:
+                    self.logger.info(f"[{self.progress}/{self.total_steps}] installed {tentacle}")
         except Exception as e:
             message = f"Error when installing {tentacle.name}: {e}"
             self.errors.append(message)
