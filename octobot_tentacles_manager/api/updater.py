@@ -24,19 +24,20 @@ Prefer a full tentacles update if a requirement version is creating conflicts.
 
 
 async def update_all_tentacles(tentacles_path_or_url, tentacle_path=TENTACLES_PATH,
-                               bot_path=DEFAULT_BOT_PATH, aiohttp_session=None) -> int:
+                               bot_path=DEFAULT_BOT_PATH, aiohttp_session=None, quite_mode=False) -> int:
     return await _update_tentacles(None, tentacles_path_or_url, tentacle_path,
-                                   bot_path, aiohttp_session=aiohttp_session)
+                                   bot_path, aiohttp_session=aiohttp_session, quite_mode=quite_mode)
 
 
 async def update_tentacles(tentacle_names, tentacles_path_or_url, tentacle_path=TENTACLES_PATH,
-                           bot_path=DEFAULT_BOT_PATH, aiohttp_session=None) -> int:
+                           bot_path=DEFAULT_BOT_PATH, aiohttp_session=None, quite_mode=False) -> int:
     return await _update_tentacles(tentacle_names, tentacles_path_or_url,
-                                   tentacle_path, bot_path, aiohttp_session=aiohttp_session)
+                                   tentacle_path, bot_path, aiohttp_session=aiohttp_session, quite_mode=quite_mode)
 
 
 async def _update_tentacles(tentacle_names, tentacles_path_or_url, tentacle_path=TENTACLES_PATH,
-                            bot_path=DEFAULT_BOT_PATH, use_confirm_prompt=False, aiohttp_session=None) -> int:
+                            bot_path=DEFAULT_BOT_PATH, use_confirm_prompt=False, aiohttp_session=None,
+                            quite_mode=False) -> int:
     update_worker = UpdateWorker(TENTACLES_INSTALL_TEMP_DIR, tentacle_path, bot_path,
-                                 use_confirm_prompt, aiohttp_session)
+                                 use_confirm_prompt, aiohttp_session, quite_mode=quite_mode)
     return await manage_tentacles(update_worker, tentacle_names, tentacles_path_or_url, aiohttp_session)

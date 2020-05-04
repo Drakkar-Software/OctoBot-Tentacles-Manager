@@ -23,20 +23,28 @@ USER_HELP = """Uninstall the given tentacle modules.
 
 
 async def uninstall_all_tentacles(tentacle_path=TENTACLES_PATH,
-                                  bot_path=DEFAULT_BOT_PATH, use_confirm_prompt=False) -> int:
-    return await _uninstall_tentacles(None, tentacle_path, bot_path, use_confirm_prompt)
+                                  bot_path=DEFAULT_BOT_PATH,
+                                  use_confirm_prompt=False,
+                                  quite_mode=False) -> int:
+    return await _uninstall_tentacles(None, tentacle_path, bot_path, use_confirm_prompt, quite_mode=quite_mode)
 
 
 async def uninstall_tentacles(tentacle_names,
                               tentacle_path=TENTACLES_PATH,
                               bot_path=DEFAULT_BOT_PATH,
-                              use_confirm_prompt=False) -> int:
-    return await _uninstall_tentacles(tentacle_names, tentacle_path, bot_path, use_confirm_prompt)
+                              use_confirm_prompt=False,
+                              quite_mode=False) -> int:
+    return await _uninstall_tentacles(tentacle_names,
+                                      tentacle_path,
+                                      bot_path,
+                                      use_confirm_prompt,
+                                      quite_mode=quite_mode)
 
 
 async def _uninstall_tentacles(tentacle_names,
                                tentacle_path=TENTACLES_PATH,
                                bot_path=DEFAULT_BOT_PATH,
-                               use_confirm_prompt=False) -> int:
-    uninstall_worker = UninstallWorker(None, tentacle_path, bot_path, use_confirm_prompt, None)
+                               use_confirm_prompt=False,
+                               quite_mode=False) -> int:
+    uninstall_worker = UninstallWorker(None, tentacle_path, bot_path, use_confirm_prompt, None, quite_mode=quite_mode)
     return await manage_tentacles(uninstall_worker, tentacle_names)
