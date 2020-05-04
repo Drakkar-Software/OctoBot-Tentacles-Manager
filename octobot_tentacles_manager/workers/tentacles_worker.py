@@ -32,8 +32,10 @@ class TentaclesWorker:
                  tentacle_path,
                  bot_installation_path,
                  use_confirm_prompt,
-                 aiohttp_session):
+                 aiohttp_session,
+                 quite_mode=False):
         self.logger = get_logger(self.__class__.__name__)
+        self.quite_mode = quite_mode
         self.aiohttp_session = aiohttp_session
         self.use_confirm_prompt = use_confirm_prompt
 
@@ -69,10 +71,11 @@ class TentaclesWorker:
 
     def log_summary(self):
         if self.errors:
-            self.logger.info(" *** Error summary: ***")
+            if not self.quite_mode:
+                self.logger.info(" *** Error summary: ***")
             for error in self.errors:
                 self.logger.error(f"Error when handling tentacle: {error}")
-        else:
+        elif not self.quite_mode:
             self.logger.info(" *** All tentacles have been successfully processed ***")
 
     def register_to_process_tentacles_modules(self, to_process_tentacle):
