@@ -1,3 +1,8 @@
+## [2.0.5] - 2020-05-4
+### Added
+- Quite mode
+- Error on tentacles package not found when downloading
+
 ## [2.0.4] - 2020-05-1
 ### Fixed
 - Migrate interfaces and notification into services
