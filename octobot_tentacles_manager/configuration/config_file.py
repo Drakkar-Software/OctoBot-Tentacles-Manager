@@ -14,31 +14,18 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import json
-import aiofiles
 from os.path import exists
 
 from octobot_commons.config_manager import dump_json
 
 
-async def read_config(config_file: str) -> dict:
-    if exists(config_file):
-        async with aiofiles.open(config_file, "r") as config_file_r:
-            return json.loads(await config_file_r.read())
-    return {}
-
-
-def sync_read_config(config_file: str) -> dict:
+def read_config(config_file: str) -> dict:
     if exists(config_file):
         with open(config_file, "r") as config_file_r:
             return json.loads(config_file_r.read())
     return {}
 
 
-async def write_config(config_file: str, content: dict) -> None:
-    async with aiofiles.open(config_file, "w+") as config_file_w:
-        await config_file_w.write(dump_json(content))
-
-
-def sync_write_config(config_file: str, content: dict) -> None:
+def write_config(config_file: str, content: dict) -> None:
     with open(config_file, "w+") as config_file_w:
         config_file_w.write(dump_json(content))

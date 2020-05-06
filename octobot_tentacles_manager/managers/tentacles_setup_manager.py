@@ -37,11 +37,11 @@ class TentaclesSetupManager:
         self.bot_installation_path = bot_installation_path
 
     async def refresh_user_tentacles_setup_config_file(self):
-        available_tentacle = await load_tentacle_with_metadata(self.tentacle_setup_root_path)
+        available_tentacle = load_tentacle_with_metadata(self.tentacle_setup_root_path)
         tentacle_setup_config = TentaclesSetupConfiguration(bot_installation_path=self.bot_installation_path)
-        await tentacle_setup_config.read_config()
+        tentacle_setup_config.read_config()
         await tentacle_setup_config.fill_tentacle_config(available_tentacle, self.default_tentacle_config)
-        await tentacle_setup_config.save_config()
+        tentacle_setup_config.save_config()
 
     async def create_missing_tentacles_arch(self):
         # tentacle user config folder

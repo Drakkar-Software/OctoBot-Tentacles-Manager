@@ -30,7 +30,7 @@ class UpdateWorker(InstallWorker):
         self.available_tentacles = []
 
     async def process(self, name_filter=None) -> int:
-        self.available_tentacles = await load_tentacle_with_metadata(self.tentacle_path)
+        self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)
         return await super().process(name_filter)
 
     def _should_tentacle_be_processed(self, tentacle, name_filter):

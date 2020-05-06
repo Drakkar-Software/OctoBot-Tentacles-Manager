@@ -18,7 +18,7 @@ from os import makedirs
 from os.path import join, split, exists
 
 from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.configuration.config_file import read_config, write_config
+from octobot_tentacles_manager.configuration.config_file import write_config, read_config
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_TENTACLE_CONFIG, \
     ACTIVATABLE_TENTACLES, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes, reload_tentacle_by_tentacle_class
@@ -41,9 +41,9 @@ class TentaclesSetupConfiguration:
                                          for tentacle in tentacles
                                          if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES
                                          for tentacle_class_name in tentacle.tentacle_class_names]
-        await self._update_tentacles_setup_config(activatable_tentacles_in_list,
-                                                  default_tentacle_config_file=default_tentacle_config,
-                                                  remove_missing_tentacles=remove_missing_tentacles)
+        self._update_tentacles_setup_config(activatable_tentacles_in_list,
+                                            default_tentacle_config_file=default_tentacle_config,
+                                            remove_missing_tentacles=remove_missing_tentacles)
 
     def update_activation_configuration(self, new_config, deactivate_other_evaluators):
         something_changed = False
@@ -97,33 +97,33 @@ class TentaclesSetupConfiguration:
     def replace_tentacle_activation(self, new_config):
         self.tentacles_activation = copy(new_config)
 
-    async def read_config(self):
+    def read_config(self):
         try:
-            self._from_dict(await read_config(self.config_path))
+            self._from_dict(read_config(self.config_path))
         except Exception as e:
             self.logger.error(f"Error when reading tentacles global configuration file ({e}), "
                               "resetting this file with default values. This will not change "
                               "any specific tentacle configuration.")
             if get_tentacle_classes() is None:
-                await reload_tentacle_by_tentacle_class()
+                reload_tentacle_by_tentacle_class()
             activatable_tentacles_in_list = [tentacle_class_name
                                              for tentacle_class_name, tentacle in get_tentacle_classes().items()
                                              if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES]
-            await self._update_tentacles_setup_config(activatable_tentacles_in_list)
-            await self.save_config()
+            self._update_tentacles_setup_config(activatable_tentacles_in_list)
+            self.save_config()
 
-    async def save_config(self):
+    def save_config(self):
         parent_dir, _ = split(self.config_path)
         if not exists(parent_dir):
             makedirs(parent_dir)
-        await write_config(self.config_path, self._to_dict())
+        write_config(self.config_path, self._to_dict())
 
-    async def _update_tentacles_setup_config(self,
-                                             activatable_tentacles_in_list,
-                                             default_tentacle_config_file=DEFAULT_TENTACLE_CONFIG,
-                                             remove_missing_tentacles=True):
+    def _update_tentacles_setup_config(self,
+                                       activatable_tentacles_in_list,
+                                       default_tentacle_config_file=DEFAULT_TENTACLE_CONFIG,
+                                       remove_missing_tentacles=True):
 
-        default_config = await read_config(default_tentacle_config_file)
+        default_config = read_config(default_tentacle_config_file)
         default_activation_config = default_config[self.TENTACLE_ACTIVATION_KEY] \
             if self.TENTACLE_ACTIVATION_KEY in default_config else {}
         for tentacle in activatable_tentacles_in_list:
