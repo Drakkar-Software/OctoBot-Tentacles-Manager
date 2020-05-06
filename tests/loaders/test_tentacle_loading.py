@@ -45,7 +45,7 @@ async def test_get_tentacle_without_loading():
 async def test_with_reload_tentacle_by_tentacle_class_installed_tentacles():
     async with aiohttp.ClientSession() as session:
         await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
-    await tentacle_loading.reload_tentacle_by_tentacle_class()
+    tentacle_loading.reload_tentacle_by_tentacle_class()
     from tentacles.Services import RedditService
     from tentacles.Trading.Mode import DailyTradingMode
     assert tentacle_loading.get_tentacle(RedditService) is not None

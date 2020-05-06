@@ -13,7 +13,6 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from asyncio import gather
 from os import scandir, DirEntry
 from os.path import isdir, join, sep
 
@@ -23,14 +22,15 @@ from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 from octobot_tentacles_manager.models.tentacle_type import TentacleType
 
 
-async def load_tentacle_with_metadata(tentacle_path: str):
+def load_tentacle_with_metadata(tentacle_path: str):
     loaded_tentacles = _parse_all_tentacles(tentacle_path)
-    await _load_all_metadata(loaded_tentacles)
+    _load_all_metadata(loaded_tentacles)
     return loaded_tentacles
 
 
-async def _load_all_metadata(tentacles):
-    await gather(*[tentacle.initialize() for tentacle in tentacles])
+def _load_all_metadata(tentacles):
+    for tentacle in tentacles:
+        tentacle.sync_initialize()
 
 
 def _parse_all_tentacles(root: str):

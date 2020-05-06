@@ -70,7 +70,7 @@ async def test_factory_reset_config():
         "plop": 42
     }
     update_config(InstantFluctuationsEvaluator, config_update)
-    await reload_tentacle_by_tentacle_class()
+    reload_tentacle_by_tentacle_class()
     factory_reset_config(InstantFluctuationsEvaluator)
     assert get_config(InstantFluctuationsEvaluator) == {
         "price_difference_threshold_percent": 1,
