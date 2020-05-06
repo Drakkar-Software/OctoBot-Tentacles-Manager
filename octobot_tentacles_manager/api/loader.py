@@ -21,5 +21,5 @@ def load_tentacles(verbose=True) -> bool:
     return TentaclesSetupManager.is_tentacles_arch_valid(verbose=verbose)
 
 
-async def reload_tentacle_info() -> None:
-    await reload_tentacle_by_tentacle_class()
+def reload_tentacle_info() -> None:
+    reload_tentacle_by_tentacle_class()

@@ -45,6 +45,16 @@ class Tentacle:
             if METADATA_DEV_MODE in self.metadata:
                 self.in_dev_mode = self.metadata[METADATA_DEV_MODE]
 
+    def sync_initialize(self):
+        with open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
+            self.metadata = json.loads(metadata_file.read())
+            self.version = self.metadata[METADATA_VERSION]
+            self.origin_package = self.metadata[METADATA_ORIGIN_PACKAGE]
+            self.tentacle_class_names = self.metadata[METADATA_TENTACLES]
+            self.tentacles_requirements = self.metadata[METADATA_TENTACLES_REQUIREMENTS]
+            if METADATA_DEV_MODE in self.metadata:
+                self.in_dev_mode = self.metadata[METADATA_DEV_MODE]
+
     @staticmethod
     def find(iterable, name):
         for tentacle in iterable:

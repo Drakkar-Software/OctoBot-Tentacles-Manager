@@ -27,9 +27,9 @@ async def ensure_setup_configuration(tentacle_path=TENTACLES_PATH, bot_path=DEFA
         await repair_installation(tentacle_path, bot_path, verbose=False)
 
 
-async def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH) -> TentaclesSetupConfiguration:
+def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH) -> TentaclesSetupConfiguration:
     setup_config = TentaclesSetupConfiguration(config_path=config_path)
-    await setup_config.read_config()
+    setup_config.read_config()
     return setup_config
 
 
@@ -55,8 +55,8 @@ def get_user_tentacles_packages(tentacles_setup_config) -> dict:
     return tentacles_setup_config.user_tentacles
 
 
-async def save_tentacles_setup_configuration(tentacles_setup_config) -> None:
-    await tentacles_setup_config.save_config()
+def save_tentacles_setup_configuration(tentacles_setup_config) -> None:
+    tentacles_setup_config.save_config()
 
 
 def get_activated_tentacles(tentacles_setup_config) -> list:

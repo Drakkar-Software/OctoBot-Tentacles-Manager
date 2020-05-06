@@ -23,9 +23,9 @@ from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_
 _tentacle_by_tentacle_class = None
 
 
-async def reload_tentacle_by_tentacle_class():
+def reload_tentacle_by_tentacle_class():
     global _tentacle_by_tentacle_class
-    loaded_tentacles = await load_tentacle_with_metadata(TENTACLES_PATH)
+    loaded_tentacles = load_tentacle_with_metadata(TENTACLES_PATH)
     _tentacle_by_tentacle_class = {
         klass: tentacle
         for tentacle in loaded_tentacles

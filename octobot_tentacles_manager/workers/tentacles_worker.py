@@ -128,7 +128,7 @@ class TentaclesWorker:
         await fetch_and_extract_tentacles(repo, self.tentacles_path_or_url or DEFAULT_TENTACLES_URL,
                                           self.aiohttp_session, merge_dirs=True)
         requirements_tentacles_path = join(repo, TENTACLES_ARCHIVE_ROOT)
-        self.fetched_for_requirements_tentacles = await load_tentacle_with_metadata(requirements_tentacles_path)
+        self.fetched_for_requirements_tentacles = load_tentacle_with_metadata(requirements_tentacles_path)
         self.fetched_for_requirements_tentacles_versions = \
             self._get_version_by_tentacle(self.fetched_for_requirements_tentacles)
 

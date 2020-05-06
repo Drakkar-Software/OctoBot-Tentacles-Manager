@@ -64,7 +64,7 @@ def _zip_tentacles_package(package_name, working_folder):
 
 
 async def _cleanup_in_dev_tentacles(tentacles_folder):
-    for tentacle in await load_tentacle_with_metadata(tentacles_folder):
+    for tentacle in load_tentacle_with_metadata(tentacles_folder):
         if tentacle.in_dev_mode:
             rmtree(join(tentacle.tentacle_path, tentacle.name))
 
