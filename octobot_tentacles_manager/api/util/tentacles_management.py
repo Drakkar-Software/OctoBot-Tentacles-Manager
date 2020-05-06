@@ -36,7 +36,7 @@ async def manage_tentacles(worker, tentacle_names, tentacles_path_or_url=None, a
             cleanup_temp_dirs(TENTACLES_INSTALL_TEMP_DIR)
         try:
             # reload tentacles data
-            await reload_tentacle_by_tentacle_class()
+            reload_tentacle_by_tentacle_class()
         except Exception as e:
             logger.exception(e, True, f"Exception while reloading tentacles data: {e}")
             errors_count = 1

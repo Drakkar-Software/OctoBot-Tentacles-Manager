@@ -38,7 +38,7 @@ async def test_update_activation_configuration():
     worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     worker.tentacles_setup_manager.default_tentacle_config = join("tests", "static", "default_tentacle_config.json")
     assert await worker.process() == 0
-    setup_config = await get_tentacles_setup_config()
+    setup_config = get_tentacles_setup_config()
     default_activation = copy(get_tentacles_activation(setup_config))
     assert default_activation == {
         'DailyTradingMode': True,

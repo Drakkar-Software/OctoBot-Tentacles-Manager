@@ -28,7 +28,7 @@ class InstallWorker(TentaclesWorker):
         await self.tentacles_setup_manager.create_missing_tentacles_arch()
         self.reset_worker()
         self.progress = 1
-        all_tentacles = await load_tentacle_with_metadata(self.reference_tentacles_root)
+        all_tentacles = load_tentacle_with_metadata(self.reference_tentacles_root)
         self.register_error_on_missing_tentacles(all_tentacles, name_filter)
         to_install_tentacles = [tentacle
                                 for tentacle in all_tentacles
