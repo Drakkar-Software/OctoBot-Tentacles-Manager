@@ -1,3 +1,7 @@
+## [2.1.0] - 2020-05-6
+### Updated
+- Use sync file IO for bot interactions
+
 ## [2.0.5] - 2020-05-4
 ### Added
 - Quite mode
