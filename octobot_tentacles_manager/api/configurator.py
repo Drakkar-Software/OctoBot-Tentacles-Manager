@@ -33,6 +33,15 @@ def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH) -> Te
     return setup_config
 
 
+def create_tentacles_setup_config_with_tentacles(*tentacles_classes):
+    setup_config = TentaclesSetupConfiguration()
+    setup_config.tentacles_activation = {
+        tentacle.get_name(): True
+        for tentacle in tentacles_classes
+    }
+    return setup_config
+
+
 def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, klass_name, default_value=False,
                                                     raise_errors=False) -> bool:
     try:
