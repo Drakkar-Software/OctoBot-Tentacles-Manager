@@ -1,3 +1,7 @@
+## [2.1.1] - 2020-05-8
+### Update
+- Configurator API
+
 ## [2.1.0] - 2020-05-6
 ### Updated
 - Use sync file IO for bot interactions
