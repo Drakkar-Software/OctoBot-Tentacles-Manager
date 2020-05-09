@@ -45,7 +45,7 @@ class TentaclesSetupConfiguration:
                                             default_tentacle_config_file=default_tentacle_config,
                                             remove_missing_tentacles=remove_missing_tentacles)
 
-    def update_activation_configuration(self, new_config, deactivate_other_evaluators):
+    def update_activation_configuration(self, new_config, deactivate_other_evaluators, add_missing_elements):
         something_changed = False
         for element_name, activated in new_config.items():
             if element_name in self.tentacles_activation:
@@ -55,6 +55,9 @@ class TentaclesSetupConfiguration:
                                      f"{'activated' if activated else 'deactivated'}")
                     self.tentacles_activation[element_name] = activated
                     something_changed = True
+            elif add_missing_elements:
+                self.tentacles_activation[element_name] = activated
+                something_changed = True
         if deactivate_other_evaluators:
             something_changed = self._deactivate_other_evaluators(new_config) or something_changed
         return something_changed
