@@ -1,3 +1,7 @@
+## [2.1.2] - 2020-05-10
+### Update
+- Configurator API
+
 ## [2.1.1] - 2020-05-8
 ### Update
 - Configurator API
