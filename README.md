@@ -2,7 +2,7 @@
 [![PyPI](https://img.shields.io/pypi/v/OctoBot-Tentacles-Manager.svg)](https://pypi.python.org/pypi/OctoBot-Tentacles-Manager/)
 [![Downloads](https://pepy.tech/badge/OctoBot-Tentacles-Manager/month)](https://pepy.tech/project/OctoBot-Tentacles-Manager)
 [![Build Status](https://travis-ci.com/Drakkar-Software/OctoBot-Tentacles-Manager.svg?branch=master)](https://travis-ci.com/Drakkar-Software/OctoBot-Tentacles-Manager)
-[![Build status](https://ci.appveyor.com/api/projects/status/c7afc4o5bxt84po9?svg=true)](https://ci.appveyor.com/project/Herklos/octobot-tentacles-manager)
+[![Build Status](https://dev.azure.com/drakkarsoftware/OctoBot-Tentacles-Manager/_apis/build/status/Drakkar-Software.OctoBot-Tentacles-Manager?branchName=master)](https://dev.azure.com/drakkarsoftware/OctoBot-Tentacles-Manager/_build/latest?definitionId=9&branchName=master)
 
 
 A module manager for your [OctoBot](https://github.com/Drakkar-Software/OctoBot) ! 
