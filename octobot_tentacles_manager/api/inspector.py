@@ -22,8 +22,8 @@ from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle, get
     get_documentation_file_path, get_tentacle_classes
 
 
-def get_installed_tentacles() -> dict:
-    return get_tentacle_classes()
+def get_installed_tentacles_modules() -> set:
+    return set(tentacle for tentacle in get_tentacle_classes().values())
 
 
 def get_tentacle_version(klass) -> str:
