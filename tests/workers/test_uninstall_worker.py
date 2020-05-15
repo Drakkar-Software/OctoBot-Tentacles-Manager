@@ -37,8 +37,10 @@ temp_dir = "temp_tests"
 async def test_uninstall_two_tentacles():
     _cleanup()
     _enable_loggers()
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
+    tentacles_path = path.join("tests", "static", "tentacles.zip")
+    await fetch_and_extract_tentacles(temp_dir, tentacles_path, None)
     install_worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    install_worker.tentacles_path_or_url = tentacles_path
     install_worker.tentacles_setup_manager.default_tentacle_config \
         = path.join("tests", "static", "default_tentacle_config.json")
     assert await install_worker.process() == 0
@@ -53,6 +55,9 @@ async def test_uninstall_two_tentacles():
     assert tentacles_files_count < 60
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'registered_tentacles': {
+                'OctoBot-Default-Tentacles': tentacles_path
+            },
             'tentacle_activation': {
                 'DailyTradingMode': True,
                 'OtherInstantFluctuationsEvaluator': False,
@@ -67,8 +72,10 @@ async def test_uninstall_two_tentacles():
 async def test_uninstall_all_tentacles():
     _cleanup()
     _enable_loggers()
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
+    tentacles_path = path.join("tests", "static", "tentacles.zip")
+    await fetch_and_extract_tentacles(temp_dir, tentacles_path, None)
     install_worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    install_worker.tentacles_path_or_url = tentacles_path
     install_worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     assert await install_worker.process() == 0
@@ -83,6 +90,7 @@ async def test_uninstall_all_tentacles():
     assert tentacles_files_count == 24
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'registered_tentacles': {},
             'tentacle_activation': {}
         }
     _cleanup()

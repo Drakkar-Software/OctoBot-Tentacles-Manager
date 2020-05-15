@@ -25,8 +25,13 @@ USER_HELP = """Uninstall the given tentacle modules.
 async def uninstall_all_tentacles(tentacle_path=TENTACLES_PATH,
                                   bot_path=DEFAULT_BOT_PATH,
                                   use_confirm_prompt=False,
-                                  quite_mode=False) -> int:
-    return await _uninstall_tentacles(None, tentacle_path, bot_path, use_confirm_prompt, quite_mode=quite_mode)
+                                  quite_mode=False,
+                                  setup_config=None) -> int:
+    return await _uninstall_tentacles(None, tentacle_path,
+                                      bot_path,
+                                      use_confirm_prompt,
+                                      quite_mode=quite_mode,
+                                      tentacles_setup_config_to_update=setup_config)
 
 
 async def uninstall_tentacles(tentacle_names,
@@ -45,6 +50,8 @@ async def _uninstall_tentacles(tentacle_names,
                                tentacle_path=TENTACLES_PATH,
                                bot_path=DEFAULT_BOT_PATH,
                                use_confirm_prompt=False,
-                               quite_mode=False) -> int:
+                               quite_mode=False,
+                               tentacles_setup_config_to_update=None) -> int:
     uninstall_worker = UninstallWorker(None, tentacle_path, bot_path, use_confirm_prompt, None, quite_mode=quite_mode)
+    uninstall_worker.tentacles_setup_config_to_update = tentacles_setup_config_to_update
     return await manage_tentacles(uninstall_worker, tentacle_names)

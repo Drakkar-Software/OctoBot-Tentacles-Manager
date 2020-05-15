@@ -20,23 +20,29 @@ from os.path import join, split, exists
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.configuration.config_file import write_config, read_config
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_TENTACLE_CONFIG, \
-    ACTIVATABLE_TENTACLES, DEFAULT_BOT_PATH
+    ACTIVATABLE_TENTACLES, DEFAULT_BOT_PATH, UNKNOWN_TENTACLES_PACKAGE_LOCATION
 from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes, reload_tentacle_by_tentacle_class
 
 
 class TentaclesSetupConfiguration:
     TENTACLE_ACTIVATION_KEY = "tentacle_activation"
+    REGISTERED_TENTANCLES_KEY = "registered_tentacles"
 
     def __init__(self, bot_installation_path=DEFAULT_BOT_PATH, config_path=USER_TENTACLE_CONFIG_FILE_PATH):
         self.logger = get_logger(self.__class__.__name__)
         self.config_path = join(bot_installation_path, config_path)
         self.tentacles_activation = {}
+        self.registered_tentacles = {}
 
-        # TODO: add user tentacle packages (previously stored in config.json as an URL/path list)
-        self.user_tentacles = {}
+    def register_tentacles_package(self, package_name, package_location):
+        self.registered_tentacles[package_name] = package_location
+
+    def unregister_tentacles_package(self, package_name):
+        self.registered_tentacles.pop(package_name)
 
     async def fill_tentacle_config(self, tentacles, default_tentacle_config=DEFAULT_TENTACLE_CONFIG,
-                                   remove_missing_tentacles=True):
+                                   remove_missing_tentacles=True, update_location=None,
+                                   force_update_registered_tentacles=False):
         activatable_tentacles_in_list = [tentacle_class_name
                                          for tentacle in tentacles
                                          if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES
@@ -44,6 +50,8 @@ class TentaclesSetupConfiguration:
         self._update_tentacles_setup_config(activatable_tentacles_in_list,
                                             default_tentacle_config_file=default_tentacle_config,
                                             remove_missing_tentacles=remove_missing_tentacles)
+        if update_location or force_update_registered_tentacles:
+            self._update_registered_tentacles(tentacles, update_location)
 
     def update_activation_configuration(self, new_config, deactivate_other_evaluators, add_missing_elements):
         something_changed = False
@@ -146,11 +154,24 @@ class TentaclesSetupConfiguration:
             if key not in activatable_tentacles_in_list:
                 self.tentacles_activation.pop(key)
 
+    def _update_registered_tentacles(self, tentacles, update_location):
+        packages = set(tentacle.origin_package
+                       for tentacle in tentacles)
+        for package in packages:
+            if package not in self.registered_tentacles:
+                self.registered_tentacles[package] = update_location or UNKNOWN_TENTACLES_PACKAGE_LOCATION
+        for registered_package in list(self.registered_tentacles):
+            if registered_package not in packages:
+                self.registered_tentacles.pop(registered_package)
+
     def _from_dict(self, input_dict):
         if self.TENTACLE_ACTIVATION_KEY in input_dict:
             self.tentacles_activation = input_dict[self.TENTACLE_ACTIVATION_KEY]
+        if self.REGISTERED_TENTANCLES_KEY in input_dict:
+            self.registered_tentacles = input_dict[self.REGISTERED_TENTANCLES_KEY]
 
     def _to_dict(self):
         return {
-            self.TENTACLE_ACTIVATION_KEY: self.tentacles_activation
+            self.TENTACLE_ACTIVATION_KEY: self.tentacles_activation,
+            self.REGISTERED_TENTANCLES_KEY: self.registered_tentacles
         }
