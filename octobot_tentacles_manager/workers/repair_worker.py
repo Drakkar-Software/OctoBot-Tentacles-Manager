@@ -48,7 +48,9 @@ class RepairWorker(TentaclesWorker):
         existing_tentacles = load_tentacle_with_metadata(self.tentacle_path)
         self.total_steps = len(existing_tentacles)
         await gather(*[self._repair_tentacle(tentacle) for tentacle in existing_tentacles])
-        await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file()
+        await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
+            force_update_registered_tentacles=True
+        )
         self.log_summary()
         return len(self.errors)
 

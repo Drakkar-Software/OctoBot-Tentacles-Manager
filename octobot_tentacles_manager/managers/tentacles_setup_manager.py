@@ -36,11 +36,22 @@ class TentaclesSetupManager:
         self.default_tentacle_config = DEFAULT_TENTACLE_CONFIG
         self.bot_installation_path = bot_installation_path
 
-    async def refresh_user_tentacles_setup_config_file(self):
+    async def refresh_user_tentacles_setup_config_file(self,
+                                                       tentacles_setup_config_to_update=None,
+                                                       update_location=None,
+                                                       force_update_registered_tentacles=False):
         available_tentacle = load_tentacle_with_metadata(self.tentacle_setup_root_path)
-        tentacle_setup_config = TentaclesSetupConfiguration(bot_installation_path=self.bot_installation_path)
-        tentacle_setup_config.read_config()
-        await tentacle_setup_config.fill_tentacle_config(available_tentacle, self.default_tentacle_config)
+        if not tentacles_setup_config_to_update:
+            tentacle_setup_config = TentaclesSetupConfiguration(bot_installation_path=self.bot_installation_path)
+            tentacle_setup_config.read_config()
+        else:
+            tentacle_setup_config = tentacles_setup_config_to_update
+        await tentacle_setup_config.fill_tentacle_config(
+            available_tentacle,
+            self.default_tentacle_config,
+            update_location=update_location,
+            force_update_registered_tentacles=force_update_registered_tentacles
+        )
         tentacle_setup_config.save_config()
 
     async def create_missing_tentacles_arch(self):

@@ -39,7 +39,8 @@ class UninstallWorker(TentaclesWorker):
                                           if tentacle.name in name_filter]
                 await gather(*[self._uninstall_tentacle(tentacle) for tentacle in to_uninstall_tentacles])
             await self.tentacles_setup_manager.create_missing_tentacles_arch()
-            await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file()
+            await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
+                self.tentacles_setup_config_to_update, self.tentacles_path_or_url, True)
             self.log_summary()
         return len(self.errors)
 
