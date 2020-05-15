@@ -36,7 +36,8 @@ class InstallWorker(TentaclesWorker):
         self.total_steps = len(to_install_tentacles)
         self.register_to_process_tentacles_modules(to_install_tentacles)
         await gather(*[self._install_tentacle(tentacle) for tentacle in to_install_tentacles])
-        await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file()
+        await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
+            self.tentacles_setup_config_to_update, self.tentacles_path_or_url, force_update_registered_tentacles=True)
         self.tentacles_setup_manager.cleanup_temp_dirs()
         self.log_summary()
         return len(self.errors)

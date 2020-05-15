@@ -24,19 +24,22 @@ USER_HELP = """Install or re-install the given tentacles modules with their requ
 
 
 async def install_all_tentacles(tentacles_path_or_url, tentacle_path=TENTACLES_PATH,
-                                bot_path=DEFAULT_BOT_PATH, aiohttp_session=None, quite_mode=False) -> int:
+                                bot_path=DEFAULT_BOT_PATH, aiohttp_session=None, quite_mode=False,
+                                setup_config=None) -> int:
     return await _install_tentacles(None, tentacles_path_or_url,
                                     tentacle_path,
                                     bot_path,
                                     aiohttp_session=aiohttp_session,
-                                    quite_mode=quite_mode)
+                                    quite_mode=quite_mode,
+                                    tentacles_setup_config_to_update=setup_config)
 
 
 async def install_tentacles(tentacle_names, tentacles_path_or_url, bot_path=DEFAULT_BOT_PATH,
-                            tentacle_path=TENTACLES_PATH, aiohttp_session=None, quite_mode=False) -> int:
+                            tentacle_path=TENTACLES_PATH, aiohttp_session=None, quite_mode=False,
+                            setup_config=None) -> int:
     return await _install_tentacles(tentacle_names, tentacles_path_or_url,
                                     tentacle_path, bot_path, aiohttp_session=aiohttp_session,
-                                    quite_mode=quite_mode)
+                                    quite_mode=quite_mode, tentacles_setup_config_to_update=setup_config)
 
 
 async def install_single_tentacle(single_tentacle_path, single_tentacle_type, tentacle_path=TENTACLES_PATH,
@@ -56,8 +59,9 @@ async def repair_installation(tentacle_path=TENTACLES_PATH, bot_path=DEFAULT_BOT
 
 async def _install_tentacles(tentacle_names, tentacles_path_or_url, tentacle_path=TENTACLES_PATH,
                              bot_path=DEFAULT_BOT_PATH, use_confirm_prompt=False, aiohttp_session=None,
-                             quite_mode=False) -> int:
+                             quite_mode=False, tentacles_setup_config_to_update=None) -> int:
     install_worker = InstallWorker(TENTACLES_INSTALL_TEMP_DIR, tentacle_path,
                                    bot_path, use_confirm_prompt, aiohttp_session, quite_mode=quite_mode)
     install_worker.tentacles_path_or_url = tentacles_path_or_url
+    install_worker.tentacles_setup_config_to_update = tentacles_setup_config_to_update
     return await manage_tentacles(install_worker, tentacle_names, tentacles_path_or_url, aiohttp_session)

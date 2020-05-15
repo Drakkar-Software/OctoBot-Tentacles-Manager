@@ -58,6 +58,8 @@ class TentaclesWorker:
         self.fetching_requirements = False
         self.requirements_downloading_event = Event()
 
+        self.tentacles_setup_config_to_update = None
+
     def reset_worker(self):
         self.errors = []
 

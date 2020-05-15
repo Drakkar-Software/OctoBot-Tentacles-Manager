@@ -21,7 +21,7 @@ from os import walk, path
 
 from octobot_commons.logging.logging_util import set_logging_level
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, USER_TENTACLE_SPECIFIC_CONFIG_PATH, \
-    USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH
+    USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH, UNKNOWN_TENTACLES_PACKAGE_LOCATION
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 from octobot_tentacles_manager.workers.update_worker import UpdateWorker
@@ -77,6 +77,9 @@ async def test_update_two_tentacles():
     # test tentacles config
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'registered_tentacles': {
+                'OctoBot-Default-Tentacles': UNKNOWN_TENTACLES_PACKAGE_LOCATION
+            },
             'tentacle_activation': {
                 'InstantFluctuationsEvaluator': True
             }

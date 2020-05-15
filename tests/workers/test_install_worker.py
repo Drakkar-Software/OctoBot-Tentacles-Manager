@@ -22,7 +22,8 @@ from os import walk, path
 
 from octobot_commons.logging.logging_util import set_logging_level
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, USER_TENTACLE_SPECIFIC_CONFIG_PATH, \
-    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH
+    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH, \
+    UNKNOWN_TENTACLES_PACKAGE_LOCATION
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 
 # All test coroutines will be treated as marked.
@@ -37,8 +38,10 @@ temp_dir = "temp_tests"
 async def test_install_two_tentacles():
     _cleanup()
     _enable_loggers()
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
+    tentacles_path = path.join("tests", "static", "tentacles.zip")
+    await fetch_and_extract_tentacles(temp_dir, tentacles_path, None)
     worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    worker.tentacles_path_or_url = tentacles_path
     worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.process(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
@@ -58,6 +61,9 @@ async def test_install_two_tentacles():
     # test tentacles config
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'registered_tentacles': {
+                'OctoBot-Default-Tentacles': tentacles_path
+            },
             'tentacle_activation': {
                 'InstantFluctuationsEvaluator': True
             }
@@ -88,6 +94,9 @@ async def test_install_one_tentacle_with_requirement():
     # test tentacles config
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'registered_tentacles': {
+                'OctoBot-Default-Tentacles': UNKNOWN_TENTACLES_PACKAGE_LOCATION
+            },
             'tentacle_activation': {}
         }
     assert path.exists(path.join("tentacles", "Services", "Services_bases", "reddit_service", "reddit_service.py"))
@@ -97,8 +106,10 @@ async def test_install_one_tentacle_with_requirement():
 async def test_install_all_tentacles():
     _cleanup()
     _enable_loggers()
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
+    tentacles_path = path.join("tests", "static", "tentacles.zip")
+    await fetch_and_extract_tentacles(temp_dir, tentacles_path, None)
     worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    worker.tentacles_path_or_url = tentacles_path
     worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.process() == 0
@@ -115,6 +126,9 @@ async def test_install_all_tentacles():
     # test tentacles config
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'registered_tentacles': {
+                'OctoBot-Default-Tentacles': tentacles_path
+            },
             'tentacle_activation': {
                 'InstantFluctuationsEvaluator': True,
                 'OtherInstantFluctuationsEvaluator': False,

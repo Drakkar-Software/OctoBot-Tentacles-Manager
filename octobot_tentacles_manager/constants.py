@@ -52,6 +52,9 @@ USER_TENTACLE_SPECIFIC_CONFIG_PATH = join(USER_TENTACLE_CONFIG_PATH, "specific_c
 TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION = "1.2.0"
 DEFAULT_TENTACLES_PACKAGE = "OctoBot-Default-Tentacles"
 
+# Tentacles packages
+UNKNOWN_TENTACLES_PACKAGE_LOCATION = "Unknown package location"
+
 # Tentacles installation folders
 TENTACLES_INSTALL_TEMP_DIR = "temp_tentacles"
 TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR = "requirements_temp_tentacles"
