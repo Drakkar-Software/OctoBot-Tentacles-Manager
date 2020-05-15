@@ -1,3 +1,7 @@
+## [2.1.3] - 2020-05-15
+### Added
+- Tentacles package origin location management
+
 ## [2.1.2] - 2020-05-10
 ### Update
 - Configurator API
