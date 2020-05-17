@@ -23,10 +23,10 @@ jobs:
   strategy:
     maxParallel: 2
     matrix:
-        Python36-32bit-full:
+        Python37-32bit-full:
           PYTHON_VERSION: '3.7'
           PYTHON_ARCH: 'x86'
-        Python36-64bit-full:
+        Python37-64bit-full:
           PYTHON_VERSION: '3.7'
           PYTHON_ARCH: 'x64'
   steps:
@@ -62,7 +62,7 @@ jobs:
   strategy:
     maxParallel: 2
     matrix:
-        Python36-64bit-full:
+        Python37-64bit-full:
           PYTHON_VERSION: '3.7'
           PYTHON_ARCH: 'x64'
   steps:
