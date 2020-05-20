@@ -1,3 +1,7 @@
+## [2.1.4] - 2020-05-20
+### Added
+- Tentacles default activation file path
+
 ## [2.1.3] - 2020-05-15
 ### Added
 - Tentacles package origin location management
