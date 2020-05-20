@@ -31,9 +31,11 @@ from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_
 
 class TentaclesSetupManager:
 
-    def __init__(self, tentacle_setup_root_path, bot_installation_path=DEFAULT_BOT_PATH):
+    def __init__(self, tentacle_setup_root_path,
+                 bot_installation_path=DEFAULT_BOT_PATH,
+                 default_tentacle_config=DEFAULT_TENTACLE_CONFIG):
         self.tentacle_setup_root_path = tentacle_setup_root_path
-        self.default_tentacle_config = DEFAULT_TENTACLE_CONFIG
+        self.default_tentacle_config = default_tentacle_config
         self.bot_installation_path = bot_installation_path
 
     async def refresh_user_tentacles_setup_config_file(self,
