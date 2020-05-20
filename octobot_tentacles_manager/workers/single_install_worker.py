@@ -15,6 +15,7 @@
 #  License along with this library.
 from os.path import split
 
+from octobot_tentacles_manager.constants import DEFAULT_BOT_INSTALL_DIR
 from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 from octobot_tentacles_manager.models.tentacle_type import TentacleType
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
@@ -23,9 +24,9 @@ from octobot_tentacles_manager.workers.install_worker import InstallWorker
 class SingleInstallWorker(InstallWorker):
 
     def __init__(self, reference_tentacles_dir, tentacle_path,
-                 bot_installation_path, use_confirm_prompt, aiohttp_session):
+                 bot_installation_path, use_confirm_prompt, aiohttp_session, bot_install_dir=DEFAULT_BOT_INSTALL_DIR):
         super().__init__(reference_tentacles_dir, tentacle_path,
-                         bot_installation_path, use_confirm_prompt, aiohttp_session)
+                         bot_installation_path, use_confirm_prompt, aiohttp_session, bot_install_dir=bot_install_dir)
         self.single_tentacle_path = None
         self.single_tentacle_type = None
 
