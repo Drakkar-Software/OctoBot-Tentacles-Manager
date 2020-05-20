@@ -19,7 +19,8 @@ from asyncio import gather, Event, wait_for
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
-from octobot_tentacles_manager.constants import TENTACLES_ARCHIVE_ROOT, DEFAULT_TENTACLES_URL
+from octobot_tentacles_manager.constants import TENTACLES_ARCHIVE_ROOT, DEFAULT_TENTACLES_URL, DEFAULT_TENTACLE_CONFIG, \
+    DEFAULT_BOT_INSTALL_DIR
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
 
@@ -33,7 +34,8 @@ class TentaclesWorker:
                  bot_installation_path,
                  use_confirm_prompt,
                  aiohttp_session,
-                 quite_mode=False):
+                 quite_mode=False,
+                 bot_install_dir=DEFAULT_BOT_INSTALL_DIR):
         self.logger = get_logger(self.__class__.__name__)
         self.quite_mode = quite_mode
         self.aiohttp_session = aiohttp_session
@@ -43,7 +45,10 @@ class TentaclesWorker:
             if reference_tentacles_dir is not None else TENTACLES_ARCHIVE_ROOT
         self.bot_installation_path = bot_installation_path
         self.tentacle_path = join(bot_installation_path, tentacle_path)
-        self.tentacles_setup_manager = TentaclesSetupManager(self.tentacle_path, self.bot_installation_path)
+        self.bot_install_dir = bot_install_dir
+        self.tentacles_setup_manager = TentaclesSetupManager(self.tentacle_path,
+                                                             self.bot_installation_path,
+                                                             join(self.bot_install_dir, DEFAULT_TENTACLE_CONFIG))
         self.tentacles_path_or_url = None
 
         self.total_steps = 0

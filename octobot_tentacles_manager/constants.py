@@ -18,6 +18,7 @@ from octobot_commons.constants import USER_FOLDER, CONFIG_FOLDER
 
 # Default tests tentacles URL
 DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/officials/base/tests/0.0.2-tests.zip"
+DEFAULT_BOT_INSTALL_DIR = "."
 
 # Tentacles files
 PYTHON_INIT_FILE = "__init__.py"
@@ -30,6 +31,7 @@ DOCUMENTATION_EXT = ".md"
 CONFIG_SCHEMA_EXT = "_schema.json"
 TENTACLE_METADATA = "metadata.json"
 DEFAULT_TENTACLE_CONFIG = join(CONFIG_FOLDER, "default_tentacles_config.json")
+
 # tentacles setup folders back list
 FOLDERS_BLACK_LIST = ["__pycache__"]
 
