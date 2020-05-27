@@ -1,3 +1,7 @@
+## [2.1.5] - 2020-05-27
+### Update
+- Cython version
+
 ## [2.1.4] - 2020-05-20
 ### Added
 - Tentacles default activation file path
