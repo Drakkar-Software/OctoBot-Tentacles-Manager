@@ -23,8 +23,6 @@ DEFAULT_BOT_INSTALL_DIR = "."
 # Tentacles files
 PYTHON_INIT_FILE = "__init__.py"
 PYTHON_EXT = ".py"
-CONFIG_EVALUATOR_FILE = "evaluator_config.json"
-CONFIG_TRADING_FILE = "trading_config.json"
 CONFIG_TENTACLES_FILE = "tentacles_config.json"
 CONFIG_EXT = ".json"
 DOCUMENTATION_EXT = ".md"
