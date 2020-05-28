@@ -1,3 +1,7 @@
+## [2.1.7] - 2020-05-28
+### Updated
+- Strictly check tentacles folders in is_tentacles_arch_valid
+
 ## [2.1.6] - 2020-05-28
 ### Added
 - Bot config dir in cli handler
