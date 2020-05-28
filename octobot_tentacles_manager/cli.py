@@ -26,13 +26,14 @@ from octobot_tentacles_manager.api.uninstaller import uninstall_all_tentacles, u
     USER_HELP as UNINSTALL_USER_HELP
 from octobot_tentacles_manager.api.updater import update_all_tentacles, update_tentacles, \
     USER_HELP as UPDATE_USER_HELP
-from octobot_tentacles_manager.constants import DEFAULT_TENTACLES_URL, DEFAULT_BOT_PATH
+from octobot_tentacles_manager.constants import DEFAULT_BOT_PATH, DEFAULT_BOT_INSTALL_DIR
 from octobot_tentacles_manager import PROJECT_NAME
 
 
 async def _handle_package_manager_command(starting_args,
                                           tentacles_url,
                                           target_dir,
+                                          bot_install_dir,
                                           single_tentacle_path,
                                           single_tentacle_type,
                                           export_tentacles_output,
@@ -56,7 +57,8 @@ async def _handle_package_manager_command(starting_args,
             error_count = await install_single_tentacle(single_tentacle_path,
                                                         single_tentacle_type,
                                                         bot_path=target_dir,
-                                                        aiohttp_session=aiohttp_session)
+                                                        aiohttp_session=aiohttp_session,
+                                                        bot_install_dir=bot_install_dir)
         elif not (starting_args.all or starting_args.tentacle_names):
             LOGGER.error("Please provide at least one tentacle name or add the '--all' parameter")
             return 1
@@ -68,13 +70,15 @@ async def _handle_package_manager_command(starting_args,
                 error_count = await install_all_tentacles(tentacles_url,
                                                           bot_path=target_dir,
                                                           aiohttp_session=aiohttp_session,
-                                                          quite_mode=quite_mode)
+                                                          quite_mode=quite_mode,
+                                                          bot_install_dir=bot_install_dir)
             else:
                 error_count = await install_tentacles(starting_args.tentacle_names,
                                                       tentacles_url,
                                                       bot_path=target_dir,
                                                       aiohttp_session=aiohttp_session,
-                                                      quite_mode=quite_mode)
+                                                      quite_mode=quite_mode,
+                                                      bot_install_dir=bot_install_dir)
         elif starting_args.update:
             if tentacles_url is None:
                 LOGGER.error("Please provide a tentacle path or URL")
@@ -111,7 +115,8 @@ def handle_tentacles_manager_command(starting_args,
                                      single_tentacle_path=None,
                                      single_tentacle_type=None,
                                      export_tentacles_output=None,
-                                     packed_tentacles_output=None) -> int:
+                                     packed_tentacles_output=None,
+                                     bot_install_dir=DEFAULT_BOT_INSTALL_DIR) -> int:
     tentacles_url = starting_args.location[0] if starting_args.location else tentacles_url
     target_bot_dir = starting_args.directory[0] if starting_args.directory else DEFAULT_BOT_PATH
     if starting_args.single_tentacle_install:
@@ -122,6 +127,7 @@ def handle_tentacles_manager_command(starting_args,
     return asyncio.run(_handle_package_manager_command(starting_args,
                                                        tentacles_url,
                                                        target_bot_dir,
+                                                       bot_install_dir,
                                                        single_tentacle_path,
                                                        single_tentacle_type,
                                                        export_tentacles_output,
