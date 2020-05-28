@@ -87,7 +87,7 @@ class TentaclesSetupManager:
     @staticmethod
     def is_tentacles_arch_valid(verbose=True, raises=False) -> bool:
         try:
-            if not exists(TENTACLES_PATH):
+            if not TentaclesSetupManager._is_full_arch_valid(TENTACLES_PATH, TENTACLES_FOLDERS_ARCH):
                 return False
             import tentacles
             return True
@@ -97,6 +97,17 @@ class TentaclesSetupManager:
             if raises:
                 raise e
             return False
+
+    @staticmethod
+    def _is_full_arch_valid(root_folder, files_arch):
+        for root, modules in files_arch.items():
+            current_root = join(root_folder, root)
+            if isinstance(modules, dict):
+                if not TentaclesSetupManager._is_full_arch_valid(current_root, modules):
+                    return False
+            elif not all(exists(join(current_root, directory)) for directory in modules):
+                return False
+        return True
 
     @staticmethod
     def delete_tentacles_arch(force=False, raises=False,
