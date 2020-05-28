@@ -1,3 +1,7 @@
+## [2.1.6] - 2020-05-28
+### Added
+- Bot config dir in cli handler
+
 ## [2.1.5] - 2020-05-27
 ### Update
 - Cython version
