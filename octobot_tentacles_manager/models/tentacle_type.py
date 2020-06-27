@@ -33,6 +33,9 @@ class TentacleType:
     def get_last_element(self):
         return self.path.split(sep)[-1]
 
+    def get_root_type(self):
+        return self.path.split(sep)[0]
+
     def to_path(self):
         return self.path
 

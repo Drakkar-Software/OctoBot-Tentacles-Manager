@@ -59,11 +59,22 @@ async def test_uninstall_two_tentacles():
                 'OctoBot-Default-Tentacles': tentacles_path
             },
             'tentacle_activation': {
-                'DailyTradingMode': True,
-                'OtherInstantFluctuationsEvaluator': False,
-                'SecondOtherInstantFluctuationsEvaluator': False,
-                'RedditForumEvaluator': False,
-                'SimpleMixedStrategyEvaluator': True
+                'Backtesting': {},
+                'Evaluator': {
+                    'OtherInstantFluctuationsEvaluator': False,
+                    'OverallStateAnalyser': True,
+                    'RedditForumEvaluator': False,
+                    'SecondOtherInstantFluctuationsEvaluator': False,
+                    'SimpleMixedStrategyEvaluator': True,
+                    'TextAnalysis': True
+                },
+                'Services': {
+                    'RedditService': True,
+                    'RedditServiceFeed': True
+                },
+                'Trading': {
+                    'DailyTradingMode': True
+                }
             }
         }
     _cleanup()
@@ -91,7 +102,12 @@ async def test_uninstall_all_tentacles():
     with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'registered_tentacles': {},
-            'tentacle_activation': {}
+            'tentacle_activation': {
+                'Backtesting': {},
+                'Evaluator': {},
+                'Services': {},
+                'Trading': {}
+            }
         }
     _cleanup()
 
