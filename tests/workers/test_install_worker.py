@@ -65,7 +65,12 @@ async def test_install_two_tentacles():
                 'OctoBot-Default-Tentacles': tentacles_path
             },
             'tentacle_activation': {
-                'InstantFluctuationsEvaluator': True
+                'Backtesting': {
+                    'GenericExchangeDataImporter': True
+                },
+                'Evaluator': {
+                    'InstantFluctuationsEvaluator': True
+                }
             }
         }
     _cleanup()
@@ -97,7 +102,12 @@ async def test_install_one_tentacle_with_requirement():
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': UNKNOWN_TENTACLES_PACKAGE_LOCATION
             },
-            'tentacle_activation': {}
+            'tentacle_activation': {
+                'Services': {
+                    'RedditService': True,
+                    'RedditServiceFeed': True
+                }
+            }
         }
     assert path.exists(path.join("tentacles", "Services", "Services_bases", "reddit_service", "reddit_service.py"))
     _cleanup()
@@ -130,12 +140,25 @@ async def test_install_all_tentacles():
                 'OctoBot-Default-Tentacles': tentacles_path
             },
             'tentacle_activation': {
-                'InstantFluctuationsEvaluator': True,
-                'OtherInstantFluctuationsEvaluator': False,
-                'SecondOtherInstantFluctuationsEvaluator': False,
-                'RedditForumEvaluator': False,
-                'SimpleMixedStrategyEvaluator': True,
-                'DailyTradingMode': True
+                'Backtesting': {
+                    'GenericExchangeDataImporter': True
+                },
+                'Evaluator': {
+                    'InstantFluctuationsEvaluator': True,
+                    'OtherInstantFluctuationsEvaluator': False,
+                    'OverallStateAnalyser': True,
+                    'RedditForumEvaluator': False,
+                    'SecondOtherInstantFluctuationsEvaluator': False,
+                    'SimpleMixedStrategyEvaluator': True,
+                    'TextAnalysis': True
+                },
+                'Services': {
+                    'RedditService': True,
+                    'RedditServiceFeed': True
+                },
+                'Trading': {
+                    'DailyTradingMode': True
+                }
             }
         }
     _cleanup()

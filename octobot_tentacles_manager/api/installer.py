@@ -55,8 +55,9 @@ async def install_single_tentacle(single_tentacle_path, single_tentacle_type, te
     return await manage_tentacles(single_install_worker, None, None, aiohttp_session)
 
 
-async def repair_installation(tentacle_path=TENTACLES_PATH, bot_path=DEFAULT_BOT_PATH, verbose=True) -> int:
-    repair_worker = RepairWorker(None, tentacle_path, bot_path, False, None)
+async def repair_installation(tentacle_path=TENTACLES_PATH, bot_path=DEFAULT_BOT_PATH,
+                              bot_install_dir=DEFAULT_BOT_INSTALL_DIR, verbose=True) -> int:
+    repair_worker = RepairWorker(None, tentacle_path, bot_path, False, None, bot_install_dir=bot_install_dir)
     repair_worker.verbose = verbose
     return await manage_tentacles(repair_worker, None, None, None)
 

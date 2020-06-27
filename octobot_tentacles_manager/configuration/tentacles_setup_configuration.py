@@ -17,16 +17,25 @@ from copy import copy
 from os import makedirs
 from os.path import join, split, exists
 
+from octobot_tentacles_manager.constants import TENTACLES_EVALUATOR_REALTIME_PATH, TENTACLES_EVALUATOR_TA_PATH, \
+    TENTACLES_TRADING_MODE_PATH, TENTACLES_EVALUATOR_STRATEGIES_PATH, TENTACLES_EVALUATOR_SOCIAL_PATH
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.configuration.config_file import write_config, read_config
 from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_TENTACLE_CONFIG, \
-    ACTIVATABLE_TENTACLES, DEFAULT_BOT_PATH, UNKNOWN_TENTACLES_PACKAGE_LOCATION
-from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes, reload_tentacle_by_tentacle_class
+    DEFAULT_BOT_PATH, UNKNOWN_TENTACLES_PACKAGE_LOCATION, TENTACLES_PATH
+from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes, ensure_tentacles_metadata
 
 
 class TentaclesSetupConfiguration:
     TENTACLE_ACTIVATION_KEY = "tentacle_activation"
     REGISTERED_TENTANCLES_KEY = "registered_tentacles"
+    DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES = {
+        TENTACLES_EVALUATOR_REALTIME_PATH,
+        TENTACLES_EVALUATOR_TA_PATH,
+        TENTACLES_EVALUATOR_SOCIAL_PATH,
+        TENTACLES_EVALUATOR_STRATEGIES_PATH,
+        TENTACLES_TRADING_MODE_PATH
+    }
 
     def __init__(self, bot_installation_path=DEFAULT_BOT_PATH, config_path=USER_TENTACLE_CONFIG_FILE_PATH):
         self.logger = get_logger(self.__class__.__name__)
@@ -43,32 +52,51 @@ class TentaclesSetupConfiguration:
     async def fill_tentacle_config(self, tentacles, default_tentacle_config=DEFAULT_TENTACLE_CONFIG,
                                    remove_missing_tentacles=True, update_location=None,
                                    force_update_registered_tentacles=False):
-        activatable_tentacles_in_list = [tentacle_class_name
-                                         for tentacle in tentacles
-                                         if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES
-                                         for tentacle_class_name in tentacle.tentacle_class_names]
-        self._update_tentacles_setup_config(activatable_tentacles_in_list,
+        self._update_tentacles_setup_config(tentacles,
                                             default_tentacle_config_file=default_tentacle_config,
                                             remove_missing_tentacles=remove_missing_tentacles)
         if update_location or force_update_registered_tentacles:
             self._update_registered_tentacles(tentacles, update_location)
 
-    def update_activation_configuration(self, new_config, deactivate_other_evaluators, add_missing_elements):
+    def update_activation_configuration(self, new_config, deactivate_other_evaluators,
+                                        add_missing_elements, tentacles_path=TENTACLES_PATH):
         something_changed = False
+        ensure_tentacles_metadata(tentacles_path)
         for element_name, activated in new_config.items():
-            if element_name in self.tentacles_activation:
-                current_activation = self.tentacles_activation[element_name]
-                if current_activation != activated:
-                    self.logger.info(f"Tentacles configuration updated: {element_name} "
-                                     f"{'activated' if activated else 'deactivated'}")
-                    self.tentacles_activation[element_name] = activated
+            try:
+                element_type = get_tentacle_classes()[element_name].tentacle_root_type
+                if element_name in self.tentacles_activation[element_type]:
+                    current_activation = self.tentacles_activation[element_type][element_name]
+                    if current_activation != activated:
+                        self.logger.info(f"Tentacles configuration updated: {element_name} "
+                                         f"{'activated' if activated else 'deactivated'}")
+                        self.tentacles_activation[element_type][element_name] = activated
+                        something_changed = True
+                elif add_missing_elements:
+                    self.tentacles_activation[element_type][element_name] = activated
                     something_changed = True
-            elif add_missing_elements:
-                self.tentacles_activation[element_name] = activated
-                something_changed = True
+            except KeyError:
+                # tentacle missing in loaded metadata: can't be used
+                pass
         if deactivate_other_evaluators:
             something_changed = self._deactivate_other_evaluators(new_config) or something_changed
         return something_changed
+
+    def is_tentacle_activated(self, tentacle_class_name, tentacles_path=TENTACLES_PATH):
+        ensure_tentacles_metadata(tentacles_path)
+        tentacle_type = get_tentacle_classes()[tentacle_class_name].tentacle_root_type
+        return self.tentacles_activation[tentacle_type][tentacle_class_name]
+
+    def from_activated_tentacles_classes(self, *tentacles_classes, tentacles_path=TENTACLES_PATH):
+        ensure_tentacles_metadata(tentacles_path)
+        tentacle_by_class_name = get_tentacle_classes()
+        for tentacle_class in tentacles_classes:
+            tentacle_name = tentacle_class.get_name()
+            tentacle = tentacle_by_class_name[tentacle_name]
+            try:
+                self.tentacles_activation[tentacle.tentacle_root_type][tentacle_name] = True
+            except KeyError:
+                self.tentacles_activation[tentacle.tentacle_root_type] = {tentacle_name: True}
 
     def _deactivate_other_evaluators(self, new_config):
         something_changed = False
@@ -84,43 +112,40 @@ class TentaclesSetupConfiguration:
             import tentacles.Evaluator.RealTime as RE
         except ImportError:
             has_evaluators = False
-        for element_name in self.tentacles_activation.keys():
-            if element_name not in new_config:
-                if self.tentacles_activation[element_name]:
-                    is_evaluator = False
-                    if has_evaluators:
-                        # deactivate only evaluators
-                        ta_klass = get_class_from_string(element_name, TAEvaluator,
-                                                         TA, evaluator_parent_inspection)
-                        se_klass = get_class_from_string(element_name, SocialEvaluator,
-                                                         SE, evaluator_parent_inspection)
-                        re_klass = get_class_from_string(element_name, RealTimeEvaluator,
-                                                         RE, evaluator_parent_inspection)
-                        is_evaluator = any(klass is not None
-                                           for klass in [ta_klass, se_klass, re_klass])
-                    if is_evaluator:
-                        self.logger.info(f"Tentacles configuration updated: {element_name} "
-                                         f"{'deactivated'}")
-                        self.tentacles_activation[element_name] = False
-                        something_changed = True
+        for element_type, element_names in self.tentacles_activation.items():
+            for element_name in element_names:
+                if element_name not in new_config:
+                    if self.tentacles_activation[element_type][element_name]:
+                        is_evaluator = False
+                        if has_evaluators:
+                            # deactivate only evaluators
+                            ta_klass = get_class_from_string(element_name, TAEvaluator,
+                                                             TA, evaluator_parent_inspection)
+                            se_klass = get_class_from_string(element_name, SocialEvaluator,
+                                                             SE, evaluator_parent_inspection)
+                            re_klass = get_class_from_string(element_name, RealTimeEvaluator,
+                                                             RE, evaluator_parent_inspection)
+                            is_evaluator = any(klass is not None
+                                               for klass in [ta_klass, se_klass, re_klass])
+                        if is_evaluator:
+                            self.logger.info(f"Tentacles configuration updated: {element_name} "
+                                             f"{'deactivated'}")
+                            self.tentacles_activation[element_type][element_name] = False
+                            something_changed = True
         return something_changed
 
     def replace_tentacle_activation(self, new_config):
         self.tentacles_activation = copy(new_config)
 
-    def read_config(self):
+    def read_config(self, tentacles_path=TENTACLES_PATH):
         try:
             self._from_dict(read_config(self.config_path))
         except Exception as e:
             self.logger.error(f"Error when reading tentacles global configuration file ({e}), "
                               "resetting this file with default values. This will not change "
                               "any specific tentacle configuration.")
-            if get_tentacle_classes() is None:
-                reload_tentacle_by_tentacle_class()
-            activatable_tentacles_in_list = [tentacle_class_name
-                                             for tentacle_class_name, tentacle in get_tentacle_classes().items()
-                                             if tentacle.get_simple_tentacle_type() in ACTIVATABLE_TENTACLES]
-            self._update_tentacles_setup_config(activatable_tentacles_in_list)
+            ensure_tentacles_metadata(tentacles_path)
+            self._update_tentacles_setup_config(get_tentacle_classes().values())
             self.save_config()
 
     def save_config(self):
@@ -130,29 +155,49 @@ class TentaclesSetupConfiguration:
         write_config(self.config_path, self._to_dict())
 
     def _update_tentacles_setup_config(self,
-                                       activatable_tentacles_in_list,
+                                       tentacles,
                                        default_tentacle_config_file=DEFAULT_TENTACLE_CONFIG,
                                        remove_missing_tentacles=True):
 
         default_config = read_config(default_tentacle_config_file)
         default_activation_config = default_config[self.TENTACLE_ACTIVATION_KEY] \
             if self.TENTACLE_ACTIVATION_KEY in default_config else {}
-        for tentacle in activatable_tentacles_in_list:
+        for tentacle in tentacles:
             self._update_tentacle_activation(tentacle, default_activation_config)
         if remove_missing_tentacles:
-            self._filter_tentacle_activation(activatable_tentacles_in_list)
+            self._filter_tentacle_activation(tentacles)
 
     def _update_tentacle_activation(self, tentacle, default_config):
-        if tentacle not in self.tentacles_activation:
-            if tentacle in default_config:
-                self.tentacles_activation[tentacle] = default_config[tentacle]
-            else:
-                self.tentacles_activation[tentacle] = False
+        if tentacle.tentacle_root_type not in self.tentacles_activation:
+            self.tentacles_activation[tentacle.tentacle_root_type] = {}
+        for tentacle_class_name in tentacle.tentacle_class_names:
+            if tentacle_class_name not in self.tentacles_activation[tentacle.tentacle_root_type]:
+                self._set_activation_using_default_config(tentacle, tentacle_class_name, default_config)
 
-    def _filter_tentacle_activation(self, activatable_tentacles_in_list):
-        for key in list(self.tentacles_activation.keys()):
-            if key not in activatable_tentacles_in_list:
-                self.tentacles_activation.pop(key)
+    def _set_activation_using_default_config(self, tentacle, tentacle_class_name, default_config):
+        if tentacle.tentacle_root_type in default_config:
+            # if tentacle_type in default config: use default value or do not activate (unless
+            # if tentacle sub type in DEFAULT_ACTIVATED_TENTACLE_TYPES)
+            if tentacle_class_name in default_config[tentacle.tentacle_root_type]:
+                self.tentacles_activation[tentacle.tentacle_root_type][tentacle_class_name] = \
+                    default_config[tentacle.tentacle_root_type][tentacle_class_name]
+            else:
+                # activate by default unless the sub type of this tentacle in among the sub types to be deactivated by
+                # default
+                self.tentacles_activation[tentacle.tentacle_root_type][tentacle_class_name] = \
+                    tentacle.get_simple_tentacle_type() not in self.DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES
+        else:
+            # if tentacle_type not in default config: activate by default
+            self.tentacles_activation[tentacle.tentacle_root_type][tentacle_class_name] = True
+
+    def _filter_tentacle_activation(self, tentacles):
+        tentacle_names = [tentacle_class_name
+                          for tentacle in tentacles
+                          for tentacle_class_name in tentacle.tentacle_class_names]
+        for element_type, element_names in self.tentacles_activation.items():
+            for element_name in list(element_names):
+                if element_name not in tentacle_names:
+                    self.tentacles_activation[element_type].pop(element_name)
 
     def _update_registered_tentacles(self, tentacles, update_location):
         packages = set(tentacle.origin_package

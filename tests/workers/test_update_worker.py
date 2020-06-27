@@ -81,7 +81,13 @@ async def test_update_two_tentacles():
                 'OctoBot-Default-Tentacles': UNKNOWN_TENTACLES_PACKAGE_LOCATION
             },
             'tentacle_activation': {
-                'InstantFluctuationsEvaluator': True
+                'Backtesting': {
+                    'GenericExchangeDataImporter': True
+                },
+                'Evaluator': {
+                    'InstantFluctuationsEvaluator': True,
+                    'TextAnalysis': True
+                }
             }
         }
 

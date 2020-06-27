@@ -27,6 +27,7 @@ class Tentacle:
         self.tentacle_root_path = tentacle_root_path
         self.name = name
         self.tentacle_type = tentacle_type
+        self.tentacle_root_type = self.tentacle_type.get_root_type()
         self.tentacle_path = join(self.tentacle_root_path, self.tentacle_type.to_path())
         self.version = None
         self.tentacle_class_names = None
