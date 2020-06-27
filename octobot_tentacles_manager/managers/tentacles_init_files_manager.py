@@ -51,7 +51,7 @@ def _add_tentacle_to_tentacle_type_init_file(tentacle, init_file):
         # load import file
         with open(init_file, "r") as init_file_r:
             init_content = init_file_r.read()
-    if tentacle.name not in init_content:
+    if f"'{tentacle.name}'" not in init_content:
         # add import headers if missing
         if TENTACLE_IMPORT_HEADER not in init_content:
             init_content = f"{TENTACLE_IMPORT_HEADER}{init_content}"
