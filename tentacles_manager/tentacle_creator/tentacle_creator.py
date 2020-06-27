@@ -126,8 +126,8 @@ class CreatedTentacle:
 
     def ask_description(self, tentacle_type):
         self.name = input(f"Enter your new {self.t_type} tentacle name : ")
+        sub_types = self.tentacle_creator.tentacles_arch[TENTACLES_PATH][0][tentacle_type]
         while self.subtype == "":
-            sub_types = self.tentacle_creator.tentacles_arch[TENTACLES_PATH][0][tentacle_type]
             if len(sub_types) > 1:
                 new_subtype = input(f"Choose your tentacle type in {sub_types} : ")
                 if new_subtype in sub_types:

@@ -206,7 +206,7 @@ def add_class_to_config_file_content(clazz, config_file_content, classes_list, a
     changed_something = False
     current_classes_list = AdvancedManager.create_default_types_list(clazz)
     for current_class in current_classes_list:
-        if not current_class.get_name() in config_file_content:
+        if current_class.get_name() not in config_file_content:
             config_file_content[current_class.get_name()] = activated
             changed_something = True
     classes_list += current_classes_list

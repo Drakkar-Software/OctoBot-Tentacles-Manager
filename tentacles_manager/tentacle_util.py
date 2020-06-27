@@ -172,7 +172,7 @@ def extract_tentacle_requirements(module):
     if TENTACLE_MODULE_REQUIREMENTS in module:
         requirements = []
         for component in module[TENTACLE_MODULE_REQUIREMENTS]:
-            requirements = requirements + component.split(TENTACLE_MODULE_LIST_SEPARATOR)
+            requirements += component.split(TENTACLE_MODULE_LIST_SEPARATOR)
         return [parse_requirements(req.strip()) for req in requirements]
     return None
 
@@ -188,17 +188,17 @@ def extract_tentacle_tests(module):
     if TENTACLE_MODULE_TESTS in module:
         tests = []
         for component in module[TENTACLE_MODULE_TESTS]:
-            tests = tests + component.split(TENTACLE_MODULE_LIST_SEPARATOR)
+            tests += component.split(TENTACLE_MODULE_LIST_SEPARATOR)
         return [test.strip() for test in tests]
     return None
 
 
 def parse_module_file(module_file_content, description_list):
-    min_description_length = 10
     description_pos = module_file_content.find(TENTACLE_MODULE_DESCRIPTION)
     if description_pos > -1:
         description_begin_pos = module_file_content.find("{")
         description_end_pos = module_file_content.find("}") + 1
+        min_description_length = 10
         if description_end_pos - description_begin_pos > min_description_length:
             description_raw = module_file_content[description_begin_pos:description_end_pos]
             description = json.loads(description_raw)
@@ -267,10 +267,7 @@ def install_on_development(config, module_dev):
         return True
 
     # is on development
-    if module_dev and CONFIG_DEBUG_OPTION in config and config[CONFIG_DEBUG_OPTION]:
-        return True
-
-    return False
+    return bool(CONFIG_DEBUG_OPTION in config and config[CONFIG_DEBUG_OPTION])
 
 
 def _parse_package(tentacle_content):

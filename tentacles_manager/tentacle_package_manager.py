@@ -124,7 +124,10 @@ except Exception as e:
         module_test_files = {test: "" for test in module_tests} if module_tests else {}
 
         if TentacleUtil.install_on_development(self.config, module_dev):
-            if action == TentacleManagerActions.INSTALL or action == TentacleManagerActions.UPDATE:
+            if action in [
+                TentacleManagerActions.INSTALL,
+                TentacleManagerActions.UPDATE,
+            ]:
                 location_str = TentacleUtil.create_localization_from_type(package_localisation,
                                                                           module_type,
                                                                           module_subtype,
@@ -160,49 +163,54 @@ except Exception as e:
                 # manage module config
                 self._try_action_on_config_or_resources(action, parsed_module, module_name, is_url, package_localisation)
 
-            if action == TentacleManagerActions.INSTALL or action == TentacleManagerActions.UPDATE:
+            if action in [
+                TentacleManagerActions.INSTALL,
+                TentacleManagerActions.UPDATE,
+            ]:
                 self._try_action_on_requirements(action, parsed_module, package_name)
-        elif action == TentacleManagerActions.INSTALL or action == TentacleManagerActions.UPDATE:
+        elif action in [
+            TentacleManagerActions.INSTALL,
+            TentacleManagerActions.UPDATE,
+        ]:
             self.logger.info(f"{module_name} is currently on development, "
                              "it will not be installed (to install it anyway, "
                              "add \"DEV-MODE\": true in your config.json)")
 
     def _should_do_something(self, action, module_name, module_version, need_this_exact_version=False, requiring=None,
                              parsed_module=None, package=None):
-        if action == TentacleManagerActions.UPDATE:
-            if TentacleUtil.is_module_in_list(module_name, None, self.installed_modules):
-                installed_version = self.installed_modules[module_name][TENTACLE_MODULE_VERSION]
-                if not need_this_exact_version:
-                    new_version_available = TentacleUtil.is_first_version_superior(module_version, installed_version)
-                    if not new_version_available:
-                        self.logger.info(f"{self._format_current_step()}{module_name} version {installed_version} "
-                                         f"is already up to date")
-                    return new_version_available
-                else:
-                    is_required_version_installed = True
-                    print_version = "any version"
-                    if module_version is not None:
-                        is_required_version_installed = installed_version == module_version
-                        print_version = f"version {module_version}"
-                    if is_required_version_installed:
-                        self.logger.info(f"{requiring} dependency: {module_name} {print_version} is satisfied.")
-                        return False
-                    else:
-                        return True
-            else:
-                if requiring:
-                    self.logger.error(f"can't find tentacle: {module_name} required for {requiring} in installed "
-                                      f"tentacles. Try to install the required tentacle")
-                else:
-                    if parsed_module is None:
-                        parsed_module = TentacleUtil.parse_module_header(package)
-                    if TentacleUtil.install_on_development(self.config, parsed_module[TENTACLE_MODULE_DEV]):
-                        self.logger.info(f"new tentacle found in tentacles packages: {module_name}. "
-                                         f"You can install it using the command: start.py -p install {module_name}")
-
-            return False
-        else:
+        if action != TentacleManagerActions.UPDATE:
             return True
+        if TentacleUtil.is_module_in_list(module_name, None, self.installed_modules):
+            installed_version = self.installed_modules[module_name][TENTACLE_MODULE_VERSION]
+            if not need_this_exact_version:
+                new_version_available = TentacleUtil.is_first_version_superior(module_version, installed_version)
+                if not new_version_available:
+                    self.logger.info(f"{self._format_current_step()}{module_name} version {installed_version} "
+                                     f"is already up to date")
+                return new_version_available
+            else:
+                is_required_version_installed = True
+                print_version = "any version"
+                if module_version is not None:
+                    is_required_version_installed = installed_version == module_version
+                    print_version = f"version {module_version}"
+                if is_required_version_installed:
+                    self.logger.info(f"{requiring} dependency: {module_name} {print_version} is satisfied.")
+                    return False
+                else:
+                    return True
+        else:
+            if requiring:
+                self.logger.error(f"can't find tentacle: {module_name} required for {requiring} in installed "
+                                  f"tentacles. Try to install the required tentacle")
+            else:
+                if parsed_module is None:
+                    parsed_module = TentacleUtil.parse_module_header(package)
+                if TentacleUtil.install_on_development(self.config, parsed_module[TENTACLE_MODULE_DEV]):
+                    self.logger.info(f"new tentacle found in tentacles packages: {module_name}. "
+                                     f"You can install it using the command: start.py -p install {module_name}")
+
+        return False
 
     def try_action_on_tentacles_package(self, action, package, target_folder):
         package_description = package[TENTACLE_PACKAGE_DESCRIPTION]
@@ -231,9 +239,9 @@ except Exception as e:
 
     def _try_action_on_requirements(self, action, parsed_module, package_name):
         success = True
-        module_name = parsed_module[TENTACLE_MODULE_NAME]
-        applied_modules = [module_name]
         if parsed_module[TENTACLE_MODULE_REQUIREMENTS]:
+            module_name = parsed_module[TENTACLE_MODULE_NAME]
+            applied_modules = [module_name]
             for requirement_data in parsed_module[TENTACLE_MODULE_REQUIREMENTS]:
                 if success:
                     requirement_module_name = requirement_data[TENTACLE_MODULE_NAME]

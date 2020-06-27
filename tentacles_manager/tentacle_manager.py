@@ -82,7 +82,10 @@ class TentacleManager:
             self.git_branch = default_git_branch
 
     def parse_commands(self, commands, force=False, default_git_branch=TENTACLES_DEFAULT_BRANCH):
-        help_message = """- install: Install or re-install the given tentacles modules with their requirements if any.
+        self._update_git_branch(commands, default_git_branch=default_git_branch)
+        self.update_list()
+        if commands:
+            help_message = """- install: Install or re-install the given tentacles modules with their requirements if any.
     Does not edit tentacles configuration files and creates it if missing.
 - update: Update the given tentacle modules with their requirements if any. Does not edit tentacles configuration files
 - uninstall: Uninstall the given tentacle modules. Also delete the associated tentacle configuration.
@@ -91,9 +94,6 @@ Note: install, update and uninstall commands can take 2 types of arguments:
     - all: applies the command to all available tentacles (remote and installed tentacles).
     - modules_name1, module_name2, ... : force to apply the command to the given tentacle modules 
           identified by their name and separated by a ' '."""
-        self._update_git_branch(commands, default_git_branch=default_git_branch)
-        self.update_list()
-        if commands:
             if commands[0] == "install":
                 if commands[1] == "all":
                     self.install_parser(commands, True, force=force)
