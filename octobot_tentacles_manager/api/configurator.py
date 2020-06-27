@@ -19,12 +19,14 @@ from octobot_tentacles_manager.api.installer import repair_installation
 from octobot_tentacles_manager.configuration.tentacle_configuration import get_config, \
     factory_reset_config, get_config_schema_path, update_config
 from octobot_tentacles_manager.configuration.tentacles_setup_configuration import TentaclesSetupConfiguration
-from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH, TENTACLES_PATH
+from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH, TENTACLES_PATH, \
+    DEFAULT_BOT_INSTALL_DIR
 
 
-async def ensure_setup_configuration(tentacle_path=TENTACLES_PATH, bot_path=DEFAULT_BOT_PATH) -> None:
+async def ensure_setup_configuration(tentacle_path=TENTACLES_PATH, bot_path=DEFAULT_BOT_PATH,
+                                     bot_install_dir=DEFAULT_BOT_INSTALL_DIR) -> None:
     if not exists(join(bot_path, USER_TENTACLE_CONFIG_FILE_PATH)):
-        await repair_installation(tentacle_path, bot_path, verbose=False)
+        await repair_installation(tentacle_path, bot_path, bot_install_dir, verbose=False)
 
 
 def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH) -> TentaclesSetupConfiguration:
@@ -35,17 +37,14 @@ def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH) -> Te
 
 def create_tentacles_setup_config_with_tentacles(*tentacles_classes):
     setup_config = TentaclesSetupConfiguration()
-    setup_config.tentacles_activation = {
-        tentacle.get_name(): True
-        for tentacle in tentacles_classes
-    }
+    setup_config.from_activated_tentacles_classes(*tentacles_classes)
     return setup_config
 
 
-def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, klass_name, default_value=False,
-                                                    raise_errors=False) -> bool:
+def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, klass_name,
+                                                    default_value=False, raise_errors=False) -> bool:
     try:
-        return tentacles_setup_config.tentacles_activation[klass_name]
+        return tentacles_setup_config.is_tentacle_activated(klass_name)
     except KeyError as e:
         if raise_errors:
             raise e
@@ -75,7 +74,8 @@ def save_tentacles_setup_configuration(tentacles_setup_config) -> None:
 
 def get_activated_tentacles(tentacles_setup_config) -> list:
     return [tentacle_class
-            for tentacle_class, activated in tentacles_setup_config.tentacles_activation.items()
+            for tentacle_classes in tentacles_setup_config.tentacles_activation.values()
+            for tentacle_class, activated in tentacle_classes.items()
             if activated]
 
 

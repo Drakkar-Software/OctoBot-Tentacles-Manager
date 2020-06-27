@@ -23,9 +23,9 @@ from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_
 _tentacle_by_tentacle_class = None
 
 
-def reload_tentacle_by_tentacle_class():
+def reload_tentacle_by_tentacle_class(tentacles_path=TENTACLES_PATH):
     global _tentacle_by_tentacle_class
-    loaded_tentacles = load_tentacle_with_metadata(TENTACLES_PATH)
+    loaded_tentacles = load_tentacle_with_metadata(tentacles_path)
     _tentacle_by_tentacle_class = {
         klass: tentacle
         for tentacle in loaded_tentacles
@@ -35,6 +35,11 @@ def reload_tentacle_by_tentacle_class():
 
 def get_tentacle_classes() -> dict:
     return _tentacle_by_tentacle_class
+
+
+def ensure_tentacles_metadata(tentacles_path) -> None:
+    if get_tentacle_classes() is None:
+        reload_tentacle_by_tentacle_class(tentacles_path)
 
 
 def get_resources_path(klass) -> str:

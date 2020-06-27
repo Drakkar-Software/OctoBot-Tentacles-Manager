@@ -45,7 +45,7 @@ class TentaclesSetupManager:
         available_tentacle = load_tentacle_with_metadata(self.tentacle_setup_root_path)
         if not tentacles_setup_config_to_update:
             tentacle_setup_config = TentaclesSetupConfiguration(bot_installation_path=self.bot_installation_path)
-            tentacle_setup_config.read_config()
+            tentacle_setup_config.read_config(self.tentacle_setup_root_path)
         else:
             tentacle_setup_config = tentacles_setup_config_to_update
         await tentacle_setup_config.fill_tentacle_config(

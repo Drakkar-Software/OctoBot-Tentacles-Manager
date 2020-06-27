@@ -30,12 +30,14 @@ class RepairWorker(TentaclesWorker):
                  tentacle_path,
                  bot_installation_path,
                  use_confirm_prompt,
-                 aiohttp_session):
+                 aiohttp_session,
+                 bot_install_dir):
         super().__init__(reference_tentacles_dir,
-                 tentacle_path,
-                 bot_installation_path,
-                 use_confirm_prompt,
-                 aiohttp_session)
+                         tentacle_path,
+                         bot_installation_path,
+                         use_confirm_prompt,
+                         aiohttp_session,
+                         bot_install_dir=bot_install_dir)
         self.verbose = True
 
     async def process(self, name_filter=None) -> int:
