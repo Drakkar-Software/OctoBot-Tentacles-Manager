@@ -41,12 +41,25 @@ async def test_update_activation_configuration():
     setup_config = get_tentacles_setup_config()
     default_activation = copy(get_tentacles_activation(setup_config))
     assert default_activation == {
-        'DailyTradingMode': True,
-        'InstantFluctuationsEvaluator': True,
-        'OtherInstantFluctuationsEvaluator': False,
-        'RedditForumEvaluator': False,
-        'SecondOtherInstantFluctuationsEvaluator': False,
-        'SimpleMixedStrategyEvaluator': True
+        'Backtesting': {
+            'GenericExchangeDataImporter': True
+        },
+        'Evaluator': {
+            'InstantFluctuationsEvaluator': True,
+            'OtherInstantFluctuationsEvaluator': False,
+            'OverallStateAnalyser': True,
+            'RedditForumEvaluator': False,
+            'SecondOtherInstantFluctuationsEvaluator': False,
+            'SimpleMixedStrategyEvaluator': True,
+            'TextAnalysis': True
+        },
+        'Services': {
+            'RedditService': True,
+            'RedditServiceFeed': True
+        },
+        'Trading': {
+            'DailyTradingMode': True
+        }
     }
     # Did not add OtherTentacle since it is not in original activation
     assert update_activation_configuration(setup_config, {"OtherTentacle": True}, False) is False
@@ -59,12 +72,25 @@ async def test_update_activation_configuration():
     # One change
     assert update_activation_configuration(setup_config, {"InstantFluctuationsEvaluator": False}, False) is True
     assert get_tentacles_activation(setup_config) == {
-        'DailyTradingMode': True,
-        'InstantFluctuationsEvaluator': False,
-        'OtherInstantFluctuationsEvaluator': False,
-        'RedditForumEvaluator': False,
-        'SecondOtherInstantFluctuationsEvaluator': False,
-        'SimpleMixedStrategyEvaluator': True
+        'Backtesting': {
+            'GenericExchangeDataImporter': True
+        },
+        'Evaluator': {
+            'InstantFluctuationsEvaluator': False,
+            'OtherInstantFluctuationsEvaluator': False,
+            'OverallStateAnalyser': True,
+            'RedditForumEvaluator': False,
+            'SecondOtherInstantFluctuationsEvaluator': False,
+            'SimpleMixedStrategyEvaluator': True,
+            'TextAnalysis': True
+        },
+        'Services': {
+            'RedditService': True,
+            'RedditServiceFeed': True
+        },
+        'Trading': {
+            'DailyTradingMode': True
+        }
     }
 
     # Two changes
@@ -75,12 +101,25 @@ async def test_update_activation_configuration():
                                            },
                                            False) is True
     assert get_tentacles_activation(setup_config) == {
-        'DailyTradingMode': True,
-        'InstantFluctuationsEvaluator': True,
-        'OtherInstantFluctuationsEvaluator': False,
-        'RedditForumEvaluator': True,
-        'SecondOtherInstantFluctuationsEvaluator': False,
-        'SimpleMixedStrategyEvaluator': True
+        'Backtesting': {
+            'GenericExchangeDataImporter': True
+        },
+        'Evaluator': {
+            'InstantFluctuationsEvaluator': True,
+            'OtherInstantFluctuationsEvaluator': False,
+            'OverallStateAnalyser': True,
+            'RedditForumEvaluator': True,
+            'SecondOtherInstantFluctuationsEvaluator': False,
+            'SimpleMixedStrategyEvaluator': True,
+            'TextAnalysis': True
+        },
+        'Services': {
+            'RedditService': True,
+            'RedditServiceFeed': True
+        },
+        'Trading': {
+            'DailyTradingMode': True
+        }
     }
 
     # Two changes with deactivate others evaluators
@@ -91,12 +130,25 @@ async def test_update_activation_configuration():
                                            },
                                            True) is False
     assert get_tentacles_activation(setup_config) == {
-        'DailyTradingMode': True,
-        'InstantFluctuationsEvaluator': True,
-        'OtherInstantFluctuationsEvaluator': False,
-        'RedditForumEvaluator': True,
-        'SecondOtherInstantFluctuationsEvaluator': False,
-        'SimpleMixedStrategyEvaluator': True
+        'Backtesting': {
+            'GenericExchangeDataImporter': True
+        },
+        'Evaluator': {
+            'InstantFluctuationsEvaluator': True,
+            'OtherInstantFluctuationsEvaluator': False,
+            'OverallStateAnalyser': True,
+            'RedditForumEvaluator': True,
+            'SecondOtherInstantFluctuationsEvaluator': False,
+            'SimpleMixedStrategyEvaluator': True,
+            'TextAnalysis': True
+        },
+        'Services': {
+            'RedditService': True,
+            'RedditServiceFeed': True
+        },
+        'Trading': {
+            'DailyTradingMode': True
+        }
     }
     _cleanup()
 
