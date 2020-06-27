@@ -26,6 +26,10 @@ def get_installed_tentacles_modules() -> set:
     return set(tentacle for tentacle in get_tentacle_classes().values())
 
 
+def get_tentacle_group(klass) -> str:
+    return get_tentacle(klass).tentacle_group
+
+
 def get_tentacle_version(klass) -> str:
     return get_tentacle(klass).version
 

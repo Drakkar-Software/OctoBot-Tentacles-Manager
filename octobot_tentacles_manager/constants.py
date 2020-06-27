@@ -39,6 +39,7 @@ METADATA_TENTACLES = "tentacles"
 METADATA_ORIGIN_PACKAGE = "origin_package"
 METADATA_DEV_MODE = "dev_mode"
 METADATA_TENTACLES_REQUIREMENTS = "tentacles-requirements"
+METADATA_TENTACLES_GROUP = "tentacles_group"
 
 # Requirements
 TENTACLE_REQUIREMENT_VERSION_EQUALS = "=="

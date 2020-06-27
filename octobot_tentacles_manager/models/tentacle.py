@@ -19,7 +19,8 @@ from os.path import join
 import aiofiles
 
 from octobot_tentacles_manager.constants import TENTACLE_METADATA, METADATA_VERSION, METADATA_ORIGIN_PACKAGE, \
-    METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, TENTACLE_REQUIREMENT_VERSION_EQUALS, METADATA_DEV_MODE
+    METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, TENTACLE_REQUIREMENT_VERSION_EQUALS, METADATA_DEV_MODE, \
+    METADATA_TENTACLES_GROUP
 
 
 class Tentacle:
@@ -33,28 +34,17 @@ class Tentacle:
         self.tentacle_class_names = None
         self.origin_package = None
         self.tentacles_requirements = None
+        self.tentacle_group = None
         self.in_dev_mode = False
         self.metadata = {}
 
     async def initialize(self):
         async with aiofiles.open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
-            self.metadata = json.loads(await metadata_file.read())
-            self.version = self.metadata[METADATA_VERSION]
-            self.origin_package = self.metadata[METADATA_ORIGIN_PACKAGE]
-            self.tentacle_class_names = self.metadata[METADATA_TENTACLES]
-            self.tentacles_requirements = self.metadata[METADATA_TENTACLES_REQUIREMENTS]
-            if METADATA_DEV_MODE in self.metadata:
-                self.in_dev_mode = self.metadata[METADATA_DEV_MODE]
+            self._read_metadata_dict(json.loads(await metadata_file.read()))
 
     def sync_initialize(self):
         with open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
-            self.metadata = json.loads(metadata_file.read())
-            self.version = self.metadata[METADATA_VERSION]
-            self.origin_package = self.metadata[METADATA_ORIGIN_PACKAGE]
-            self.tentacle_class_names = self.metadata[METADATA_TENTACLES]
-            self.tentacles_requirements = self.metadata[METADATA_TENTACLES_REQUIREMENTS]
-            if METADATA_DEV_MODE in self.metadata:
-                self.in_dev_mode = self.metadata[METADATA_DEV_MODE]
+            self._read_metadata_dict(json.loads(metadata_file.read()))
 
     @staticmethod
     def find(iterable, name):
@@ -78,6 +68,17 @@ class Tentacle:
 
     def extract_tentacle_requirements(self):
         return [self._parse_requirements(component) for component in self.tentacles_requirements]
+
+    def _read_metadata_dict(self, metadata):
+        self.metadata = metadata
+        self.version = self.metadata[METADATA_VERSION]
+        self.origin_package = self.metadata[METADATA_ORIGIN_PACKAGE]
+        self.tentacle_class_names = self.metadata[METADATA_TENTACLES]
+        self.tentacles_requirements = self.metadata[METADATA_TENTACLES_REQUIREMENTS]
+        # self.tentacle_group is this tentacle name if no provided
+        self.tentacle_group = self.metadata.get(METADATA_TENTACLES_GROUP, self.name)
+        if METADATA_DEV_MODE in self.metadata:
+            self.in_dev_mode = self.metadata[METADATA_DEV_MODE]
 
     @staticmethod
     def _parse_requirements(requirement):
