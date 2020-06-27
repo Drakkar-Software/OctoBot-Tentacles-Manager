@@ -52,12 +52,13 @@ def get_tentacle_module_path(klass) -> str:
 
 
 def get_documentation_file_path(klass) -> str:
-    return join(get_resources_path(klass), f"{klass.get_name()}{DOCUMENTATION_EXT}")
+    return \
+        join(get_resources_path(klass), f"{klass if isinstance(klass, str) else klass.get_name()}{DOCUMENTATION_EXT}")
 
 
 def get_tentacle(klass) -> Tentacle:
     try:
-        return _tentacle_by_tentacle_class[klass.get_name()]
+        return _tentacle_by_tentacle_class[klass if isinstance(klass, str) else klass.get_name()]
     except TypeError:
         raise RuntimeError(f"tentacle have not been initialized, call reload_tentacle_data_by_tentacle_class "
                            f"fix this issue")
