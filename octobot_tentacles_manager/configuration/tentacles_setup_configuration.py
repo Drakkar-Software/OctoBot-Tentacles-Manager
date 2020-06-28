@@ -77,7 +77,8 @@ class TentaclesSetupConfiguration:
                     something_changed = True
             except KeyError:
                 # tentacle missing in loaded metadata: can't be used
-                pass
+                self.logger.error(f"Impossible to change activation of {element_name}: this Tentacle class is not "
+                                  f"in loaded tentacles metadata dict.")
         if deactivate_other_evaluators:
             something_changed = self._deactivate_other_evaluators(new_config) or something_changed
         return something_changed
@@ -100,39 +101,26 @@ class TentaclesSetupConfiguration:
 
     def _deactivate_other_evaluators(self, new_config):
         something_changed = False
-        from octobot_commons.tentacles_management.class_inspector import get_class_from_string, \
-            evaluator_parent_inspection
-        has_evaluators = True
-        try:
-            from octobot_evaluators.evaluator.TA_evaluator import TAEvaluator
-            from octobot_evaluators.evaluator.social_evaluator import SocialEvaluator
-            from octobot_evaluators.evaluator.realtime_evaluator import RealTimeEvaluator
-            import tentacles.Evaluator.TA as TA
-            import tentacles.Evaluator.Social as SE
-            import tentacles.Evaluator.RealTime as RE
-        except ImportError:
-            has_evaluators = False
         for element_type, element_names in self.tentacles_activation.items():
             for element_name in element_names:
-                if element_name not in new_config:
-                    if self.tentacles_activation[element_type][element_name]:
-                        is_evaluator = False
-                        if has_evaluators:
-                            # deactivate only evaluators
-                            ta_klass = get_class_from_string(element_name, TAEvaluator,
-                                                             TA, evaluator_parent_inspection)
-                            se_klass = get_class_from_string(element_name, SocialEvaluator,
-                                                             SE, evaluator_parent_inspection)
-                            re_klass = get_class_from_string(element_name, RealTimeEvaluator,
-                                                             RE, evaluator_parent_inspection)
-                            is_evaluator = any(klass is not None
-                                               for klass in [ta_klass, se_klass, re_klass])
-                        if is_evaluator:
-                            self.logger.info(f"Tentacles configuration updated: {element_name} "
-                                             f"{'deactivated'}")
-                            self.tentacles_activation[element_type][element_name] = False
-                            something_changed = True
+                # for each activated element that is not in new_config
+                if element_name not in new_config and self.tentacles_activation[element_type][element_name]:
+                    # only handle evaluator tentacles
+                    something_changed = self._deactivate_tentacle_if_evaluator(element_name, element_type) or \
+                                        something_changed
+
         return something_changed
+
+    def _deactivate_tentacle_if_evaluator(self, element_name, element_type):
+        if get_tentacle_classes()[element_name].get_simple_tentacle_type() in {
+            TENTACLES_EVALUATOR_TA_PATH,
+            TENTACLES_EVALUATOR_SOCIAL_PATH,
+            TENTACLES_EVALUATOR_REALTIME_PATH
+        }:
+            self.logger.info(f"Tentacles configuration updated: {element_name} {'deactivated'}")
+            self.tentacles_activation[element_type][element_name] = False
+            return True
+        return False
 
     def replace_tentacle_activation(self, new_config):
         self.tentacles_activation = copy(new_config)
