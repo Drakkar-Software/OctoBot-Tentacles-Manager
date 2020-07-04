@@ -38,7 +38,8 @@ async def _handle_package_manager_command(starting_args,
                                           single_tentacle_type,
                                           export_tentacles_output,
                                           packed_tentacles_output,
-                                          quite_mode) -> int:
+                                          quite_mode,
+                                          cythonize) -> int:
     error_count = 0
     LOGGER = get_logger(f"{PROJECT_NAME}-CLI")
     async with aiohttp.ClientSession() as aiohttp_session:
@@ -49,10 +50,12 @@ async def _handle_package_manager_command(starting_args,
             error_count = await repair_installation(bot_path=target_dir)
         elif starting_args.export:
             error_count = await create_tentacles_package(export_tentacles_output, target_dir,
-                                                         in_zip=False, with_dev_mode=include_dev_mode)
+                                                         in_zip=False, with_dev_mode=include_dev_mode,
+                                                         cythonize=cythonize)
         elif starting_args.pack:
             error_count = await create_tentacles_package(packed_tentacles_output, target_dir,
-                                                         in_zip=True, with_dev_mode=include_dev_mode)
+                                                         in_zip=True, with_dev_mode=include_dev_mode,
+                                                         cythonize=cythonize)
         elif single_tentacle_path:
             error_count = await install_single_tentacle(single_tentacle_path,
                                                         single_tentacle_type,
@@ -132,7 +135,8 @@ def handle_tentacles_manager_command(starting_args,
                                                        single_tentacle_type,
                                                        export_tentacles_output,
                                                        packed_tentacles_output,
-                                                       starting_args.quite))
+                                                       starting_args.quite,
+                                                       starting_args.cythonize))
 
 
 def register_tentacles_manager_arguments(tentacles_parser) -> None:
@@ -150,6 +154,7 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-p", "--pack", help="Create a tentacle package containing all tentacles "
                                                        "in the given folder.\n"
                                                        "Specify source folder using the --directory argument.\n"
+                                                       "Add --cythonize to cythonize and compile the packed tentacles."
                                                        "Example: -p myTentaclesPackage.zip -d ./tentacles", nargs=1)
     tentacles_parser.add_argument("-e", "--export", help="Export tentacles into a folder containing all tentacles "
                                                          "in the given folder. Removes installation generated files. "
@@ -167,6 +172,8 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')
+    tentacles_parser.add_argument("-cy", "--cythonize", help="Option for the --pack command: cythonize and "
+                                                             "compile the packed tentacles.", action='store_true')
     tentacles_parser.add_argument("-q", "--quite", help="Only display errors in logs.", action='store_true')
     tentacles_parser.add_argument("tentacle_names", nargs="*")
 

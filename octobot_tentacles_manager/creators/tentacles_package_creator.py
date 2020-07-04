@@ -20,11 +20,13 @@ from shutil import rmtree, copytree, make_archive, copy
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, TENTACLES_ARCHIVE_ROOT, \
     TENTACLES_PACKAGE_FORMAT, PYTHON_GENERATED_ELEMENTS, PYTHON_GENERATED_ELEMENTS_EXTENSION
+from octobot_tentacles_manager.creators.compiled_package_manager import cythonize_and_compile_tentacles
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
 
 
-async def create_tentacles_package_from_local_tentacles(package_name, tentacles_folder, in_zip, with_dev_mode) -> int:
+async def create_tentacles_package_from_local_tentacles(package_name, tentacles_folder,
+                                                        in_zip, with_dev_mode, cythonize) -> int:
     logger = get_logger("tentacles_package_creator")
     try:
         # create working folder
@@ -42,6 +44,10 @@ async def create_tentacles_package_from_local_tentacles(package_name, tentacles_
         tentacles_setup_manager = TentaclesSetupManager(working_folder)
         await tentacles_setup_manager.remove_tentacle_arch_init_files()
         _remove_python_generated_files(working_folder)
+
+        # handle tentacles cythonization if required
+        if cythonize:
+            await cythonize_and_compile_tentacles(working_folder)
 
         if in_zip:
             _zip_tentacles_package(package_name, TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)

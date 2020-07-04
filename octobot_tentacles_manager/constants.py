@@ -22,7 +22,9 @@ DEFAULT_BOT_INSTALL_DIR = "."
 
 # Tentacles files
 PYTHON_INIT_FILE = "__init__.py"
+CYTHON_HEADER_INIT_FILE = "__init__.pxd"
 PYTHON_EXT = ".py"
+CYTHON_EXT = ".pxd"
 CONFIG_TENTACLES_FILE = "tentacles_config.json"
 CONFIG_EXT = ".json"
 DOCUMENTATION_EXT = ".md"
@@ -95,15 +97,20 @@ TENTACLE_RESOURCES = "resources"
 TENTACLE_TESTS = "tests"
 
 # Tentacle creator
-TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER = "creator_tentacles_temp"
+TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER = "creator_temp"
 TENTACLES_PACKAGE_FORMAT = "zip"
-PYTHON_GENERATED_ELEMENTS = ["__pycache__"]
-PYTHON_GENERATED_ELEMENTS_EXTENSION = ["pyc"]
+PYTHON_GENERATED_ELEMENTS = {"__pycache__"}
+COMPILED_TENTACLES_TO_REMOVE_FOLDERS = {"build", "temp", "tests"}
+PYTHON_GENERATED_ELEMENTS_EXTENSION = {"pyc"}
+COMPILED_TENTACLES_TO_KEEP_ELEMENTS = {PYTHON_INIT_FILE}
+COMPILED_TENTACLES_TO_REMOVE_ELEMENTS = {".c", ".py", ".pxd", ".pyc", "tests"}
 TENTACLE_TEMPLATE_PATH = "templates"
 TENTACLE_TEMPLATE_DESCRIPTION = "description"
 TENTACLE_CONFIG_TEMPLATE_PRE_EXT = "_config"
 TENTACLE_TEMPLATE_EXT = ".template"
 TENTACLE_TEMPLATE_PRE_EXT = "_tentacle"
+CYTHON_PXD_HEADER = "# cython: language_level=3"
+SETUP_FILE = "setup.py"
 
 # Tentacles architecture
 TENTACLES_FOLDERS_ARCH = {
