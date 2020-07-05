@@ -16,8 +16,8 @@
 from os import scandir, DirEntry
 from os.path import isdir, join, sep
 
-from octobot_tentacles_manager.constants import PYTHON_EXT, PYTHON_INIT_FILE, TENTACLE_MAX_SUB_FOLDERS_LEVEL, \
-    FOLDERS_BLACK_LIST
+from octobot_tentacles_manager.constants import PYTHON_INIT_FILE, TENTACLE_MAX_SUB_FOLDERS_LEVEL, FOLDERS_BLACK_LIST, \
+    TENTACLE_METADATA
 from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 from octobot_tentacles_manager.models.tentacle_type import TentacleType
 
@@ -74,7 +74,7 @@ def _add_tentacle_type_if_is_valid(tentacle_type_entry: DirEntry, full_tentacle_
 
 
 def _has_tentacle_in_direct_sub_directories(directory_entry: DirEntry):
-    return any((file_entry.name.endswith(PYTHON_EXT) and not file_entry.name == PYTHON_INIT_FILE)
+    return any((file_entry.name == TENTACLE_METADATA)
                for sub_directory_entry in scandir(directory_entry)
                if sub_directory_entry.is_dir()
                for file_entry in scandir(sub_directory_entry)
