@@ -42,28 +42,43 @@ class TentacleManager:
         rmtree(join(self.bot_installation_path, self.tentacle.tentacle_path, self.tentacle.name))
 
     @staticmethod
-    def find_tentacles_missing_requirements(tentacle, version_by_modules):
+    def find_tentacles_missing_requirements(tentacle, to_install_version_by_modules, available_tentacles):
         # check if requirement is in tentacles to be installed in this call
         return {
             requirement: version
             for requirement, version in tentacle.extract_tentacle_requirements()
-            if not TentacleManager.is_requirement_satisfied(requirement, version, tentacle, version_by_modules)
+            if not TentacleManager.is_requirement_satisfied(requirement, version, tentacle,
+                                                            to_install_version_by_modules, available_tentacles)
         }
 
     @staticmethod
-    def is_requirement_satisfied(requirement, version, tentacle, version_by_modules):
+    def is_requirement_satisfied(requirement, version, tentacle, to_install_version_by_modules, available_tentacles):
         satisfied = False
-        if requirement in version_by_modules:
-            available = version_by_modules[requirement]
-            if version is None:
-                satisfied = True
-            elif version != available:
-                get_logger(TentacleManager.__name__).\
-                    error(f"Incompatible tentacle version requirement for "
-                          f"{tentacle.name}: requires {version}, installed: "
-                          f"{available}. This tentacle might not work as expected")
-                satisfied = True
+        # check in to install tentacles
+        if requirement in to_install_version_by_modules:
+            satisfied = TentacleManager._ensure_version(tentacle.name,
+                                                        version,
+                                                        to_install_version_by_modules[requirement])
+        if not satisfied:
+            # check in available tentacles
+            for available_tentacle in available_tentacles:
+                if available_tentacle.name == requirement:
+                    return TentacleManager._ensure_version(tentacle.name,
+                                                           version,
+                                                           available_tentacle.version)
         return satisfied
+
+    @staticmethod
+    def _ensure_version(name, version, available_version):
+        if version is None:
+            return True
+        elif version != available_version:
+            get_logger(TentacleManager.__name__). \
+                error(f"Incompatible tentacle version requirement for "
+                      f"{name}: requires {version}, installed: "
+                      f"{available_version}. This tentacle might not work as expected")
+            return True
+        return False
 
     async def _update_tentacle_folder(self, target_tentacle_path):
         reference_tentacle_path = join(self.tentacle.tentacle_path, self.tentacle.name)

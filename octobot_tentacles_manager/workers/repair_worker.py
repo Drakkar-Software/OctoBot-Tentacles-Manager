@@ -47,9 +47,9 @@ class RepairWorker(TentaclesWorker):
         await self.tentacles_setup_manager.create_missing_tentacles_arch()
         self.reset_worker()
         self.progress = 1
-        existing_tentacles = load_tentacle_with_metadata(self.tentacle_path)
-        self.total_steps = len(existing_tentacles)
-        await gather(*[self._repair_tentacle(tentacle) for tentacle in existing_tentacles])
+        self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)
+        self.total_steps = len(self.available_tentacles)
+        await gather(*[self._repair_tentacle(tentacle) for tentacle in self.available_tentacles])
         await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
             force_update_registered_tentacles=True
         )

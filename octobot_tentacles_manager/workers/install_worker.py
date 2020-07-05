@@ -29,6 +29,7 @@ class InstallWorker(TentaclesWorker):
         self.reset_worker()
         self.progress = 1
         all_tentacles = load_tentacle_with_metadata(self.reference_tentacles_root)
+        self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)
         self.register_error_on_missing_tentacles(all_tentacles, name_filter)
         to_install_tentacles = [tentacle
                                 for tentacle in all_tentacles
@@ -65,7 +66,8 @@ class InstallWorker(TentaclesWorker):
     async def _try_install_from_requirements(self, tentacle, missing_requirements):
         for requirement, version in missing_requirements.items():
             if TentacleManager.is_requirement_satisfied(requirement, version, tentacle,
-                                                        self.fetched_for_requirements_tentacles_versions):
+                                                        self.fetched_for_requirements_tentacles_versions,
+                                                        self.available_tentacles):
                 to_install_tentacle = Tentacle.find(self.fetched_for_requirements_tentacles, requirement)
                 if to_install_tentacle is not None:
                     await self._install_tentacle(to_install_tentacle)

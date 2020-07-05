@@ -50,6 +50,7 @@ class TentaclesWorker:
                                                              self.bot_installation_path,
                                                              join(self.bot_install_dir, DEFAULT_TENTACLE_CONFIG))
         self.tentacles_path_or_url = None
+        self.available_tentacles = []
 
         self.total_steps = 0
         self.progress = 0
@@ -104,7 +105,8 @@ class TentaclesWorker:
 
     async def _handle_tentacles_requirements(self, tentacle, callback):
         missing_requirements = TentacleManager.find_tentacles_missing_requirements(tentacle,
-                                                                                   self.to_process_tentacle_modules)
+                                                                                   self.to_process_tentacle_modules,
+                                                                                   self.available_tentacles)
         if missing_requirements:
             if not self.fetching_requirements:
                 self.fetching_requirements = True
