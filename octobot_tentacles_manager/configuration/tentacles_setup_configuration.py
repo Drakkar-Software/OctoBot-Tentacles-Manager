@@ -51,10 +51,11 @@ class TentaclesSetupConfiguration:
 
     async def fill_tentacle_config(self, tentacles, default_tentacle_config=DEFAULT_TENTACLE_CONFIG,
                                    remove_missing_tentacles=True, update_location=None,
-                                   force_update_registered_tentacles=False):
+                                   force_update_registered_tentacles=False, newly_installed_tentacles=None):
         self._update_tentacles_setup_config(tentacles,
                                             default_tentacle_config_file=default_tentacle_config,
-                                            remove_missing_tentacles=remove_missing_tentacles)
+                                            remove_missing_tentacles=remove_missing_tentacles,
+                                            newly_installed_tentacles=newly_installed_tentacles)
         if update_location or force_update_registered_tentacles:
             self._update_registered_tentacles(tentacles, update_location)
 
@@ -145,8 +146,8 @@ class TentaclesSetupConfiguration:
     def _update_tentacles_setup_config(self,
                                        tentacles,
                                        default_tentacle_config_file=DEFAULT_TENTACLE_CONFIG,
-                                       remove_missing_tentacles=True):
-
+                                       remove_missing_tentacles=True,
+                                       newly_installed_tentacles=None):
         default_config = read_config(default_tentacle_config_file)
         default_activation_config = default_config[self.TENTACLE_ACTIVATION_KEY] \
             if self.TENTACLE_ACTIVATION_KEY in default_config else {}
@@ -154,6 +155,8 @@ class TentaclesSetupConfiguration:
             self._update_tentacle_activation(tentacle, default_activation_config)
         if remove_missing_tentacles:
             self._filter_tentacle_activation(tentacles)
+        if newly_installed_tentacles:
+            self._activate_newly_installed_tentacles_if_necessary(tentacles, newly_installed_tentacles)
 
     def _update_tentacle_activation(self, tentacle, default_config):
         if tentacle.tentacle_root_type not in self.tentacles_activation:
@@ -186,6 +189,20 @@ class TentaclesSetupConfiguration:
             for element_name in list(element_names):
                 if element_name not in tentacle_names:
                     self.tentacles_activation[element_type].pop(element_name)
+
+    def _activate_newly_installed_tentacles_if_necessary(self, tentacles, newly_installed_tentacles):
+        for new_tentacle in newly_installed_tentacles:
+            if new_tentacle.get_simple_tentacle_type() not in self.DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES \
+              and new_tentacle.tentacle_group != new_tentacle.name:
+                # activate new_tentacle if part of tentacle to activate by default and has a tentacle group from which
+                # it's not the default tentacle
+                self._deactivate_other_tentacles_from_group(tentacles, new_tentacle)
+
+    def _deactivate_other_tentacles_from_group(self, tentacles, new_tentacle):
+        for tentacle in tentacles:
+            if tentacle.tentacle_group == new_tentacle.tentacle_group and tentacle.name != new_tentacle.name:
+                for tentacle_class_name in tentacle.tentacle_class_names:
+                    self.tentacles_activation[tentacle.tentacle_root_type][tentacle_class_name] = False
 
     def _update_registered_tentacles(self, tentacles, update_location):
         packages = set(tentacle.origin_package
