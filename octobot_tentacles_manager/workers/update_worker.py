@@ -27,7 +27,6 @@ class UpdateWorker(InstallWorker):
         super().__init__(reference_tentacles_dir, tentacle_path,
                          bot_installation_path, use_confirm_prompt, aiohttp_session,
                          quite_mode=quite_mode)
-        self.available_tentacles = []
 
     async def process(self, name_filter=None) -> int:
         self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)

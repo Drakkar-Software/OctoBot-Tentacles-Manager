@@ -32,10 +32,10 @@ class UninstallWorker(TentaclesWorker):
                                                                    bot_installation_path=self.bot_installation_path)
             else:
                 self.progress = 1
-                all_tentacles = load_tentacle_with_metadata(self.tentacle_path)
-                self.register_error_on_missing_tentacles(all_tentacles, name_filter)
+                self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)
+                self.register_error_on_missing_tentacles(self.available_tentacles, name_filter)
                 to_uninstall_tentacles = [tentacle
-                                          for tentacle in all_tentacles
+                                          for tentacle in self.available_tentacles
                                           if tentacle.name in name_filter]
                 await gather(*[self._uninstall_tentacle(tentacle) for tentacle in to_uninstall_tentacles])
             await self.tentacles_setup_manager.create_missing_tentacles_arch()
