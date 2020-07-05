@@ -42,7 +42,8 @@ class TentaclesSetupManager:
                                                        tentacles_setup_config_to_update=None,
                                                        update_location=None,
                                                        force_update_registered_tentacles=False,
-                                                       newly_installed_tentacles=None):
+                                                       newly_installed_tentacles=None,
+                                                       uninstalled_tentacles=None):
         available_tentacle = load_tentacle_with_metadata(self.tentacle_setup_root_path)
         if not tentacles_setup_config_to_update:
             tentacle_setup_config = TentaclesSetupConfiguration(bot_installation_path=self.bot_installation_path)
@@ -54,7 +55,8 @@ class TentaclesSetupManager:
             self.default_tentacle_config,
             update_location=update_location,
             force_update_registered_tentacles=force_update_registered_tentacles,
-            newly_installed_tentacles=newly_installed_tentacles
+            newly_installed_tentacles=newly_installed_tentacles,
+            uninstalled_tentacles=uninstalled_tentacles
         )
         tentacle_setup_config.save_config()
 

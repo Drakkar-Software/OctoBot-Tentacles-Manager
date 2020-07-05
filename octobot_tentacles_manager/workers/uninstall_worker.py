@@ -27,6 +27,7 @@ class UninstallWorker(TentaclesWorker):
         self.reset_worker()
         if self.confirm_action("Remove all installed tentacles ?"
                                if name_filter is None else "Remove {', '.join(name_filter)} tentacles ?"):
+            to_uninstall_tentacles = None
             if name_filter is None:
                 self.tentacles_setup_manager.delete_tentacles_arch(force=True, with_user_config=False,
                                                                    bot_installation_path=self.bot_installation_path)
@@ -40,7 +41,10 @@ class UninstallWorker(TentaclesWorker):
                 await gather(*[self._uninstall_tentacle(tentacle) for tentacle in to_uninstall_tentacles])
             await self.tentacles_setup_manager.create_missing_tentacles_arch()
             await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
-                self.tentacles_setup_config_to_update, self.tentacles_path_or_url, True)
+                self.tentacles_setup_config_to_update,
+                self.tentacles_path_or_url,
+                True,
+                uninstalled_tentacles=to_uninstall_tentacles)
             self.log_summary()
         return len(self.errors)
 
