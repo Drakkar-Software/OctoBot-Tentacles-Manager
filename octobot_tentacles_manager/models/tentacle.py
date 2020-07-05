@@ -20,7 +20,7 @@ import aiofiles
 
 from octobot_tentacles_manager.constants import TENTACLE_METADATA, METADATA_VERSION, METADATA_ORIGIN_PACKAGE, \
     METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, TENTACLE_REQUIREMENT_VERSION_EQUALS, METADATA_DEV_MODE, \
-    METADATA_TENTACLES_GROUP
+    METADATA_TENTACLES_GROUP, UNKNOWN_TENTACLES_PACKAGE_LOCATION
 
 
 class Tentacle:
@@ -31,10 +31,10 @@ class Tentacle:
         self.tentacle_root_type = self.tentacle_type.get_root_type()
         self.tentacle_path = join(self.tentacle_root_path, self.tentacle_type.to_path())
         self.version = None
-        self.tentacle_class_names = None
-        self.origin_package = None
+        self.tentacle_class_names = []
+        self.origin_package = UNKNOWN_TENTACLES_PACKAGE_LOCATION
         self.tentacles_requirements = None
-        self.tentacle_group = None
+        self.tentacle_group = self.name
         self.in_dev_mode = False
         self.metadata = {}
 
@@ -43,8 +43,12 @@ class Tentacle:
             self._read_metadata_dict(json.loads(await metadata_file.read()))
 
     def sync_initialize(self):
-        with open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
-            self._read_metadata_dict(json.loads(metadata_file.read()))
+        try:
+            with open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
+                self._read_metadata_dict(json.loads(metadata_file.read()))
+        except FileNotFoundError:
+            pass
+
 
     @staticmethod
     def find(iterable, name):
