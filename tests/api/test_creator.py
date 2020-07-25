@@ -58,7 +58,7 @@ async def test_create_folder_tentacles_package(install_tentacles):
 
     # add generated python file
     random_content = "123"
-    generated_file_path = path.join(TENTACLES_PATH, "file.pyc")
+    generated_file_path = path.join(TENTACLES_PATH, TENTACLES_TRADING_PATH, "file.pyc")
     with open(generated_file_path, "w+") as generated_file:
         generated_file.write(random_content)
     # add generated python folder
@@ -67,19 +67,27 @@ async def test_create_folder_tentacles_package(install_tentacles):
 
     # create folder to force folder merge
     mkdir(TENTACLE_PACKAGE)
+
+    with open(path.join(TENTACLE_PACKAGE, "not_tentacle_file"), "w+") as rand_file:
+        rand_file.write(random_content)
+
     mkdir(path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH))
-    with open(path.join(TENTACLE_PACKAGE, "rnd"), "w+") as rand_file:
+
+    with open(path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH, "rnd"), "w+") as rand_file:
         rand_file.write(random_content)
 
     assert await create_tentacles_package(TENTACLE_PACKAGE, in_zip=False) == 0
     assert path.exists(TENTACLE_PACKAGE)
 
     # random init file still here
-    with open(path.join(TENTACLE_PACKAGE, "rnd")) as rand_file:
+    with open(path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH, "rnd")) as rand_file:
         assert random_content == rand_file.read()
 
+    # file taht is not in tentacles arch not copied
+    assert not path.exists(path.join(TENTACLE_PACKAGE, "not_tentacle_file"))
+
     # generated file not copied
-    assert not path.exists(path.join(TENTACLE_PACKAGE, "file.pyc"))
+    assert not path.exists(path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH, "file.pyc"))
 
     # generated folder not copied
     assert not path.exists(path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH, "__pycache__"))
