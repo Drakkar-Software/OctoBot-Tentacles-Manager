@@ -14,11 +14,14 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import asyncio
+import subprocess
+import sys
 from os import scandir, remove, getenv, getcwd, chdir
 from os.path import exists, join
 from shutil import rmtree
 from setuptools import sandbox
 
+from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import TENTACLE_METADATA, COMPILED_TENTACLES_TO_REMOVE_ELEMENTS, \
     COMPILED_TENTACLES_TO_KEEP_ELEMENTS, CYTHON_PXD_HEADER, PYTHON_EXT, CYTHON_EXT, SETUP_FILE, PYTHON_INIT_FILE, \
     TENTACLE_TESTS, COMPILED_TENTACLES_TO_REMOVE_FOLDERS
@@ -98,7 +101,10 @@ def _update_files(directory):
 def _compile_tentacle(directory):
     previous_dir = getcwd()
     chdir(directory)
-    sandbox.run_setup('setup.py', ['build_ext', '-i'])
+    # Use subprocess.call() instead of sandbox.run_setup('setup.py', ['build_ext', '-i'])
+    # to avoid multiple subsequent cythonization side effects.
+    if subprocess.call([sys.executable, 'setup.py', 'build_ext', '-i']) != 0:
+        get_logger("CompiledPackageManager").error(f"Error when cythonizing {directory.path}, see above for details.")
     chdir(previous_dir)
 
 
@@ -107,7 +113,7 @@ def _clean_up_compiled_tentacle(directory):
         element_ext = element.name.split(".")[-1]
         if element.name in COMPILED_TENTACLES_TO_REMOVE_FOLDERS or \
                 (f".{element_ext}" in COMPILED_TENTACLES_TO_REMOVE_ELEMENTS
-                 and element not in COMPILED_TENTACLES_TO_KEEP_ELEMENTS
+                 and element.name not in COMPILED_TENTACLES_TO_KEEP_ELEMENTS
                  and element.is_file()):
             if element.is_dir():
                 rmtree(element)
