@@ -19,7 +19,7 @@ from shutil import rmtree, copytree, make_archive, copy
 
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, TENTACLES_ARCHIVE_ROOT, \
-    TENTACLES_PACKAGE_FORMAT, PYTHON_GENERATED_ELEMENTS, PYTHON_GENERATED_ELEMENTS_EXTENSION
+    TENTACLES_PACKAGE_FORMAT, PYTHON_GENERATED_ELEMENTS, PYTHON_GENERATED_ELEMENTS_EXTENSION, TENTACLES_FOLDERS_ARCH
 from octobot_tentacles_manager.creators.compiled_package_manager import cythonize_and_compile_tentacles
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
@@ -44,13 +44,14 @@ async def create_tentacles_package_from_local_tentacles(package_name, tentacles_
         tentacles_setup_manager = TentaclesSetupManager(working_folder)
         await tentacles_setup_manager.remove_tentacle_arch_init_files()
         _remove_python_generated_files(working_folder)
+        _remove_non_tentacles_files(working_folder, logger)
 
         # handle tentacles cythonization if required
         if cythonize:
             await cythonize_and_compile_tentacles(working_folder)
 
         if in_zip:
-            _zip_tentacles_package(package_name, TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
+            _zip_tentacles_package(package_name, TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, logger)
             logger.info(f"Zipped tentacles package available at: {package_name}")
         else:
             logger.info(f"Cleaned tentacles folder available at: {package_name}")
@@ -61,12 +62,15 @@ async def create_tentacles_package_from_local_tentacles(package_name, tentacles_
         return 1
 
 
-def _zip_tentacles_package(package_name, working_folder):
+def _zip_tentacles_package(package_name, working_folder, logger):
     # remove .zip extension if necessary
     file_name = package_name.split(f".{TENTACLES_PACKAGE_FORMAT}")[0]
     make_archive(file_name, TENTACLES_PACKAGE_FORMAT, working_folder)
-    # remove working folder
-    rmtree(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
+    try:
+        # remove working folder
+        rmtree(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
+    except Exception as e:
+        logger.error(f"Error when cleaning up temporary folder: {e}")
 
 
 async def _cleanup_in_dev_tentacles(tentacles_folder):
@@ -115,3 +119,15 @@ def _remove_python_generated_files(directory):
                 remove(element)
         elif element.is_dir():
             _remove_python_generated_files(element)
+
+
+def _remove_non_tentacles_files(directory, logger):
+    for element in scandir(directory):
+        if element.name not in set(TENTACLES_FOLDERS_ARCH):
+            try:
+                if element.is_dir():
+                    rmtree(element)
+                elif element.is_file():
+                    remove(element)
+            except Exception as e:
+                logger.error(f"Error when cleaning up temporary folder: {e}")
