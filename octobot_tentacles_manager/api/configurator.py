@@ -15,6 +15,7 @@
 #  License along with this library.
 from os.path import exists, join
 
+from octobot_commons.tentacles_management.class_inspector import get_all_classes_from_parent
 from octobot_tentacles_manager.api.installer import repair_installation
 from octobot_tentacles_manager.configuration.tentacle_configuration import get_config, \
     factory_reset_config, get_config_schema_path, update_config
@@ -49,6 +50,18 @@ def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, klas
         if raise_errors:
             raise e
         return default_value
+
+
+def get_class_from_name_with_activated_required_tentacles(name, parent_class, tentacles_setup_config):
+    for subclass in get_all_classes_from_parent(parent_class):
+        # Filter sub classes to only use the one that is appropriate to the given name and that has its
+        # tentacles requirements activated (identified by REQUIRED_ACTIVATED_TENTACLES iterable class attribute).
+        if subclass.get_name() == name and \
+            tentacles_setup_config is not None and \
+            all(is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, required_tentacle.__name__)
+                for required_tentacle in subclass.REQUIRED_ACTIVATED_TENTACLES):
+            return subclass
+    return None
 
 
 def get_tentacles_activation(tentacles_setup_config) -> dict:
