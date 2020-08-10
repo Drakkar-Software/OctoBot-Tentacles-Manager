@@ -83,8 +83,8 @@ async def test_create_folder_tentacles_package(install_tentacles):
     with open(path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH, "rnd")) as rand_file:
         assert random_content == rand_file.read()
 
-    # file taht is not in tentacles arch not copied
-    assert not path.exists(path.join(TENTACLE_PACKAGE, "not_tentacle_file"))
+    # file that is not in tentacles arch is copied since it's not in a zip
+    assert path.exists(path.join(TENTACLE_PACKAGE, "not_tentacle_file"))
 
     # generated file not copied
     assert not path.exists(path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH, "file.pyc"))
