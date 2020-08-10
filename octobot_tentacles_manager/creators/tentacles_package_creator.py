@@ -44,7 +44,8 @@ async def create_tentacles_package_from_local_tentacles(package_name, tentacles_
         tentacles_setup_manager = TentaclesSetupManager(working_folder)
         await tentacles_setup_manager.remove_tentacle_arch_init_files()
         _remove_python_generated_files(working_folder)
-        _remove_non_tentacles_files(working_folder, logger)
+        if in_zip:
+            _remove_non_tentacles_files(working_folder, logger)
 
         # handle tentacles cythonization if required
         if cythonize:
