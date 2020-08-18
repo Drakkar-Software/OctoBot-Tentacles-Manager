@@ -178,8 +178,12 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("tentacle_names", nargs="*")
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description=f"{PROJECT_NAME}-CLI")
     register_tentacles_manager_arguments(parser)
     args = parser.parse_args(sys.argv[1:])
     sys.exit(handle_tentacles_manager_command(args))
+
+
+if __name__ == "__main__":
+    main()

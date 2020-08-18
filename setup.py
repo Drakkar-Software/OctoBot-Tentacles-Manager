@@ -48,6 +48,11 @@ setup(
     setup_requires=REQUIRED,
     install_requires=REQUIRED,
     python_requires=REQUIRES_PYTHON,
+    entry_points={
+        'console_scripts': [
+            PROJECT_NAME + ' = octobot_tentacles_manager.cli:main'
+        ]
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 3.7',
