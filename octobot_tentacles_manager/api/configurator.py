@@ -52,7 +52,10 @@ def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, klas
         return default_value
 
 
-def get_class_from_name_with_activated_required_tentacles(name, parent_class, tentacles_setup_config):
+def get_class_from_name_with_activated_required_tentacles(name,
+                                                          parent_class,
+                                                          tentacles_setup_config,
+                                                          with_class_method=None):
     for subclass in get_all_classes_from_parent(parent_class):
         # Filter sub classes to only use the one that is appropriate to the given name and that has its
         # tentacles requirements activated (identified by REQUIRED_ACTIVATED_TENTACLES iterable class attribute).
@@ -60,7 +63,8 @@ def get_class_from_name_with_activated_required_tentacles(name, parent_class, te
             tentacles_setup_config is not None and \
             all(is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, required_tentacle.__name__)
                 for required_tentacle in subclass.REQUIRED_ACTIVATED_TENTACLES):
-            return subclass
+            if with_class_method is None or getattr(subclass, with_class_method)():
+                return subclass
     return None
 
 
