@@ -19,7 +19,6 @@ import sys
 from os import scandir, remove, getenv, getcwd, chdir
 from os.path import exists, join
 from shutil import rmtree
-from setuptools import sandbox
 
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import TENTACLE_METADATA, COMPILED_TENTACLES_TO_REMOVE_ELEMENTS, \

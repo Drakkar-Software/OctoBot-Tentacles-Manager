@@ -19,7 +19,8 @@ from shutil import rmtree, copytree, make_archive, copy
 
 from octobot_commons.logging.logging_util import get_logger
 from octobot_tentacles_manager.constants import TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, TENTACLES_ARCHIVE_ROOT, \
-    TENTACLES_PACKAGE_FORMAT, PYTHON_GENERATED_ELEMENTS, PYTHON_GENERATED_ELEMENTS_EXTENSION, TENTACLES_FOLDERS_ARCH
+    TENTACLES_PACKAGE_FORMAT, PYTHON_GENERATED_ELEMENTS, PYTHON_GENERATED_ELEMENTS_EXTENSION, TENTACLES_FOLDERS_ARCH, \
+    TENTACLES_PACKAGE_IGNORED_ELEMENTS
 from octobot_tentacles_manager.creators.compiled_package_manager import cythonize_and_compile_tentacles
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
@@ -43,7 +44,7 @@ async def create_tentacles_package_from_local_tentacles(package_name, tentacles_
         # cleanup temp working folder
         tentacles_setup_manager = TentaclesSetupManager(working_folder)
         await tentacles_setup_manager.remove_tentacle_arch_init_files()
-        _remove_python_generated_files(working_folder)
+        _remove_unnecessary_files(working_folder)
         if in_zip:
             _remove_non_tentacles_files(working_folder, logger)
 
@@ -84,14 +85,20 @@ def _create_zip_working_tentacles_folder(source_tentacles_folder, working_folder
     if exists(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER):
         rmtree(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
     mkdir(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
-    copytree(source_tentacles_folder, working_folder)
+    copytree(source_tentacles_folder, working_folder, ignore=_should_ignore)
 
 
 def _create_folder_working_tentacles_folder(source_tentacles_folder, working_folder):
     if not exists(working_folder):
-        copytree(source_tentacles_folder, working_folder)
+        copytree(source_tentacles_folder, working_folder, ignore=_should_ignore)
     else:
         _merge_folders(source_tentacles_folder, working_folder)
+
+
+def _should_ignore(_, names):
+    return [name
+            for name in names
+            if name in TENTACLES_PACKAGE_IGNORED_ELEMENTS]
 
 
 def _merge_folders(to_merge_folder, dest_folder):
@@ -109,7 +116,7 @@ def _merge_folders(to_merge_folder, dest_folder):
                 _merge_folders(element.path, dest_folder_elements[element.name].path)
 
 
-def _remove_python_generated_files(directory):
+def _remove_unnecessary_files(directory):
     for element in scandir(directory):
         element_ext = element.name.split(".")[-1]
         if element.name in PYTHON_GENERATED_ELEMENTS or \
@@ -119,7 +126,7 @@ def _remove_python_generated_files(directory):
             elif element.is_file():
                 remove(element)
         elif element.is_dir():
-            _remove_python_generated_files(element)
+            _remove_unnecessary_files(element)
 
 
 def _remove_non_tentacles_files(directory, logger):

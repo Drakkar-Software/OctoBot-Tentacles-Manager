@@ -100,6 +100,8 @@ TENTACLE_TESTS = "tests"
 TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER = "creator_temp"
 TENTACLES_PACKAGE_FORMAT = "zip"
 PYTHON_GENERATED_ELEMENTS = {"__pycache__"}
+TENTACLES_PACKAGE_IGNORED_ELEMENTS = [".git", ".coveragerc", ".gitignore", ".travis.yml",
+                                      "azure-pipelines.yml", "octobot_config.json"]
 COMPILED_TENTACLES_TO_REMOVE_FOLDERS = {"build", "temp", "tests"}
 PYTHON_GENERATED_ELEMENTS_EXTENSION = {"pyc"}
 COMPILED_TENTACLES_TO_KEEP_ELEMENTS = {PYTHON_INIT_FILE}
