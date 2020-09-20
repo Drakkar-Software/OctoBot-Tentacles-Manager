@@ -18,7 +18,7 @@ from octobot_tentacles_manager.api.util.tentacles_management import manage_tenta
 from octobot_tentacles_manager.workers.uninstall_worker import UninstallWorker
 
 
-USER_HELP = """Uninstall the given tentacle modules. 
+USER_HELP = """Uninstall the given tentacle modules.
     Does not delete the associated tentacle configuration."""
 
 
