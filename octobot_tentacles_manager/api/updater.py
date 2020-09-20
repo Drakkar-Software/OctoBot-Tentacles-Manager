@@ -17,8 +17,8 @@ from octobot_tentacles_manager.api.util.tentacles_management import manage_tenta
 from octobot_tentacles_manager.constants import TENTACLES_INSTALL_TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.workers.update_worker import UpdateWorker
 
-USER_HELP = """Update the given tentacle modules and install missing requirements if any. 
-Does not update already filled requirements regardless of their version to avoid conflicts. 
+USER_HELP = """Update the given tentacle modules and install missing requirements if any.
+Does not update already filled requirements regardless of their version to avoid conflicts.
 Prefer a full tentacles update if a requirement version is creating conflicts.
     Does not edit tentacles configuration files."""
 
