@@ -13,3 +13,25 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+from octobot_tentacles_manager.creators import tentacles_package_creator
+from octobot_tentacles_manager.creators import tentacle_creator
+from octobot_tentacles_manager.creators import compiled_package_manager
+
+from octobot_tentacles_manager.creators.tentacles_package_creator import (
+    create_tentacles_package_from_local_tentacles,
+)
+from octobot_tentacles_manager.creators.tentacle_creator import (
+    TentacleCreator,
+    CreatedTentacle,
+)
+from octobot_tentacles_manager.creators.compiled_package_manager import (
+    cythonize_and_compile_tentacles,
+)
+
+__all__ = [
+    "create_tentacles_package_from_local_tentacles",
+    "TentacleCreator",
+    "CreatedTentacle",
+    "cythonize_and_compile_tentacles",
+]

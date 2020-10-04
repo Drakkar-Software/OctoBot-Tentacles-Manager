@@ -13,3 +13,25 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+from octobot_tentacles_manager.util import tentacle_fetching
+from octobot_tentacles_manager.util import tentacle_explorer
+from octobot_tentacles_manager.util import file_util
+
+from octobot_tentacles_manager.util.tentacle_fetching import (
+    cleanup_temp_dirs,
+    fetch_and_extract_tentacles,
+)
+from octobot_tentacles_manager.util.tentacle_explorer import (
+    load_tentacle_with_metadata,
+)
+from octobot_tentacles_manager.util.file_util import (
+    find_or_create,
+)
+
+__all__ = [
+    "cleanup_temp_dirs",
+    "fetch_and_extract_tentacles",
+    "load_tentacle_with_metadata",
+    "find_or_create",
+]
