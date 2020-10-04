@@ -13,3 +13,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+from octobot_tentacles_manager.api.util import tentacles_management
+
+from octobot_tentacles_manager.api.util.tentacles_management import (
+    manage_tentacles,
+)
+
+__all__ = [
+    "manage_tentacles",
+]

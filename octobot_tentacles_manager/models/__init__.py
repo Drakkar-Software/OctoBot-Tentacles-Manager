@@ -13,3 +13,23 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+from octobot_tentacles_manager.models import tentacle_type
+from octobot_tentacles_manager.models import tentacle_factory
+from octobot_tentacles_manager.models import tentacle
+
+from octobot_tentacles_manager.models.tentacle_type import (
+    TentacleType,
+)
+from octobot_tentacles_manager.models.tentacle_factory import (
+    TentacleFactory,
+)
+from octobot_tentacles_manager.models.tentacle import (
+    Tentacle,
+)
+
+__all__ = [
+    "TentacleType",
+    "TentacleFactory",
+    "Tentacle",
+]
