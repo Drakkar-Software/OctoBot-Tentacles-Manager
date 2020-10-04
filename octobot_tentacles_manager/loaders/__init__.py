@@ -13,3 +13,25 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+
+from octobot_tentacles_manager.loaders import tentacle_loading
+
+from octobot_tentacles_manager.loaders.tentacle_loading import (
+    reload_tentacle_by_tentacle_class,
+    get_tentacle_classes,
+    ensure_tentacles_metadata,
+    get_resources_path,
+    get_tentacle_module_path,
+    get_documentation_file_path,
+    get_tentacle,
+)
+
+__all__ = [
+    "reload_tentacle_by_tentacle_class",
+    "get_tentacle_classes",
+    "ensure_tentacles_metadata",
+    "get_resources_path",
+    "get_tentacle_module_path",
+    "get_documentation_file_path",
+    "get_tentacle",
+]
