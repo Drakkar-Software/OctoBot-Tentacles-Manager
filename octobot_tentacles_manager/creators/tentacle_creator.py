@@ -14,14 +14,13 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import os
-from logging import INFO
-from jinja2.nativetypes import NativeEnvironment
+import os.path as path
+import logging
+import jinja2.nativetypes as nativetypes
 
-from octobot_commons.logging.logging_util import get_logger, set_global_logger_level
-from octobot_tentacles_manager.constants import TENTACLE_TEMPLATE_PATH, \
-    TENTACLE_TEMPLATE_DESCRIPTION, TENTACLE_TEMPLATE_EXT, TENTACLE_TEMPLATE_PRE_EXT, \
-    TENTACLES_PATH, TENTACLE_CONFIG_TEMPLATE_PRE_EXT, CONFIG_EXT, \
-    TENTACLE_CONFIG, TENTACLES_FOLDERS_ARCH
+import octobot_commons.logging as common_logging
+import octobot_tentacles_manager.constants as constants
+
 
 # TODO: remove from to .coveragerc when adapted
 
@@ -31,18 +30,18 @@ class TentacleCreator:
         self.config = config
         self.templates = {}
         self.config_templates = {}
-        self.logger = get_logger(self.__class__.__name__)
-        set_global_logger_level(INFO)
+        self.logger = common_logging.get_logger(self.__class__.__name__)
+        common_logging.set_global_logger_level(logging.INFO)
 
     @staticmethod
     def get_template_path(name):
-        return os.path.join(os.path.dirname(os.path.abspath(__file__)), TENTACLE_TEMPLATE_PATH,
-                            f"{name}{TENTACLE_TEMPLATE_PRE_EXT}{TENTACLE_TEMPLATE_EXT}")
+        return path.join(os.path.dirname(os.path.abspath(__file__)), constants.TENTACLE_TEMPLATE_PATH,
+                         f"{name}{constants.TENTACLE_TEMPLATE_PRE_EXT}{constants.TENTACLE_TEMPLATE_EXT}")
 
     @staticmethod
     def get_config_template_path(name):
-        return os.path.join(os.path.dirname(os.path.abspath(__file__)), TENTACLE_TEMPLATE_PATH,
-                            f"{name}{TENTACLE_CONFIG_TEMPLATE_PRE_EXT}{TENTACLE_TEMPLATE_EXT}")
+        return path.join(os.path.dirname(os.path.abspath(__file__)), constants.TENTACLE_TEMPLATE_PATH,
+                         f"{name}{constants.TENTACLE_CONFIG_TEMPLATE_PRE_EXT}{constants.TENTACLE_TEMPLATE_EXT}")
 
     def get_templates(self):
         return self.templates
@@ -51,7 +50,8 @@ class TentacleCreator:
         return self.config_templates
 
     def load_templates(self):
-        self.templates["Description"] = open(self.get_template_path(TENTACLE_TEMPLATE_DESCRIPTION), "r").read()
+        self.templates["Description"] = open(self.get_template_path(
+            constants.TENTACLE_TEMPLATE_DESCRIPTION), "r").read()
         # Todo: handle tentacle sub-types
         raise NotImplementedError("Todo: handle tentacle sub-types")
         for tentacle_type in []:
@@ -67,7 +67,7 @@ class TentacleCreator:
 
     def parse_commands(self, commands) -> int:
         command_help = ""
-        for tentacle_type in TENTACLES_FOLDERS_ARCH:
+        for tentacle_type in constants.TENTACLES_FOLDERS_ARCH:
             command_help += f"- {tentacle_type}: Create a new {tentacle_type} tentacle\n"
 
         if commands:
@@ -85,7 +85,7 @@ class TentacleCreator:
             return 1
 
     def create_tentacle(self, tentacle_type):
-        if tentacle_type in TENTACLES_FOLDERS_ARCH:
+        if tentacle_type in constants.TENTACLES_FOLDERS_ARCH:
             try:
                 new_tentacle = CreatedTentacle(self.config, tentacle_type, self)
                 new_tentacle.ask_description(tentacle_type)
@@ -97,7 +97,7 @@ class TentacleCreator:
                 self.logger.error(f"Tentacle creation failed : {e}")
         else:
             self.logger.warning(f"This tentacle type '{tentacle_type}' does not exist. "
-                                f"Tentacle types are: {list(TENTACLES_FOLDERS_ARCH.keys())}")
+                                f"Tentacle types are: {list(constants.TENTACLES_FOLDERS_ARCH.keys())}")
 
 
 class CreatedTentacle:
@@ -115,15 +115,17 @@ class CreatedTentacle:
         self.requirements = []
         self.tests = []
 
-        self.config_file = self.get_config_path() if self.subtype in self.tentacle_creator.get_config_templates() else[]
-        self.logger = get_logger(self.__class__.__name__)
-        set_global_logger_level(INFO)
+        self.config_file = self.get_config_path() if self.subtype in \
+                                                     self.tentacle_creator.get_config_templates() else []
+        self.logger = common_logging.get_logger(self.__class__.__name__)
+        common_logging.set_global_logger_level(logging.INFO)
 
     def get_path(self):
-        return f"{TENTACLES_PATH}/{self.t_type}/{self.subtype}/{self.name}.py"
+        return f"{constants.TENTACLES_PATH}/{self.t_type}/{self.subtype}/{self.name}.py"
 
     def get_config_path(self):
-        return f"{TENTACLES_PATH}/{self.t_type}/{self.subtype}/{TENTACLE_CONFIG}/{self.name}{CONFIG_EXT}"
+        return f"{constants.TENTACLES_PATH}/{self.t_type}/{self.subtype}/" \
+               f"{constants.TENTACLE_CONFIG}/{self.name}{constants.CONFIG_EXT}"
 
     def get_name(self):
         return self.name
@@ -131,7 +133,7 @@ class CreatedTentacle:
     def ask_description(self, tentacle_type):
         self.name = input(f"Enter your new {self.t_type} tentacle name : ")
         while self.subtype == "":
-            sub_types = TENTACLES_FOLDERS_ARCH[tentacle_type]
+            sub_types = constants.TENTACLES_FOLDERS_ARCH[tentacle_type]
             if len(sub_types) > 1:
                 new_subtype = input(f"Choose your tentacle type in {sub_types} : ")
                 if new_subtype in sub_types:
@@ -143,8 +145,10 @@ class CreatedTentacle:
 
     def create_file(self):
         try:
-            desc_template = NativeEnvironment().from_string(self.tentacle_creator.get_templates()["Description"])
-            impl_template = NativeEnvironment().from_string(self.tentacle_creator.get_templates()[self.subtype])
+            desc_template = nativetypes.NativeEnvironment().from_string(
+                self.tentacle_creator.get_templates()["Description"])
+            impl_template = nativetypes.NativeEnvironment().from_string(
+                self.tentacle_creator.get_templates()[self.subtype])
             if not os.path.isfile(self.get_path()):
                 with open(self.get_path(), "w") as tentacle_file:
                     tentacle_file.write(self.header_separator)
@@ -156,7 +160,7 @@ class CreatedTentacle:
                                                              requirements=self.requirements,
                                                              tests=self.tests,
                                                              config=self.config_file))
-                    tentacle_file.write("\n"+self.header_separator)
+                    tentacle_file.write("\n" + self.header_separator)
                     tentacle_file.write(impl_template.render(name=self.name,
                                                              big_name=self.name.title(),
                                                              t_type=self.t_type,
@@ -174,7 +178,8 @@ class CreatedTentacle:
 
     def create_config_file(self):
         try:
-            cfg_template = NativeEnvironment().from_string(self.tentacle_creator.get_config_templates()[self.subtype])
+            cfg_template = nativetypes.NativeEnvironment().from_string(
+                self.tentacle_creator.get_config_templates()[self.subtype])
             if not os.path.isfile(self.get_config_path()):
                 with open(self.get_config_path(), "w") as config_file:
                     config_file.write(cfg_template.render()[1:])

@@ -17,9 +17,9 @@ import asyncio
 import os
 import sys
 
-from octobot_commons.enums import OctoBotTypes
-from octobot_commons.logging.logging_util import get_logger
-from octobot_commons.os_util import get_octobot_type
+import octobot_commons.enums as enums
+import octobot_commons.logging as logging
+import octobot_commons.os_util as os_util
 
 
 # TODO: adapt this wrapper to handle python modules requirements
@@ -35,15 +35,15 @@ Tentacles management
 
 
 async def install_tentacle(tentacle_path: str, tentacle_name: str) -> (str, str):
-    return await _run_pip_install(os.path.join(tentacle_path, "Trading"), tentacle_name)
+    return await _run_pip_install(path.join(tentacle_path, "Trading"), tentacle_name)
 
 
 async def update_tentacle(tentacle_path: str, tentacle_name: str) -> (str, str):
-    return await _run_pip_update(os.path.join(tentacle_path, "Trading"), tentacle_name)
+    return await _run_pip_update(path.join(tentacle_path, "Trading"), tentacle_name)
 
 
 async def list_installed_tentacles(tentacle_path: str) -> list:
-    return [await _run_pip_freeze(os.path.join(tentacle_path, tentacle_type_path))
+    return [await _run_pip_freeze(path.join(tentacle_path, tentacle_type_path))
             for tentacle_type_path in ["Trading"]]
 
 """
@@ -52,7 +52,7 @@ Pip wrapper
 
 
 async def _run_pip_command(args) -> (str, str):
-    if get_octobot_type() == OctoBotTypes.BINARY.value:
+    if os_util.get_octobot_type() == enums.OctoBotTypes.BINARY.value:
         raise RuntimeError("Can't use PIP in a frozen binary environment")
     # Create subprocess
     process = await asyncio.create_subprocess_exec(
@@ -62,16 +62,16 @@ async def _run_pip_command(args) -> (str, str):
     )
 
     # Status
-    get_logger().info(f"Started: {args}, pid={process.pid}")
+    logging.get_logger().info(f"Started: {args}, pid={process.pid}")
 
     # Wait for the subprocess to finish
     stdout, stderr = await process.communicate()
 
     # Progress
     if process.returncode == 0:
-        get_logger().info(f"Done: {args}, pid={process.pid}")
+        logging.get_logger().info(f"Done: {args}, pid={process.pid}")
     else:
-        get_logger().error(f"Failed: {args}, pid={process.pid}, result: {_parse_pip_command_result(stderr)}")
+        logging.get_logger().error(f"Failed: {args}, pid={process.pid}, result: {_parse_pip_command_result(stderr)}")
 
     return stdout, stderr
 

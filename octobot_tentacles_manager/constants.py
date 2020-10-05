@@ -13,8 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from os.path import join
-from octobot_commons.constants import USER_FOLDER, CONFIG_FOLDER
+import os.path as path
+import octobot_commons.constants as constants
 
 # Default tests tentacles URL
 DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/officials/base/tests/0.0.2-tests.zip"
@@ -30,7 +30,7 @@ CONFIG_EXT = ".json"
 DOCUMENTATION_EXT = ".md"
 CONFIG_SCHEMA_EXT = "_schema.json"
 TENTACLE_METADATA = "metadata.json"
-DEFAULT_TENTACLE_CONFIG = join(CONFIG_FOLDER, "default_tentacles_config.json")
+DEFAULT_TENTACLE_CONFIG = path.join(constants.CONFIG_FOLDER, "default_tentacles_config.json")
 
 # tentacles setup folders back list
 FOLDERS_BLACK_LIST = ["__pycache__"]
@@ -47,9 +47,9 @@ METADATA_TENTACLES_GROUP = "tentacles_group"
 TENTACLE_REQUIREMENT_VERSION_EQUALS = "=="
 
 # Tentacle user config files and folders
-USER_TENTACLE_CONFIG_PATH = join(USER_FOLDER, "tentacles_config")
-USER_TENTACLE_CONFIG_FILE_PATH = join(USER_TENTACLE_CONFIG_PATH, CONFIG_TENTACLES_FILE)
-USER_TENTACLE_SPECIFIC_CONFIG_PATH = join(USER_TENTACLE_CONFIG_PATH, "specific_config")
+USER_TENTACLE_CONFIG_PATH = path.join(constants.USER_FOLDER, "tentacles_config")
+USER_TENTACLE_CONFIG_FILE_PATH = path.join(USER_TENTACLE_CONFIG_PATH, CONFIG_TENTACLES_FILE)
+USER_TENTACLE_SPECIFIC_CONFIG_PATH = path.join(USER_TENTACLE_CONFIG_PATH, "specific_config")
 
 # Current minimum default tentacles version
 TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION = "1.2.0"

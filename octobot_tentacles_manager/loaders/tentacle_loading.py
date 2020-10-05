@@ -13,19 +13,19 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from os.path import join
+import os.path as path
 
-from octobot_tentacles_manager.constants import TENTACLES_PATH, TENTACLE_RESOURCES, DOCUMENTATION_EXT
-from octobot_tentacles_manager.models.tentacle import Tentacle
-from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.models as models
+import octobot_tentacles_manager.util as util
 
 # tentacle_data_by_tentacle_class is used to cache tentacles metadata
 _tentacle_by_tentacle_class = None
 
 
-def reload_tentacle_by_tentacle_class(tentacles_path=TENTACLES_PATH):
+def reload_tentacle_by_tentacle_class(tentacles_path=constants.TENTACLES_PATH):
     global _tentacle_by_tentacle_class
-    loaded_tentacles = load_tentacle_with_metadata(tentacles_path)
+    loaded_tentacles = util.load_tentacle_with_metadata(tentacles_path)
     _tentacle_by_tentacle_class = {
         klass: tentacle
         for tentacle in loaded_tentacles
@@ -43,20 +43,21 @@ def ensure_tentacles_metadata(tentacles_path) -> None:
 
 
 def get_resources_path(klass) -> str:
-    return join(get_tentacle_module_path(klass), TENTACLE_RESOURCES)
+    return path.join(get_tentacle_module_path(klass), constants.TENTACLE_RESOURCES)
 
 
 def get_tentacle_module_path(klass) -> str:
     tentacle = get_tentacle(klass)
-    return join(tentacle.tentacle_path, tentacle.name)
+    return path.join(tentacle.tentacle_path, tentacle.name)
 
 
 def get_documentation_file_path(klass) -> str:
     return \
-        join(get_resources_path(klass), f"{klass if isinstance(klass, str) else klass.get_name()}{DOCUMENTATION_EXT}")
+        path.join(get_resources_path(klass), f"{klass if isinstance(klass, str) else klass.get_name()}"
+                                             f"{constants.DOCUMENTATION_EXT}")
 
 
-def get_tentacle(klass) -> Tentacle:
+def get_tentacle(klass) -> models.Tentacle:
     try:
         return _tentacle_by_tentacle_class[klass if isinstance(klass, str) else klass.get_name()]
     except TypeError:

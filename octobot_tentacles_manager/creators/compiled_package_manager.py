@@ -16,25 +16,24 @@
 import asyncio
 import subprocess
 import sys
-from os import scandir, remove, getenv, getcwd, chdir
-from os.path import exists, join
-from shutil import rmtree
+import os
+import os.path as path
+import shutil
 
-from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.constants import TENTACLE_METADATA, COMPILED_TENTACLES_TO_REMOVE_ELEMENTS, \
-    COMPILED_TENTACLES_TO_KEEP_ELEMENTS, CYTHON_PXD_HEADER, PYTHON_EXT, CYTHON_EXT, SETUP_FILE, PYTHON_INIT_FILE, \
-    TENTACLE_TESTS, COMPILED_TENTACLES_TO_REMOVE_FOLDERS
-from octobot_tentacles_manager.util.file_util import find_or_create
+import octobot_commons.logging as logging
+
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.util as util
 
 
 async def cythonize_and_compile_tentacles(directory):
-    for element in scandir(directory):
-        if element.name == TENTACLE_METADATA:
+    for element in os.scandir(directory):
+        if element.name == constants.TENTACLE_METADATA:
             # this folder is a tentacle: cythonize
             # remove test folder
-            test_folder = join(directory, TENTACLE_TESTS)
-            if exists(test_folder):
-                rmtree(test_folder)
+            test_folder = path.join(directory, constants.TENTACLE_TESTS)
+            if path.exists(test_folder):
+                shutil.rmtree(test_folder)
             await _cythonize_tentacle(directory)
             _compile_tentacle(directory)
             _clean_up_compiled_tentacle(directory)
@@ -48,17 +47,17 @@ async def _cythonize_tentacle(directory):
     # do not compile test files
     await _ensure_cython_header_files(directory)
     # update files
-    if getenv('PACKAGER_UPDATE_FILES'):
+    if os.getenv('PACKAGER_UPDATE_FILES'):
         _update_files(directory)
     # add missing setup.py
-    if not exists(join(directory, SETUP_FILE)):
+    if not path.exists(path.join(directory, constants.SETUP_FILE)):
         await _create_setup_file(directory)
 
 
 async def _ensure_cython_header_files(directory):
     files = []
     directories = []
-    for element in scandir(directory):
+    for element in os.scandir(directory):
         if element.is_file():
             files.append(element.name)
         elif element.is_dir() and element.name:
@@ -66,11 +65,11 @@ async def _ensure_cython_header_files(directory):
     coros = []
     for element in files:
         element_simple_name = element.split(".")[0]
-        header_file = f"{element_simple_name}{CYTHON_EXT}"
-        if element.endswith(PYTHON_EXT) and header_file not in files:
+        header_file = f"{element_simple_name}{constants.CYTHON_EXT}"
+        if element.endswith(constants.PYTHON_EXT) and header_file not in files:
             # this python file has no existing header file: create default one
-            coros.append(find_or_create(join(directory, header_file),
-                                        is_directory=False, file_content=CYTHON_PXD_HEADER))
+            coros.append(util.find_or_create(path.join(directory, header_file),
+                                             is_directory=False, file_content=constants.CYTHON_PXD_HEADER))
     for directory in directories:
         coros.append(_ensure_cython_header_files(directory))
     await asyncio.gather(*coros)
@@ -78,15 +77,15 @@ async def _ensure_cython_header_files(directory):
 
 async def _create_setup_file(directory):
     package_list = _find_packages(directory)
-    await find_or_create(join(directory, SETUP_FILE), is_directory=False,
-                         file_content=_get_setup_file_content(package_list))
+    await util.find_or_create(path.join(directory, constants.SETUP_FILE), is_directory=False,
+                              file_content=_get_setup_file_content(package_list))
 
 
 def _find_packages(directory, parent_path=""):
     package_list = []
-    for element in scandir(directory):
-        if element.name.endswith(PYTHON_EXT) and element.name != PYTHON_INIT_FILE:
-            package_list.append(f"{parent_path}{element.name.split(PYTHON_EXT)[0]}")
+    for element in os.scandir(directory):
+        if element.name.endswith(constants.PYTHON_EXT) and element.name != constants.PYTHON_INIT_FILE:
+            package_list.append(f"{parent_path}{element.name.split(constants.PYTHON_EXT)[0]}")
         elif element.is_dir():
             package_list += _find_packages(element, parent_path=f"{parent_path}{element.name}.")
     return package_list
@@ -98,26 +97,27 @@ def _update_files(directory):
 
 
 def _compile_tentacle(directory):
-    previous_dir = getcwd()
-    chdir(directory)
+    previous_dir = os.getcwd()
+    os.chdir(directory)
     # Use subprocess.call() instead of sandbox.run_setup('setup.py', ['build_ext', '-i'])
     # to avoid multiple subsequent cythonization side effects.
     if subprocess.call([sys.executable, 'setup.py', 'build_ext', '-i']) != 0:
-        get_logger("CompiledPackageManager").error(f"Error when cythonizing {directory.path}, see above for details.")
-    chdir(previous_dir)
+        logging.get_logger("CompiledPackageManager").error(
+            f"Error when cythonizing {directory.path}, see above for details.")
+    os.chdir(previous_dir)
 
 
 def _clean_up_compiled_tentacle(directory):
-    for element in scandir(directory):
+    for element in os.scandir(directory):
         element_ext = element.name.split(".")[-1]
-        if element.name in COMPILED_TENTACLES_TO_REMOVE_FOLDERS or \
-                (f".{element_ext}" in COMPILED_TENTACLES_TO_REMOVE_ELEMENTS
-                 and element.name not in COMPILED_TENTACLES_TO_KEEP_ELEMENTS
+        if element.name in constants.COMPILED_TENTACLES_TO_REMOVE_FOLDERS or \
+                (f".{element_ext}" in constants.COMPILED_TENTACLES_TO_REMOVE_ELEMENTS
+                 and element.name not in constants.COMPILED_TENTACLES_TO_KEEP_ELEMENTS
                  and element.is_file()):
             if element.is_dir():
-                rmtree(element)
+                shutil.rmtree(element)
             elif element.is_file():
-                remove(element)
+                os.remove(element)
         elif element.is_dir():
             _clean_up_compiled_tentacle(element)
 

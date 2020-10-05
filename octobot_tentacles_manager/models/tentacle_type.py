@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from os.path import sep
+import os.path as path
 
 
 class TentacleType:
@@ -27,17 +27,17 @@ class TentacleType:
         module_name = import_path.split(".")[-1]
         tentacle_type_path = import_path.split(f"{root}.")[-1]\
             .replace(f".{module_name}", "")\
-            .replace(f".", sep)
+            .replace(f".", path.sep)
         return TentacleType(tentacle_type_path, module_name)
 
     def get_last_element(self):
-        return self.path.split(sep)[-1]
+        return self.path.split(path.sep)[-1]
 
     def get_root_type(self):
-        return self.path.split(sep)[0]
+        return self.path.split(path.sep)[0]
 
     def to_path(self):
         return self.path
 
     def __str__(self):
-        return self.path.replace(sep, ".")
+        return self.path.replace(path.sep, ".")
