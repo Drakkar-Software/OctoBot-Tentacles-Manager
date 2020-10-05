@@ -18,16 +18,16 @@ import asyncio
 import sys
 import aiohttp
 
-from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.api.creator import start_tentacle_creator, create_tentacles_package
-from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles, \
+import octobot_commons.logging as logging
+import octobot_tentacles_manager.api as creator 
+import octobot_tentacles_manager.api as api
     USER_HELP as INSTALL_USER_HELP, install_single_tentacle, repair_installation
-from octobot_tentacles_manager.api.uninstaller import uninstall_all_tentacles, uninstall_tentacles, \
+import octobot_tentacles_manager.api as uninstaller 
     USER_HELP as UNINSTALL_USER_HELP
-from octobot_tentacles_manager.api.updater import update_all_tentacles, update_tentacles, \
+import octobot_tentacles_manager.api as updater 
     USER_HELP as UPDATE_USER_HELP
-from octobot_tentacles_manager.constants import DEFAULT_BOT_PATH, DEFAULT_BOT_INSTALL_DIR
-from octobot_tentacles_manager import PROJECT_NAME
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager 
 
 
 async def _handle_package_manager_command(starting_args,
@@ -41,7 +41,7 @@ async def _handle_package_manager_command(starting_args,
                                           quite_mode,
                                           cythonize) -> int:
     error_count = 0
-    LOGGER = get_logger(f"{PROJECT_NAME}-CLI")
+    LOGGER = logging.get_logger(f"{PROJECT_NAME}-CLI")
     async with aiohttp.ClientSession() as aiohttp_session:
         include_dev_mode = starting_args.include_dev_mode
         if starting_args.creator:
@@ -119,9 +119,9 @@ def handle_tentacles_manager_command(starting_args,
                                      single_tentacle_type=None,
                                      export_tentacles_output=None,
                                      packed_tentacles_output=None,
-                                     bot_install_dir=DEFAULT_BOT_INSTALL_DIR) -> int:
+                                     bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR) -> int:
     tentacles_url = starting_args.location[0] if starting_args.location else tentacles_url
-    target_bot_dir = starting_args.directory[0] if starting_args.directory else DEFAULT_BOT_PATH
+    target_bot_dir = starting_args.directory[0] if starting_args.directory else constants.DEFAULT_BOT_PATH
     if starting_args.single_tentacle_install:
         single_tentacle_path = starting_args.single_tentacle_install[0]
         single_tentacle_type = starting_args.single_tentacle_install[1]
@@ -162,7 +162,7 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
                                                          "Example: -e myTentaclesFolder -d ./tentacles", nargs=1)
     tentacles_parser.add_argument("-a", "--all", help="Apply command to all available Tentacles.", action='store_true')
     tentacles_parser.add_argument("-d", "--directory", help=f"Path to the root of the OctoBot installation folder "
-                                                            f"to operate on. Default is '{DEFAULT_BOT_PATH}'.",
+                                                            f"to operate on. Default is '{constants.DEFAULT_BOT_PATH}'.",
                                   nargs=1)
     tentacles_parser.add_argument("-l", "--location", help="Tentacles package local path or url to find the "
                                                            "tentacles package to process.", nargs=1)

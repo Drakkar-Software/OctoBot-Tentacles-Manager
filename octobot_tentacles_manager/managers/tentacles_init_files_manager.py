@@ -13,10 +13,10 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from os.path import join, isfile
+import os.path as path
 
-from octobot_tentacles_manager.constants import PYTHON_INIT_FILE
-from octobot_tentacles_manager.util.file_util import find_or_create
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.util as util
 
 
 TENTACLE_IMPORT_HEADER = """from octobot_tentacles_manager.api.inspector import check_tentacle_version
@@ -27,17 +27,18 @@ NEW_LINE = "\n"
 
 
 async def find_or_create_module_init_file(module_root, modules):
-    await find_or_create(join(module_root, PYTHON_INIT_FILE), False, get_module_init_file_content(modules))
+    await util.find_or_create(path.join(module_root, constants.PYTHON_INIT_FILE), False,
+                              get_module_init_file_content(modules))
 
 
 async def create_tentacle_init_file_if_necessary(tentacle_module_path, tentacle):
-    init_file = join(tentacle_module_path, PYTHON_INIT_FILE)
-    await find_or_create(init_file, is_directory=False, file_content=_get_default_init_file_content(tentacle))
+    init_file = path.join(tentacle_module_path, constants.PYTHON_INIT_FILE)
+    await util.find_or_create(init_file, is_directory=False, file_content=_get_default_init_file_content(tentacle))
 
 
 def update_tentacle_type_init_file(tentacle, target_tentacle_path, remove_import=False):
     # Not async function to avoid conflict between read and write
-    init_file = join(target_tentacle_path, PYTHON_INIT_FILE)
+    init_file = path.join(target_tentacle_path, constants.PYTHON_INIT_FILE)
     if remove_import:
         # remove import line
         _remove_tentacle_from_tentacle_type_init_file(tentacle, init_file)
@@ -47,7 +48,7 @@ def update_tentacle_type_init_file(tentacle, target_tentacle_path, remove_import
 
 def _add_tentacle_to_tentacle_type_init_file(tentacle, init_file):
     init_content = ""
-    if isfile(init_file):
+    if path.isfile(init_file):
         # load import file
         with open(init_file, "r") as init_file_r:
             init_content = init_file_r.read()
@@ -63,7 +64,7 @@ def _add_tentacle_to_tentacle_type_init_file(tentacle, init_file):
 
 def _remove_tentacle_from_tentacle_type_init_file(tentacle, init_file):
     init_content_lines = []
-    if isfile(init_file):
+    if path.isfile(init_file):
         # load import file
         with open(init_file, "r") as init_file_r:
             init_content_lines = init_file_r.readlines()

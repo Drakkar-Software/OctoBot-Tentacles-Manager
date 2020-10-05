@@ -14,13 +14,13 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import json
-from os.path import exists
+import os.path as path
 
-from octobot_commons.config_manager import dump_json
+import octobot_commons.config_manager as config_manager
 
 
 def read_config(config_file: str) -> dict:
-    if exists(config_file):
+    if path.exists(config_file):
         with open(config_file, "r") as config_file_r:
             return json.loads(config_file_r.read())
     return {}
@@ -28,6 +28,6 @@ def read_config(config_file: str) -> dict:
 
 def write_config(config_file: str, content: dict) -> None:
     # create config content before opening file not to clear file or json dump exception
-    config_content = dump_json(content)
+    config_content = config_manager.dump_json(content)
     with open(config_file, "w+") as config_file_w:
         config_file_w.write(config_content)

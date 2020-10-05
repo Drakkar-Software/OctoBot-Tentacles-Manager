@@ -14,13 +14,11 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import json
-from os.path import join
+import os.path as path
 
 import aiofiles
 
-from octobot_tentacles_manager.constants import TENTACLE_METADATA, METADATA_VERSION, METADATA_ORIGIN_PACKAGE, \
-    METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, TENTACLE_REQUIREMENT_VERSION_EQUALS, METADATA_DEV_MODE, \
-    METADATA_TENTACLES_GROUP, UNKNOWN_TENTACLES_PACKAGE_LOCATION
+import octobot_tentacles_manager.constants as constants
 
 
 class Tentacle:
@@ -29,22 +27,23 @@ class Tentacle:
         self.name = name
         self.tentacle_type = tentacle_type
         self.tentacle_root_type = self.tentacle_type.get_root_type()
-        self.tentacle_path = join(self.tentacle_root_path, self.tentacle_type.to_path())
+        self.tentacle_path = path.join(self.tentacle_root_path, self.tentacle_type.to_path())
         self.version = None
         self.tentacle_class_names = []
-        self.origin_package = UNKNOWN_TENTACLES_PACKAGE_LOCATION
+        self.origin_package = constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
         self.tentacles_requirements = None
         self.tentacle_group = self.name
         self.in_dev_mode = False
         self.metadata = {}
 
     async def initialize(self):
-        async with aiofiles.open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
+        async with aiofiles.open(path.join(self.tentacle_path, self.name,
+                                           constants.TENTACLE_METADATA), "r") as metadata_file:
             self._read_metadata_dict(json.loads(await metadata_file.read()))
 
     def sync_initialize(self):
         try:
-            with open(join(self.tentacle_path, self.name, TENTACLE_METADATA), "r") as metadata_file:
+            with open(path.join(self.tentacle_path, self.name, constants.TENTACLE_METADATA), "r") as metadata_file:
                 self._read_metadata_dict(json.loads(metadata_file.read()))
         except FileNotFoundError:
             pass
@@ -75,18 +74,18 @@ class Tentacle:
 
     def _read_metadata_dict(self, metadata):
         self.metadata = metadata
-        self.version = self.metadata[METADATA_VERSION]
-        self.origin_package = self.metadata[METADATA_ORIGIN_PACKAGE]
-        self.tentacle_class_names = self.metadata[METADATA_TENTACLES]
-        self.tentacles_requirements = self.metadata[METADATA_TENTACLES_REQUIREMENTS]
+        self.version = self.metadata[constants.METADATA_VERSION]
+        self.origin_package = self.metadata[constants.METADATA_ORIGIN_PACKAGE]
+        self.tentacle_class_names = self.metadata[constants.METADATA_TENTACLES]
+        self.tentacles_requirements = self.metadata[constants.METADATA_TENTACLES_REQUIREMENTS]
         # self.tentacle_group is this tentacle name if no provided
-        self.tentacle_group = self.metadata.get(METADATA_TENTACLES_GROUP, self.name)
-        if METADATA_DEV_MODE in self.metadata:
-            self.in_dev_mode = self.metadata[METADATA_DEV_MODE]
+        self.tentacle_group = self.metadata.get(constants.METADATA_TENTACLES_GROUP, self.name)
+        if constants.METADATA_DEV_MODE in self.metadata:
+            self.in_dev_mode = self.metadata[constants.METADATA_DEV_MODE]
 
     @staticmethod
     def _parse_requirements(requirement):
-        if TENTACLE_REQUIREMENT_VERSION_EQUALS in requirement:
-            return requirement.split(TENTACLE_REQUIREMENT_VERSION_EQUALS)
+        if constants.TENTACLE_REQUIREMENT_VERSION_EQUALS in requirement:
+            return requirement.split(constants.TENTACLE_REQUIREMENT_VERSION_EQUALS)
         else:
             return [requirement, None]

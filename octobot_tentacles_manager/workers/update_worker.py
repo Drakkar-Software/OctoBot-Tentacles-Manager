@@ -13,14 +13,14 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from distutils.version import LooseVersion
+import distutils.version as loose_version
 
-from octobot_tentacles_manager.workers.install_worker import InstallWorker
-from octobot_tentacles_manager.models.tentacle import Tentacle
-from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
+import octobot_tentacles_manager.workers as workers
+import octobot_tentacles_manager.models as models
+import octobot_tentacles_manager.util as util
 
 
-class UpdateWorker(InstallWorker):
+class UpdateWorker(workers.InstallWorker):
 
     def __init__(self, reference_tentacles_dir, tentacle_path,
                  bot_installation_path, use_confirm_prompt, aiohttp_session, quite_mode=False):
@@ -29,14 +29,14 @@ class UpdateWorker(InstallWorker):
                          quite_mode=quite_mode)
 
     async def process(self, name_filter=None) -> int:
-        self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)
+        self.available_tentacles = util.load_tentacle_with_metadata(self.tentacle_path)
         return await super().process(name_filter)
 
     def _should_tentacle_be_processed(self, tentacle, name_filter):
         name = tentacle.name
         if name_filter is None or name in name_filter:
-            installed_tentacle = Tentacle.find(self.available_tentacles, name)
+            installed_tentacle = models.Tentacle.find(self.available_tentacles, name)
             if installed_tentacle is not None:
                 installed_version = installed_tentacle.version
-                return LooseVersion(installed_version) < LooseVersion(tentacle.version)
+                return loose_version.LooseVersion(installed_version) < loose_version.LooseVersion(tentacle.version)
         return False

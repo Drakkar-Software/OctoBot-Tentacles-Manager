@@ -13,13 +13,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_by_tentacle_class
-from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
+import octobot_tentacles_manager.loaders as loaders
+import octobot_tentacles_manager.managers as managers
 
 
 def load_tentacles(verbose=True) -> bool:
-    return TentaclesSetupManager.is_tentacles_arch_valid(verbose=verbose)
+    return managers.TentaclesSetupManager.is_tentacles_arch_valid(verbose=verbose)
 
 
 def reload_tentacle_info() -> None:
-    reload_tentacle_by_tentacle_class()
+    loaders.reload_tentacle_by_tentacle_class()
