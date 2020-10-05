@@ -13,16 +13,13 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from os.path import join
-from asyncio import gather, Event, wait_for
+import os.path as path
+import asyncio
 
-from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
-from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
-from octobot_tentacles_manager.constants import TENTACLES_ARCHIVE_ROOT, DEFAULT_TENTACLES_URL, DEFAULT_TENTACLE_CONFIG, \
-    DEFAULT_BOT_INSTALL_DIR
-from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
-from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
+import octobot_commons.logging as logging
+import octobot_tentacles_manager.managers as managers
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.util as util
 
 
 class TentaclesWorker:
@@ -35,20 +32,21 @@ class TentaclesWorker:
                  use_confirm_prompt,
                  aiohttp_session,
                  quite_mode=False,
-                 bot_install_dir=DEFAULT_BOT_INSTALL_DIR):
-        self.logger = get_logger(self.__class__.__name__)
+                 bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR):
+        self.logger = logging.get_logger(self.__class__.__name__)
         self.quite_mode = quite_mode
         self.aiohttp_session = aiohttp_session
         self.use_confirm_prompt = use_confirm_prompt
 
-        self.reference_tentacles_root = join(reference_tentacles_dir, TENTACLES_ARCHIVE_ROOT) \
-            if reference_tentacles_dir is not None else TENTACLES_ARCHIVE_ROOT
+        self.reference_tentacles_root = path.join(reference_tentacles_dir, constants.TENTACLES_ARCHIVE_ROOT) \
+            if reference_tentacles_dir is not None else constants.TENTACLES_ARCHIVE_ROOT
         self.bot_installation_path = bot_installation_path
-        self.tentacle_path = join(bot_installation_path, tentacle_path)
+        self.tentacle_path = path.join(bot_installation_path, tentacle_path)
         self.bot_install_dir = bot_install_dir
-        self.tentacles_setup_manager = TentaclesSetupManager(self.tentacle_path,
-                                                             self.bot_installation_path,
-                                                             join(self.bot_install_dir, DEFAULT_TENTACLE_CONFIG))
+        self.tentacles_setup_manager = managers.TentaclesSetupManager(self.tentacle_path,
+                                                                      self.bot_installation_path,
+                                                                      path.join(self.bot_install_dir,
+                                                                                constants.DEFAULT_TENTACLE_CONFIG))
         self.tentacles_path_or_url = None
         self.available_tentacles = []
 
@@ -62,7 +60,7 @@ class TentaclesWorker:
         self.fetched_for_requirements_tentacles = []
         self.fetched_for_requirements_tentacles_versions = {}
         self.fetching_requirements = False
-        self.requirements_downloading_event = Event()
+        self.requirements_downloading_event = asyncio.Event()
 
         self.tentacles_setup_config_to_update = None
 
@@ -75,7 +73,7 @@ class TentaclesWorker:
         self.fetched_for_requirements_tentacles = []
         self.fetched_for_requirements_tentacles_versions = {}
         self.fetching_requirements = False
-        self.requirements_downloading_event = Event()
+        self.requirements_downloading_event = asyncio.Event()
 
     def log_summary(self):
         if self.errors:
@@ -104,15 +102,15 @@ class TentaclesWorker:
         # TODO: handle python requirements
 
     async def _handle_tentacles_requirements(self, tentacle, callback):
-        missing_requirements = TentacleManager.find_tentacles_missing_requirements(tentacle,
-                                                                                   self.to_process_tentacle_modules,
-                                                                                   self.available_tentacles)
+        missing_requirements = managers.TentacleManager.find_tentacles_missing_requirements(tentacle,
+                                                                                            self.to_process_tentacle_modules,
+                                                                                            self.available_tentacles)
         if missing_requirements:
             if not self.fetching_requirements:
                 self.fetching_requirements = True
                 await self._fetch_all_available_tentacles()
             else:
-                await wait_for(self.requirements_downloading_event.wait(), self.TENTACLES_FETCHING_TIMEOUT)
+                await asyncio.wait_for(self.requirements_downloading_event.wait(), self.TENTACLES_FETCHING_TIMEOUT)
             await callback(tentacle, missing_requirements)
 
     def confirm_action(self, action):
@@ -129,15 +127,15 @@ class TentaclesWorker:
 
     async def _fetch_all_available_tentacles(self):
         # try getting it from available tentacles
-        await gather(*[self._fetch_tentacles_for_requirement(repo)
-                       for repo in TentaclesSetupManager.get_available_tentacles_repos()])
+        await asyncio.gather(*[self._fetch_tentacles_for_requirement(repo)
+                               for repo in managers.TentaclesSetupManager.get_available_tentacles_repos()])
         self.requirements_downloading_event.set()
 
     async def _fetch_tentacles_for_requirement(self, repo):
-        await fetch_and_extract_tentacles(repo, self.tentacles_path_or_url or DEFAULT_TENTACLES_URL,
-                                          self.aiohttp_session, merge_dirs=True)
-        requirements_tentacles_path = join(repo, TENTACLES_ARCHIVE_ROOT)
-        self.fetched_for_requirements_tentacles = load_tentacle_with_metadata(requirements_tentacles_path)
+        await util.fetch_and_extract_tentacles(repo, self.tentacles_path_or_url or constants.DEFAULT_TENTACLES_URL,
+                                               self.aiohttp_session, merge_dirs=True)
+        requirements_tentacles_path = path.join(repo, constants.TENTACLES_ARCHIVE_ROOT)
+        self.fetched_for_requirements_tentacles = util.load_tentacle_with_metadata(requirements_tentacles_path)
         self.fetched_for_requirements_tentacles_versions = \
             self._get_version_by_tentacle(self.fetched_for_requirements_tentacles)
 

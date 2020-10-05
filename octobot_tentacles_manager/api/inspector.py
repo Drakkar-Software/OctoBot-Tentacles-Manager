@@ -13,52 +13,52 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from distutils.version import LooseVersion
+import distutils.version as loose_version
 
-from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.constants import DEFAULT_TENTACLES_PACKAGE, \
-    TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION
-from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle, get_resources_path, \
-    get_documentation_file_path, get_tentacle_classes
+import octobot_commons.logging as logging
+
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.loaders as loaders
 
 
 def get_installed_tentacles_modules() -> set:
-    return set(tentacle for tentacle in get_tentacle_classes().values())
+    return set(tentacle for tentacle in loaders.get_tentacle_classes().values())
 
 
 def get_tentacle_group(klass) -> str:
-    return get_tentacle(klass).tentacle_group
+    return loaders.get_tentacle(klass).tentacle_group
 
 
 def get_tentacle_version(klass) -> str:
-    return get_tentacle(klass).version
+    return loaders.get_tentacle(klass).version
 
 
 def get_tentacle_origin_package(klass) -> str:
-    return get_tentacle(klass).origin_package
+    return loaders.get_tentacle(klass).origin_package
 
 
 def get_tentacle_module_name(klass) -> str:
-    return get_tentacle(klass).name
+    return loaders.get_tentacle(klass).name
 
 
 def get_tentacle_resources_path(klass) -> str:
-    return get_resources_path(klass)
+    return loaders.get_resources_path(klass)
 
 
 def get_tentacle_documentation_path(klass) -> str:
-    return get_documentation_file_path(klass)
+    return loaders.get_documentation_file_path(klass)
 
 
 def check_tentacle_version(version, name, origin_package, verbose=True) -> bool:
-    logger = get_logger("TentacleChecker")
+    logger = logging.get_logger("TentacleChecker")
     try:
-        if origin_package == DEFAULT_TENTACLES_PACKAGE:
-            if LooseVersion(version) < LooseVersion(TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION) \
-                    and verbose:
+        if origin_package == constants.DEFAULT_TENTACLES_PACKAGE:
+            if loose_version.LooseVersion(version) < loose_version.LooseVersion(
+                    constants.TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION) and verbose:
                 logger.error(f"Incompatible tentacle {name}: version {version}, "
-                             f"minimum expected: {TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION} this tentacle "
-                             f"may not work properly. Please update your tentacles ('start.py -p update {name}' "
+                             f"minimum expected: {constants.TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION} "
+                             f"this tentacle may not work properly. "
+                             f"Please update your tentacles ('start.py -p update {name}' "
                              f"or 'start.py -p update all')")
                 return False
     except Exception as e:

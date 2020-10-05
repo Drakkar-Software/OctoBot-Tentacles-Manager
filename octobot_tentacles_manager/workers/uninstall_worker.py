@@ -13,15 +13,14 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from asyncio import gather
+import asyncio 
 
-from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
-from octobot_tentacles_manager.managers.tentacles_init_files_manager import update_tentacle_type_init_file
-from octobot_tentacles_manager.workers.tentacles_worker import TentaclesWorker
-from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
+import octobot_tentacles_manager.managers as managers
+import octobot_tentacles_manager.workers as workers
+import octobot_tentacles_manager.util as util
 
 
-class UninstallWorker(TentaclesWorker):
+class UninstallWorker(workers.TentaclesWorker):
 
     async def process(self, name_filter=None) -> int:
         self.reset_worker()
@@ -33,12 +32,12 @@ class UninstallWorker(TentaclesWorker):
                                                                    bot_installation_path=self.bot_installation_path)
             else:
                 self.progress = 1
-                self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)
+                self.available_tentacles = util.load_tentacle_with_metadata(self.tentacle_path)
                 self.register_error_on_missing_tentacles(self.available_tentacles, name_filter)
                 to_uninstall_tentacles = [tentacle
                                           for tentacle in self.available_tentacles
                                           if tentacle.name in name_filter]
-                await gather(*[self._uninstall_tentacle(tentacle) for tentacle in to_uninstall_tentacles])
+                await asyncio.gather(*[self._uninstall_tentacle(tentacle) for tentacle in to_uninstall_tentacles])
             await self.tentacles_setup_manager.create_missing_tentacles_arch()
             await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
                 self.tentacles_setup_config_to_update,
@@ -50,9 +49,9 @@ class UninstallWorker(TentaclesWorker):
 
     async def _uninstall_tentacle(self, tentacle):
         try:
-            tentacle_manager = TentacleManager(tentacle)
+            tentacle_manager = managers.TentacleManager(tentacle)
             await tentacle_manager.uninstall_tentacle()
-            update_tentacle_type_init_file(tentacle, tentacle.tentacle_path, remove_import=True)
+            managers.update_tentacle_type_init_file(tentacle, tentacle.tentacle_path, remove_import=True)
             if not self.quite_mode:
                 self.logger.info(f"[{self.progress}/{self.total_steps}] uninstalled {tentacle}")
         except Exception as e:

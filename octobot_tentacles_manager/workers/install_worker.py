@@ -13,30 +13,29 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from asyncio import gather
+import asyncio
 
-from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
-from octobot_tentacles_manager.managers.tentacles_init_files_manager import update_tentacle_type_init_file
-from octobot_tentacles_manager.workers.tentacles_worker import TentaclesWorker
-from octobot_tentacles_manager.models.tentacle import Tentacle
-from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
+import octobot_tentacles_manager.managers as managers
+import octobot_tentacles_manager.workers as workers
+import octobot_tentacles_manager.models as models
+import octobot_tentacles_manager.util as util
 
 
-class InstallWorker(TentaclesWorker):
+class InstallWorker(workers.TentaclesWorker):
 
     async def process(self, name_filter=None) -> int:
         await self.tentacles_setup_manager.create_missing_tentacles_arch()
         self.reset_worker()
         self.progress = 1
-        all_tentacles = load_tentacle_with_metadata(self.reference_tentacles_root)
-        self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)
+        all_tentacles = util.load_tentacle_with_metadata(self.reference_tentacles_root)
+        self.available_tentacles = util.load_tentacle_with_metadata(self.tentacle_path)
         self.register_error_on_missing_tentacles(all_tentacles, name_filter)
         to_install_tentacles = [tentacle
                                 for tentacle in all_tentacles
                                 if self._should_tentacle_be_processed(tentacle, name_filter)]
         self.total_steps = len(to_install_tentacles)
         self.register_to_process_tentacles_modules(to_install_tentacles)
-        await gather(*[self._install_tentacle(tentacle) for tentacle in to_install_tentacles])
+        await asyncio.gather(*[self._install_tentacle(tentacle) for tentacle in to_install_tentacles])
         await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
             self.tentacles_setup_config_to_update,
             self.tentacles_path_or_url,
@@ -54,9 +53,9 @@ class InstallWorker(TentaclesWorker):
             if tentacle.name not in self.processed_tentacles_modules:
                 self.processed_tentacles_modules.append(tentacle.name)
                 await self.handle_requirements(tentacle, self._try_install_from_requirements)
-                tentacle_manager = TentacleManager(tentacle, self.bot_installation_path)
+                tentacle_manager = managers.TentacleManager(tentacle, self.bot_installation_path)
                 await tentacle_manager.install_tentacle(self.tentacle_path)
-                update_tentacle_type_init_file(tentacle, tentacle_manager.target_tentacle_path)
+                managers.update_tentacle_type_init_file(tentacle, tentacle_manager.target_tentacle_path)
                 if not self.quite_mode:
                     self.logger.info(f"[{self.progress}/{self.total_steps}] installed {tentacle}")
         except Exception as e:
@@ -68,10 +67,10 @@ class InstallWorker(TentaclesWorker):
 
     async def _try_install_from_requirements(self, tentacle, missing_requirements):
         for requirement, version in missing_requirements.items():
-            if TentacleManager.is_requirement_satisfied(requirement, version, tentacle,
-                                                        self.fetched_for_requirements_tentacles_versions,
-                                                        self.available_tentacles):
-                to_install_tentacle = Tentacle.find(self.fetched_for_requirements_tentacles, requirement)
+            if managers.TentacleManager.is_requirement_satisfied(requirement, version, tentacle,
+                                                                 self.fetched_for_requirements_tentacles_versions,
+                                                                 self.available_tentacles):
+                to_install_tentacle = models.Tentacle.find(self.fetched_for_requirements_tentacles, requirement)
                 if to_install_tentacle is not None:
                     await self._install_tentacle(to_install_tentacle)
                 else:

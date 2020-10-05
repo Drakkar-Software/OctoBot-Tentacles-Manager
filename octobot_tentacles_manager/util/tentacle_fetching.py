@@ -14,11 +14,12 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import aiofiles
-from zipfile import ZipFile
-from os import remove, path
-from shutil import rmtree
+import zipfile 
+import os
+import os.path as path
+import shutil
 
-from octobot_tentacles_manager.constants import TENTACLE_TYPES, TENTACLES_ARCHIVE_ROOT
+import octobot_tentacles_manager.constants as constants
 
 DOWNLOADED_DATA_CHUNK_SIZE = 60000
 
@@ -35,12 +36,12 @@ async def fetch_and_extract_tentacles(tentacles_temp_dir, tentacles_path_or_url,
         await _extract_tentacles(compressed_file, tentacles_temp_dir, merge_dirs)
     finally:
         if should_download and path.isfile(compressed_file):
-            remove(compressed_file)
+            os.remove(compressed_file)
 
 
 def cleanup_temp_dirs(target_path):
     if path.exists(target_path):
-        rmtree(target_path)
+        shutil.rmtree(target_path)
 
 
 async def _download_tentacles(target_file, download_URL, aiohttp_session):
@@ -58,8 +59,8 @@ async def _download_tentacles(target_file, download_URL, aiohttp_session):
 
 async def _extract_tentacles(source_path, target_path, merge_dirs):
     if path.exists(target_path) and path.isdir(target_path) and not merge_dirs:
-        rmtree(target_path)
-    with ZipFile(source_path) as zipped_tentacles:
+        shutil.rmtree(target_path)
+    with zipfile.ZipFile(source_path) as zipped_tentacles:
         for archive_member in zipped_tentacles.namelist():
             if _is_tentacle_valid_tentacle_file(archive_member):
                 zipped_tentacles.extract(archive_member, target_path)
@@ -68,8 +69,8 @@ async def _extract_tentacles(source_path, target_path, merge_dirs):
 def _is_tentacle_valid_tentacle_file(archive_member):
     member_path = archive_member.split("/")
     return len(member_path) >= 2 \
-        and member_path[0] == TENTACLES_ARCHIVE_ROOT \
-        and member_path[1] in TENTACLE_TYPES
+        and member_path[0] == constants.TENTACLES_ARCHIVE_ROOT \
+        and member_path[1] in constants.TENTACLE_TYPES
 
 
 def _is_url(string):

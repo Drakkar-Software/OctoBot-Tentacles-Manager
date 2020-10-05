@@ -13,18 +13,18 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from os.path import split
+import os.path as path
 
-from octobot_tentacles_manager.constants import DEFAULT_BOT_INSTALL_DIR
-from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
-from octobot_tentacles_manager.models.tentacle_type import TentacleType
-from octobot_tentacles_manager.workers.install_worker import InstallWorker
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.models as models
+import octobot_tentacles_manager.workers as workers
 
 
-class SingleInstallWorker(InstallWorker):
+class SingleInstallWorker(workers.InstallWorker):
 
     def __init__(self, reference_tentacles_dir, tentacle_path,
-                 bot_installation_path, use_confirm_prompt, aiohttp_session, bot_install_dir=DEFAULT_BOT_INSTALL_DIR):
+                 bot_installation_path, use_confirm_prompt, aiohttp_session,
+                 bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR):
         super().__init__(reference_tentacles_dir, tentacle_path,
                          bot_installation_path, use_confirm_prompt, aiohttp_session, bot_install_dir=bot_install_dir)
         self.single_tentacle_path = None
@@ -38,10 +38,10 @@ class SingleInstallWorker(InstallWorker):
             await self.tentacles_setup_manager.create_missing_tentacles_arch()
             self.progress = 1
             self.total_steps = 1
-            split_path = split(self.single_tentacle_path)
+            split_path = path.split(self.single_tentacle_path)
             tentacle_name = split_path[1]
-            factory = TentacleFactory(split_path[0])
-            tentacle = factory.create_tentacle_from_type(tentacle_name, TentacleType(self.single_tentacle_type))
+            factory = models.TentacleFactory(split_path[0])
+            tentacle = factory.create_tentacle_from_type(tentacle_name, models.TentacleType(self.single_tentacle_type))
             # remove tentacle type from tentacle origin path since in this context it doesn't exist in filesystem
             tentacle.tentacle_path = split_path[0]
             await tentacle.initialize()

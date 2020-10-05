@@ -13,17 +13,17 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_tentacles_manager.constants import TENTACLES_PATH, DEFAULT_BOT_PATH
-from octobot_tentacles_manager.api.util.tentacles_management import manage_tentacles
-from octobot_tentacles_manager.workers.uninstall_worker import UninstallWorker
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.api as util
+import octobot_tentacles_manager.workers as workers
 
 
 USER_HELP = """Uninstall the given tentacle modules.
     Does not delete the associated tentacle configuration."""
 
 
-async def uninstall_all_tentacles(tentacle_path=TENTACLES_PATH,
-                                  bot_path=DEFAULT_BOT_PATH,
+async def uninstall_all_tentacles(tentacle_path=constants.TENTACLES_PATH,
+                                  bot_path=constants.DEFAULT_BOT_PATH,
                                   use_confirm_prompt=False,
                                   quite_mode=False,
                                   setup_config=None) -> int:
@@ -35,8 +35,8 @@ async def uninstall_all_tentacles(tentacle_path=TENTACLES_PATH,
 
 
 async def uninstall_tentacles(tentacle_names,
-                              tentacle_path=TENTACLES_PATH,
-                              bot_path=DEFAULT_BOT_PATH,
+                              tentacle_path=constants.TENTACLES_PATH,
+                              bot_path=constants.DEFAULT_BOT_PATH,
                               use_confirm_prompt=False,
                               quite_mode=False) -> int:
     return await _uninstall_tentacles(tentacle_names,
@@ -47,11 +47,12 @@ async def uninstall_tentacles(tentacle_names,
 
 
 async def _uninstall_tentacles(tentacle_names,
-                               tentacle_path=TENTACLES_PATH,
-                               bot_path=DEFAULT_BOT_PATH,
+                               tentacle_path=constants.TENTACLES_PATH,
+                               bot_path=constants.DEFAULT_BOT_PATH,
                                use_confirm_prompt=False,
                                quite_mode=False,
                                tentacles_setup_config_to_update=None) -> int:
-    uninstall_worker = UninstallWorker(None, tentacle_path, bot_path, use_confirm_prompt, None, quite_mode=quite_mode)
+    uninstall_worker = workers.UninstallWorker(None, tentacle_path, bot_path, use_confirm_prompt,
+                                               None, quite_mode=quite_mode)
     uninstall_worker.tentacles_setup_config_to_update = tentacles_setup_config_to_update
-    return await manage_tentacles(uninstall_worker, tentacle_names)
+    return await util.manage_tentacles(uninstall_worker, tentacle_names)
