@@ -3,7 +3,7 @@ cython==0.29.21
 setuptools
 
 # Drakkar-Software requirements
-OctoBot-Commons>=1.3.43, <1.4
+OctoBot-Commons>=1.4.1, <1.5
 
 # async files management
 aiofiles>=0.4.0, <0.5
