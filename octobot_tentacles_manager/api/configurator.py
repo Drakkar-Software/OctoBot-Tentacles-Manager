@@ -13,31 +13,30 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from os.path import exists, join
+import os.path as path
 
-from octobot_commons.tentacles_management.class_inspector import get_all_classes_from_parent
-from octobot_tentacles_manager.api.installer import repair_installation
-from octobot_tentacles_manager.configuration.tentacle_configuration import get_config, \
-    factory_reset_config, get_config_schema_path, update_config
-from octobot_tentacles_manager.configuration.tentacles_setup_configuration import TentaclesSetupConfiguration
-from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH, TENTACLES_PATH, \
-    DEFAULT_BOT_INSTALL_DIR
+import octobot_commons.tentacles_management as tentacles_management
+
+import octobot_tentacles_manager.api as api
+import octobot_tentacles_manager.configuration as configuration
+import octobot_tentacles_manager.constants as constants
 
 
-async def ensure_setup_configuration(tentacle_path=TENTACLES_PATH, bot_path=DEFAULT_BOT_PATH,
-                                     bot_install_dir=DEFAULT_BOT_INSTALL_DIR) -> None:
-    if not exists(join(bot_path, USER_TENTACLE_CONFIG_FILE_PATH)):
-        await repair_installation(tentacle_path, bot_path, bot_install_dir, verbose=False)
+async def ensure_setup_configuration(tentacle_path=constants.TENTACLES_PATH, bot_path=constants.DEFAULT_BOT_PATH,
+                                     bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR) -> None:
+    if not path.exists(path.join(bot_path, constants.USER_TENTACLE_CONFIG_FILE_PATH)):
+        await api.repair_installation(tentacle_path, bot_path, bot_install_dir, verbose=False)
 
 
-def get_tentacles_setup_config(config_path=USER_TENTACLE_CONFIG_FILE_PATH) -> TentaclesSetupConfiguration:
-    setup_config = TentaclesSetupConfiguration(config_path=config_path)
+def get_tentacles_setup_config(
+        config_path=constants.USER_TENTACLE_CONFIG_FILE_PATH) -> configuration.TentaclesSetupConfiguration:
+    setup_config = configuration.TentaclesSetupConfiguration(config_path=config_path)
     setup_config.read_config()
     return setup_config
 
 
 def create_tentacles_setup_config_with_tentacles(*tentacles_classes):
-    setup_config = TentaclesSetupConfiguration()
+    setup_config = configuration.TentaclesSetupConfiguration()
     setup_config.from_activated_tentacles_classes(*tentacles_classes)
     return setup_config
 
@@ -56,7 +55,7 @@ def get_class_from_name_with_activated_required_tentacles(name,
                                                           parent_class,
                                                           tentacles_setup_config,
                                                           with_class_method=None):
-    for subclass in get_all_classes_from_parent(parent_class):
+    for subclass in tentacles_management.get_all_classes_from_parent(parent_class):
         # Filter sub classes to only use the one that is appropriate to the given name and that has its
         # tentacles requirements activated (identified by REQUIRED_ACTIVATED_TENTACLES iterable class attribute).
         if subclass.get_name() == name and \
@@ -97,16 +96,16 @@ def get_activated_tentacles(tentacles_setup_config) -> list:
 
 
 def update_tentacle_config(tentacle_class: object, config_data: dict) -> None:
-    update_config(tentacle_class, config_data)
+    configuration.update_config(tentacle_class, config_data)
 
 
 def get_tentacle_config(klass) -> dict:
-    return get_config(klass)
+    return configuration.get_config(klass)
 
 
 def factory_tentacle_reset_config(klass) -> None:
-    return factory_reset_config(klass)
+    return configuration.factory_reset_config(klass)
 
 
 def get_tentacle_config_schema_path(klass) -> str:
-    return get_config_schema_path(klass)
+    return configuration.get_config_schema_path(klass)

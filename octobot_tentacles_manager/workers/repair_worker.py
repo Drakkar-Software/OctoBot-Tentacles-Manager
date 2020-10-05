@@ -13,17 +13,15 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from asyncio import gather
-from os.path import join
+import asyncio 
+import os.path as path
 
-from octobot_tentacles_manager.managers.tentacle_manager import TentacleManager
-from octobot_tentacles_manager.managers.tentacles_init_files_manager import update_tentacle_type_init_file, \
-    create_tentacle_init_file_if_necessary
-from octobot_tentacles_manager.workers.tentacles_worker import TentaclesWorker
-from octobot_tentacles_manager.util.tentacle_explorer import load_tentacle_with_metadata
+import octobot_tentacles_manager.managers as managers
+import octobot_tentacles_manager.workers as workers
+import octobot_tentacles_manager.util as util
 
 
-class RepairWorker(TentaclesWorker):
+class RepairWorker(workers.TentaclesWorker):
 
     def __init__(self,
                  reference_tentacles_dir,
@@ -47,9 +45,9 @@ class RepairWorker(TentaclesWorker):
         await self.tentacles_setup_manager.create_missing_tentacles_arch()
         self.reset_worker()
         self.progress = 1
-        self.available_tentacles = load_tentacle_with_metadata(self.tentacle_path)
+        self.available_tentacles = util.load_tentacle_with_metadata(self.tentacle_path)
         self.total_steps = len(self.available_tentacles)
-        await gather(*[self._repair_tentacle(tentacle) for tentacle in self.available_tentacles])
+        await asyncio.gather(*[self._repair_tentacle(tentacle) for tentacle in self.available_tentacles])
         await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
             force_update_registered_tentacles=True
         )
@@ -58,11 +56,11 @@ class RepairWorker(TentaclesWorker):
 
     async def _repair_tentacle(self, tentacle):
         try:
-            tentacle_module_path = join(tentacle.tentacle_path, tentacle.name)
-            tentacle_manager = TentacleManager(tentacle, self.bot_installation_path)
-            await create_tentacle_init_file_if_necessary(tentacle_module_path, tentacle)
+            tentacle_module_path = path.join(tentacle.tentacle_path, tentacle.name)
+            tentacle_manager = managers.TentacleManager(tentacle, self.bot_installation_path)
+            await managers.create_tentacle_init_file_if_necessary(tentacle_module_path, tentacle)
             tentacle_manager.import_tentacle_config_if_any(tentacle_module_path)
-            update_tentacle_type_init_file(tentacle, tentacle.tentacle_path)
+            managers.update_tentacle_type_init_file(tentacle, tentacle.tentacle_path)
             if self.verbose:
                 self.logger.info(f"[{self.progress}/{self.total_steps}] {tentacle} ready to use")
         except Exception as e:

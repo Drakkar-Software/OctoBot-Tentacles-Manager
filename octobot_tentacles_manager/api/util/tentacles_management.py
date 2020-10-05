@@ -13,18 +13,18 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from octobot_commons.logging.logging_util import get_logger
-from octobot_tentacles_manager.constants import TENTACLES_INSTALL_TEMP_DIR
-from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_by_tentacle_class
-from octobot_tentacles_manager.util.tentacle_fetching import cleanup_temp_dirs, fetch_and_extract_tentacles
+import octobot_commons.logging as logging
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.loaders as loaders
+import octobot_tentacles_manager.util as tentacle_fetching 
 
 
 async def manage_tentacles(worker, tentacle_names, tentacles_path_or_url=None, aiohttp_session=None) -> int:
     errors_count = 0
-    logger = get_logger(__name__)
+    logger = logging.get_logger(__name__)
     try:
         if tentacles_path_or_url is not None:
-            await fetch_and_extract_tentacles(TENTACLES_INSTALL_TEMP_DIR, tentacles_path_or_url, aiohttp_session)
+            await fetch_and_extract_tentacles(constants.TENTACLES_INSTALL_TEMP_DIR, tentacles_path_or_url, aiohttp_session)
         errors_count = await worker.process(tentacle_names)
     except Exception as e:
         logger.exception(e, True, f"Exception during {worker.__class__.__name__} processing: {e}")
@@ -33,7 +33,7 @@ async def manage_tentacles(worker, tentacle_names, tentacles_path_or_url=None, a
             errors_count = 1
     finally:
         if tentacles_path_or_url is not None:
-            cleanup_temp_dirs(TENTACLES_INSTALL_TEMP_DIR)
+            cleanup_temp_dirs(constants.TENTACLES_INSTALL_TEMP_DIR)
         try:
             # reload tentacles data
             reload_tentacle_by_tentacle_class()
