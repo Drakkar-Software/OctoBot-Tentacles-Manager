@@ -17,6 +17,7 @@ import os.path as path
 
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.util as util
+import octobot_commons.logging as bot_logging
 
 
 TENTACLE_IMPORT_HEADER = """from octobot_tentacles_manager.api.inspector import check_tentacle_version
@@ -24,6 +25,7 @@ from octobot_commons.logging.logging_util import get_logger
 """
 
 NEW_LINE = "\n"
+LOGGER_NAME = "TentaclesInitFilesManager"
 
 
 async def find_or_create_module_init_file(module_root, modules):
@@ -33,7 +35,9 @@ async def find_or_create_module_init_file(module_root, modules):
 
 async def create_tentacle_init_file_if_necessary(tentacle_module_path, tentacle):
     init_file = path.join(tentacle_module_path, constants.PYTHON_INIT_FILE)
-    await util.find_or_create(init_file, is_directory=False, file_content=_get_default_init_file_content(tentacle))
+    if not path.isfile(init_file):
+        await util.find_or_create(init_file, is_directory=False,
+                                  file_content=_get_default_init_file_content(tentacle_module_path, tentacle))
 
 
 def update_tentacle_type_init_file(tentacle, target_tentacle_path, remove_import=False):
@@ -92,8 +96,14 @@ def get_module_init_file_content(modules):
     return NEW_LINE.join(f"from .{module} import *" for module in modules)
 
 
-def _get_default_init_file_content(tentacle):
-    return f"from .{tentacle.name} import {', '.join(tentacle.tentacle_class_names)}"
+def _get_default_init_file_content(tentacle_module_path, tentacle):
+    if path.isfile(path.join(tentacle_module_path, f"{tentacle.name}.py")):
+        return f"from .{tentacle.name} import {', '.join(tentacle.tentacle_class_names)}"
+    else:
+        bot_logging.get_logger(LOGGER_NAME).error(f"Impossible to generate {constants.PYTHON_INIT_FILE} content for "
+                                                  f"{tentacle_module_path}, please enter the relevant import lines to "
+                                                  f"be able to use this tentacle.")
+        return ""
 
 
 def _get_single_module_init_line(tentacle):
