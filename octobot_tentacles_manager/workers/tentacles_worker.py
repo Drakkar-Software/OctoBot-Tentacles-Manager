@@ -76,13 +76,15 @@ class TentaclesWorker:
         self.requirements_downloading_event = asyncio.Event()
 
     def log_summary(self):
-        if self.errors:
-            if not self.quite_mode:
-                self.logger.info(" *** Error summary: ***")
-            for error in self.errors:
-                self.logger.error(f"Error when handling tentacle: {error}")
-        elif not self.quite_mode:
-            self.logger.info(" *** All tentacles have been successfully processed ***")
+        if not self.quite_mode:
+            url_identifier = f" from '{self.tentacles_path_or_url.split('tentacles/')[-1]}'" \
+                if self.tentacles_path_or_url else ""
+            if self.errors:
+                self.logger.info(f" *** Error summary{url_identifier}: ***")
+                for error in self.errors:
+                    self.logger.error(f"Error when handling tentacle: {error}")
+            else:
+                self.logger.info(f" *** All tentacles{url_identifier} have been successfully processed ***")
 
     def register_to_process_tentacles_modules(self, to_process_tentacle):
         self.to_process_tentacle_modules = self._get_version_by_tentacle(to_process_tentacle)
