@@ -84,13 +84,8 @@ class TentacleManager:
         reference_tentacle_path = path.join(self.tentacle.tentacle_path, self.tentacle.name)
         await util.find_or_create(target_tentacle_path)
         for tentacle_file_entry in os.scandir(reference_tentacle_path):
-            target_file_or_dir = path.join(target_tentacle_path, tentacle_file_entry.name)
-            if tentacle_file_entry.is_file():
-                shutil.copyfile(tentacle_file_entry, target_file_or_dir)
-            else:
-                if path.exists(target_file_or_dir):
-                    shutil.rmtree(target_file_or_dir)
-                shutil.copytree(tentacle_file_entry, target_file_or_dir)
+            await util.replace_with_remove_or_rename(tentacle_file_entry,
+                                                     path.join(target_tentacle_path, tentacle_file_entry.name))
 
     def import_tentacle_config_if_any(self, tentacle_module_path, replace=False):
         target_tentacle_config_path = path.join(tentacle_module_path, constants.TENTACLE_CONFIG)

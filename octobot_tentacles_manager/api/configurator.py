@@ -20,6 +20,7 @@ import octobot_commons.tentacles_management as tentacles_management
 import octobot_tentacles_manager.api as api
 import octobot_tentacles_manager.configuration as configuration
 import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.util as util
 
 
 async def ensure_setup_configuration(tentacle_path=constants.TENTACLES_PATH, bot_path=constants.DEFAULT_BOT_PATH,
@@ -109,3 +110,7 @@ def factory_tentacle_reset_config(klass) -> None:
 
 def get_tentacle_config_schema_path(klass) -> str:
     return configuration.get_config_schema_path(klass)
+
+
+def get_compiled_tentacles_url(base_url, version) -> str:
+    return f"{base_url}{util.get_local_arch_download_path()}/{version}.zip"
