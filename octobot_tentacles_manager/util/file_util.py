@@ -16,6 +16,9 @@
 import aiofiles
 import os
 import os.path as path
+import shutil
+
+import octobot_tentacles_manager.constants as constants
 
 
 async def find_or_create(path_to_create, is_directory=True, file_content=""):
@@ -30,3 +33,23 @@ async def find_or_create(path_to_create, is_directory=True, file_content=""):
                     await file.write(file_content)
         return True
     return False
+
+
+async def replace_with_remove_or_rename(new_file_or_dir_entry, dest_file_or_dir):
+    try:
+        if path.isfile(dest_file_or_dir):
+            os.remove(dest_file_or_dir)
+        else:
+            if path.exists(dest_file_or_dir):
+                shutil.rmtree(dest_file_or_dir)
+    except PermissionError:
+        # can't remove file / folder: might be locked (ex: .pyd files)
+        # move it into TO_REMOVE_FOLDER for it to be deleted afterwards
+        dest_path, dest_file = path.split(dest_file_or_dir)
+        to_rm_folder = path.join(dest_path, constants.TO_REMOVE_FOLDER)
+        await find_or_create(to_rm_folder, is_directory=True)
+        shutil.move(dest_file_or_dir, path.join(to_rm_folder, dest_file))
+    if path.isfile(new_file_or_dir_entry):
+        shutil.copyfile(new_file_or_dir_entry, dest_file_or_dir)
+    else:
+        shutil.copytree(new_file_or_dir_entry, dest_file_or_dir)

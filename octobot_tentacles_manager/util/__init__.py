@@ -21,17 +21,21 @@ from octobot_tentacles_manager.util import file_util
 from octobot_tentacles_manager.util.tentacle_fetching import (
     cleanup_temp_dirs,
     fetch_and_extract_tentacles,
+    get_local_arch_download_path,
 )
 from octobot_tentacles_manager.util.tentacle_explorer import (
     load_tentacle_with_metadata,
 )
 from octobot_tentacles_manager.util.file_util import (
     find_or_create,
+    replace_with_remove_or_rename,
 )
 
 __all__ = [
     "cleanup_temp_dirs",
     "fetch_and_extract_tentacles",
+    "get_local_arch_download_path",
     "load_tentacle_with_metadata",
     "find_or_create",
+    "replace_with_remove_or_rename",
 ]

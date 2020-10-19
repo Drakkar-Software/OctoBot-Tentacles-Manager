@@ -29,7 +29,7 @@ import octobot_tentacles_manager
 
 
 async def _handle_package_manager_command(starting_args,
-                                          tentacles_url,
+                                          tentacles_urls,
                                           target_dir,
                                           bot_install_dir,
                                           single_tentacle_path,
@@ -64,47 +64,49 @@ async def _handle_package_manager_command(starting_args,
             LOGGER.error("Please provide at least one tentacle name or add the '--all' parameter")
             return 1
         elif starting_args.install:
-            if tentacles_url is None:
-                LOGGER.error("Please provide a tentacle path or URL")
-                return 1
-            if starting_args.all:
-                error_count = await api.install_all_tentacles(tentacles_url,
+            for tentacles_url in tentacles_urls:
+                if tentacles_url is None:
+                    LOGGER.error("Please provide a tentacle path or URL")
+                    error_count += 1
+                elif starting_args.all:
+                    error_count += await api.install_all_tentacles(tentacles_url,
+                                                                   bot_path=target_dir,
+                                                                   aiohttp_session=aiohttp_session,
+                                                                   quite_mode=quite_mode,
+                                                                   bot_install_dir=bot_install_dir)
+                else:
+                    error_count += await api.install_tentacles(starting_args.tentacle_names,
+                                                               tentacles_url,
+                                                               bot_path=target_dir,
+                                                               aiohttp_session=aiohttp_session,
+                                                               quite_mode=quite_mode,
+                                                               bot_install_dir=bot_install_dir)
+        elif starting_args.update:
+            for tentacles_url in tentacles_urls:
+                if tentacles_url is None:
+                    LOGGER.error("Please provide a tentacle path or URL")
+                    error_count += 1
+                elif starting_args.all:
+                    error_count += await api.update_all_tentacles(tentacles_url,
+                                                                  bot_path=target_dir,
+                                                                  aiohttp_session=aiohttp_session,
+                                                                  quite_mode=quite_mode)
+                else:
+                    error_count += await api.update_tentacles(starting_args.tentacle_names,
+                                                              tentacles_url,
                                                               bot_path=target_dir,
                                                               aiohttp_session=aiohttp_session,
-                                                              quite_mode=quite_mode,
-                                                              bot_install_dir=bot_install_dir)
-            else:
-                error_count = await api.install_tentacles(starting_args.tentacle_names,
-                                                          tentacles_url,
-                                                          bot_path=target_dir,
-                                                          aiohttp_session=aiohttp_session,
-                                                          quite_mode=quite_mode,
-                                                          bot_install_dir=bot_install_dir)
-        elif starting_args.update:
-            if tentacles_url is None:
-                LOGGER.error("Please provide a tentacle path or URL")
-                return 1
-            if starting_args.all:
-                error_count = await api.update_all_tentacles(tentacles_url,
-                                                             bot_path=target_dir,
-                                                             aiohttp_session=aiohttp_session,
-                                                             quite_mode=quite_mode)
-            else:
-                error_count = await api.update_tentacles(starting_args.tentacle_names,
-                                                         tentacles_url,
-                                                         bot_path=target_dir,
-                                                         aiohttp_session=aiohttp_session,
-                                                         quite_mode=quite_mode)
+                                                              quite_mode=quite_mode)
         elif starting_args.uninstall:
             if starting_args.all:
-                error_count = await api.uninstall_all_tentacles(bot_path=target_dir,
-                                                                use_confirm_prompt=starting_args.force,
-                                                                quite_mode=quite_mode)
+                error_count += await api.uninstall_all_tentacles(bot_path=target_dir,
+                                                                 use_confirm_prompt=starting_args.force,
+                                                                 quite_mode=quite_mode)
             else:
-                error_count = await api.uninstall_tentacles(starting_args.tentacle_names,
-                                                            bot_path=target_dir,
-                                                            use_confirm_prompt=starting_args.force,
-                                                            quite_mode=quite_mode)
+                error_count += await api.uninstall_tentacles(starting_args.tentacle_names,
+                                                             bot_path=target_dir,
+                                                             use_confirm_prompt=starting_args.force,
+                                                             quite_mode=quite_mode)
     if error_count > 0:
         LOGGER.error(f"{error_count} errors occurred while processing tentacles.")
         return 1
@@ -112,13 +114,13 @@ async def _handle_package_manager_command(starting_args,
 
 
 def handle_tentacles_manager_command(starting_args,
-                                     tentacles_url=None,
+                                     tentacles_urls=None,
                                      single_tentacle_path=None,
                                      single_tentacle_type=None,
                                      export_tentacles_output=None,
                                      packed_tentacles_output=None,
                                      bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR) -> int:
-    tentacles_url = starting_args.location[0] if starting_args.location else tentacles_url
+    tentacles_urls = [starting_args.location[0]] if starting_args.location else tentacles_urls
     target_bot_dir = starting_args.directory[0] if starting_args.directory else constants.DEFAULT_BOT_PATH
     if starting_args.single_tentacle_install:
         single_tentacle_path = starting_args.single_tentacle_install[0]
@@ -126,7 +128,7 @@ def handle_tentacles_manager_command(starting_args,
     export_tentacles_output = starting_args.export[0] if starting_args.export else export_tentacles_output
     packed_tentacles_output = starting_args.pack[0] if starting_args.pack else packed_tentacles_output
     return asyncio.run(_handle_package_manager_command(starting_args,
-                                                       tentacles_url,
+                                                       tentacles_urls,
                                                        target_bot_dir,
                                                        bot_install_dir,
                                                        single_tentacle_path,
