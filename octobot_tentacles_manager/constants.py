@@ -15,6 +15,7 @@
 #  License along with this library.
 import os.path as path
 import octobot_commons.constants as constants
+import octobot_commons.enums as enums
 
 # Default tests tentacles URL
 DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/officials/base/tests/0.0.2-tests.zip"
@@ -62,6 +63,7 @@ UNKNOWN_TENTACLES_PACKAGE_LOCATION = "Unknown package location"
 TENTACLES_INSTALL_TEMP_DIR = "temp_tentacles"
 TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR = "requirements_temp_tentacles"
 TENTACLES_ARCHIVE_ROOT = "reference_tentacles"
+TO_REMOVE_FOLDER = "_to_rm"
 
 # Tentacles folders
 TENTACLES_PATH = "tentacles"
@@ -162,3 +164,10 @@ TENTACLE_TYPES = [
     TENTACLES_SERVICES_PATH,
     TENTACLES_TRADING_PATH
 ]
+
+# compiled tentacles paths
+PLATFORM_TO_DOWNLOAD_PATH = {
+    enums.PlatformsName.WINDOWS: "windows",
+    enums.PlatformsName.LINUX: "linux",
+    enums.PlatformsName.MAC: "macos",
+}

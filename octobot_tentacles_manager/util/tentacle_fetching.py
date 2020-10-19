@@ -18,8 +18,11 @@ import zipfile
 import os
 import os.path as path
 import shutil
+import sys
 
 import octobot_tentacles_manager.constants as constants
+import octobot_commons.os_util as os_util
+import octobot_commons.enums as commons_enums
 
 DOWNLOADED_DATA_CHUNK_SIZE = 60000
 
@@ -42,6 +45,19 @@ async def fetch_and_extract_tentacles(tentacles_temp_dir, tentacles_path_or_url,
 def cleanup_temp_dirs(target_path):
     if path.exists(target_path):
         shutil.rmtree(target_path)
+
+
+def get_local_arch_download_path():
+    current_os = constants.PLATFORM_TO_DOWNLOAD_PATH[os_util.get_os()]
+    return f"{current_os}/{_get_local_arch_path(current_os)}"
+
+
+def _get_local_arch_path(current_os):
+    is_x64 = sys.maxsize > 2**32
+    arch = "x64" if is_x64 else "x86"
+    if current_os == constants.PLATFORM_TO_DOWNLOAD_PATH[commons_enums.PlatformsName.LINUX] and arch == "x64":
+        return "x86_64"
+    return arch
 
 
 async def _download_tentacles(target_file, download_URL, aiohttp_session):
