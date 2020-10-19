@@ -119,7 +119,8 @@ def handle_tentacles_manager_command(starting_args,
                                      single_tentacle_type=None,
                                      export_tentacles_output=None,
                                      packed_tentacles_output=None,
-                                     bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR) -> int:
+                                     bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR,
+                                     quite=False) -> int:
     tentacles_urls = [starting_args.location[0]] if starting_args.location else tentacles_urls
     target_bot_dir = starting_args.directory[0] if starting_args.directory else constants.DEFAULT_BOT_PATH
     if starting_args.single_tentacle_install:
@@ -127,6 +128,7 @@ def handle_tentacles_manager_command(starting_args,
         single_tentacle_type = starting_args.single_tentacle_install[1]
     export_tentacles_output = starting_args.export[0] if starting_args.export else export_tentacles_output
     packed_tentacles_output = starting_args.pack[0] if starting_args.pack else packed_tentacles_output
+    quite_mode = starting_args.quite or quite
     return asyncio.run(_handle_package_manager_command(starting_args,
                                                        tentacles_urls,
                                                        target_bot_dir,
@@ -135,7 +137,7 @@ def handle_tentacles_manager_command(starting_args,
                                                        single_tentacle_type,
                                                        export_tentacles_output,
                                                        packed_tentacles_output,
-                                                       starting_args.quite,
+                                                       quite_mode,
                                                        starting_args.cythonize))
 
 
