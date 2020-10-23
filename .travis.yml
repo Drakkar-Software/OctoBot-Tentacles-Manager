@@ -1,7 +1,7 @@
 notifications:
   email: false
-dist: xenial
 os: linux
+dist: xenial
 language: python
 cache: pip
 python: 3.8-dev
@@ -16,19 +16,15 @@ install:
 
 jobs:
   include:
-    - name: "Linux - Python 3.8-dev - Python sources"
+    - name: "Linux - Python 3.8 - Python sources"
       stage: test
-      os: linux
-      language: python
       script:
         - pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
       after_success:
         - if [ $TRAVIS_PULL_REQUEST == "false" ]; then coveralls; fi
 
-    - name: "Linux - Python 3.8-dev - Installed"
+    - name: "Linux - Python 3.8 - Installed"
       stage: test
-      os: linux
-      language: python
       script:
         - python3 setup.py build_ext --inplace
         - python3 setup.py install
