@@ -19,9 +19,9 @@ from os import path, walk
 
 from octobot_tentacles_manager.constants import TENTACLE_TYPES, TENTACLES_ARCHIVE_ROOT, DEFAULT_TENTACLES_URL
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles, cleanup_temp_dirs
+from tests import event_loop
 
 # All test coroutines will be treated as marked.
-
 pytestmark = pytest.mark.asyncio
 
 temp_dir = "tests_temp"
@@ -31,8 +31,8 @@ async def test_fetch_and_extract_tentacles_using_download():
     _cleanup()
     # ensure cleanup is working
     assert not path.isdir(temp_dir)
-    session = aiohttp.ClientSession()
-    await fetch_and_extract_tentacles(temp_dir, DEFAULT_TENTACLES_URL, session)
+    async with aiohttp.ClientSession() as session:
+        await fetch_and_extract_tentacles(temp_dir, DEFAULT_TENTACLES_URL, session)
     _test_temp_tentacles()
     _cleanup()
 
@@ -41,9 +41,9 @@ async def test_fetch_and_extract_tentacles_using_download_with_wrong_url():
     _cleanup()
     # ensure cleanup is working
     assert not path.isdir(temp_dir)
-    session = aiohttp.ClientSession()
-    with pytest.raises(RuntimeError):
-        await fetch_and_extract_tentacles(temp_dir, DEFAULT_TENTACLES_URL+"1213113a", session)
+    async with aiohttp.ClientSession() as session:
+        with pytest.raises(RuntimeError):
+            await fetch_and_extract_tentacles(temp_dir, DEFAULT_TENTACLES_URL+"1213113a", session)
     _cleanup()
 
 

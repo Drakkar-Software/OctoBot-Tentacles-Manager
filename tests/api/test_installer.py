@@ -29,6 +29,8 @@ from octobot_tentacles_manager.constants import TENTACLES_PATH, TENTACLES_REQUIR
     PYTHON_INIT_FILE, TENTACLES_NOTIFIERS_PATH, USER_TENTACLE_CONFIG_PATH, CONFIG_TENTACLES_FILE, \
     USER_TENTACLE_SPECIFIC_CONFIG_PATH, TENTACLES_SERVICES_PATH, TENTACLES_BACKTESTING_PATH, TENTACLES_EVALUATOR_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
+from tests import event_loop
+
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
