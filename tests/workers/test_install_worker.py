@@ -25,11 +25,11 @@ from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, USER_
     TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH, \
     UNKNOWN_TENTACLES_PACKAGE_LOCATION
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
-
-# All test coroutines will be treated as marked.
 from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
+from tests import event_loop
 
+# All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
 temp_dir = "temp_tests"
