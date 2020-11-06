@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import asyncio
-import os
+import os.path as path
 import sys
 
 import octobot_commons.enums as enums
