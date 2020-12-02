@@ -24,7 +24,9 @@ def start_tentacle_creator(config, commands) -> int:
 
 
 async def create_tentacles_package(package_name, tentacles_folder=constants.TENTACLES_PATH,
+                                   exported_tentacles_package=None,
                                    in_zip=True, with_dev_mode=False, cythonize=False) -> int:
     return await tentacles_package_creator.create_tentacles_package_from_local_tentacles(package_name, tentacles_folder,
+                                                                                         exported_tentacles_package,
                                                                                          in_zip, with_dev_mode,
                                                                                          cythonize)

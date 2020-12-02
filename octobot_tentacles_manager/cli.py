@@ -35,6 +35,7 @@ async def _handle_package_manager_command(starting_args,
                                           single_tentacle_path,
                                           single_tentacle_type,
                                           export_tentacles_output,
+                                          exported_tentacles_package,
                                           packed_tentacles_output,
                                           quite_mode,
                                           cythonize) -> int:
@@ -48,10 +49,12 @@ async def _handle_package_manager_command(starting_args,
             error_count = await api.repair_installation(bot_path=target_dir)
         elif starting_args.export:
             error_count = await api.create_tentacles_package(export_tentacles_output, target_dir,
+                                                             exported_tentacles_package=exported_tentacles_package,
                                                              in_zip=False, with_dev_mode=include_dev_mode,
                                                              cythonize=cythonize)
         elif starting_args.pack:
             error_count = await api.create_tentacles_package(packed_tentacles_output, target_dir,
+                                                             exported_tentacles_package=exported_tentacles_package,
                                                              in_zip=True, with_dev_mode=include_dev_mode,
                                                              cythonize=cythonize)
         elif single_tentacle_path:
@@ -118,6 +121,7 @@ def handle_tentacles_manager_command(starting_args,
                                      single_tentacle_path=None,
                                      single_tentacle_type=None,
                                      export_tentacles_output=None,
+                                     exported_tentacles_package=None,
                                      packed_tentacles_output=None,
                                      bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR,
                                      quite=False) -> int:
@@ -127,6 +131,8 @@ def handle_tentacles_manager_command(starting_args,
         single_tentacle_path = starting_args.single_tentacle_install[0]
         single_tentacle_type = starting_args.single_tentacle_install[1]
     export_tentacles_output = starting_args.export[0] if starting_args.export else export_tentacles_output
+    exported_tentacles_package = starting_args.export[1] if len(starting_args.export) > 1 \
+        else exported_tentacles_package
     packed_tentacles_output = starting_args.pack[0] if starting_args.pack else packed_tentacles_output
     quite_mode = starting_args.quite or quite
     return asyncio.run(_handle_package_manager_command(starting_args,
@@ -136,6 +142,7 @@ def handle_tentacles_manager_command(starting_args,
                                                        single_tentacle_path,
                                                        single_tentacle_type,
                                                        export_tentacles_output,
+                                                       exported_tentacles_package,
                                                        packed_tentacles_output,
                                                        quite_mode,
                                                        starting_args.cythonize))
@@ -158,10 +165,16 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
                                                        "Specify source folder using the --directory argument.\n"
                                                        "Add --cythonize to cythonize and compile the packed tentacles."
                                                        "Example: -p myTentaclesPackage.zip -d ./tentacles", nargs=1)
-    tentacles_parser.add_argument("-e", "--export", help="Export tentacles into a folder containing all tentacles "
+    tentacles_parser.add_argument("-e", "--export", help="Export tentacles into a folder containing tentacles "
                                                          "in the given folder. Removes installation generated files. "
-                                                         "Specify source folder using the --directory argument.\n"
-                                                         "Example: -e myTentaclesFolder -d ./tentacles", nargs=1)
+                                                         "Exported tentacles can be filtered to only be the ones from a"
+                                                         " given package by using the package name as a second "
+                                                         "argument. Specify source folder using the --directory "
+                                                         "argument.\n"
+                                                         "Example (all tentacles): -e myTentaclesFolder -d ./tentacles"
+                                                         "\nother example (tentacles from 'OctoBot-Default-Tentacles' "
+                                                         "package): -e myTentaclesFolder OctoBot-Default-Tentacles "
+                                                         "-d ./tentacles", nargs="+")
     tentacles_parser.add_argument("-a", "--all", help="Apply command to all available Tentacles.", action='store_true')
     tentacles_parser.add_argument("-d", "--directory", help=f"Path to the root of the OctoBot installation folder "
                                                             f"to operate on. Default is '{constants.DEFAULT_BOT_PATH}'.",
