@@ -26,6 +26,14 @@ def load_tentacle_with_metadata(tentacle_path: str):
     return loaded_tentacles
 
 
+def get_tentacles_from_package(tentacles, package_name: str):
+    return [
+        tentacle
+        for tentacle in tentacles
+        if tentacle.origin_package == package_name
+    ]
+
+
 def _load_all_metadata(tentacles):
     for tentacle in tentacles:
         tentacle.sync_initialize()
@@ -33,11 +41,13 @@ def _load_all_metadata(tentacles):
 
 def _parse_all_tentacles(root: str):
     factory = models.TentacleFactory(root)
-    return [factory.create_tentacle_from_type(tentacle_entry.name, tentacle_type)
-            for tentacle_type in _get_tentacle_types(root)
-            for tentacle_entry in os.scandir(path.join(root, tentacle_type.to_path()))
-            if not (tentacle_entry.name == constants.PYTHON_INIT_FILE or
-                    tentacle_entry.name in constants.FOLDERS_BLACK_LIST)]
+    return [
+        factory.create_tentacle_from_type(tentacle_entry.name, tentacle_type)
+        for tentacle_type in _get_tentacle_types(root)
+        for tentacle_entry in os.scandir(path.join(root, tentacle_type.to_path()))
+        if not (tentacle_entry.name == constants.PYTHON_INIT_FILE or
+                tentacle_entry.name in constants.FOLDERS_BLACK_LIST)
+    ]
 
 
 def _get_tentacle_types(ref_tentacles_root):
@@ -75,8 +85,9 @@ def _add_tentacle_type_if_is_valid(tentacle_type_entry: os.DirEntry,
 
 
 def _has_tentacle_in_direct_sub_directories(directory_entry: os.DirEntry):
-    return any((file_entry.name == constants.TENTACLE_METADATA)
-               for sub_directory_entry in os.scandir(directory_entry)
-               if sub_directory_entry.is_dir()
-               for file_entry in os.scandir(sub_directory_entry)
-               )
+    return any(
+        file_entry.name == constants.TENTACLE_METADATA
+        for sub_directory_entry in os.scandir(directory_entry)
+        if sub_directory_entry.is_dir()
+        for file_entry in os.scandir(sub_directory_entry)
+    )

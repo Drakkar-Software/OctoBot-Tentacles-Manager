@@ -18,7 +18,7 @@ from os.path import exists, join, getsize
 from shutil import rmtree
 import aiohttp
 import pytest
-from os import path, remove, mkdir, scandir
+from os import path, remove, mkdir, scandir, walk
 
 from octobot_tentacles_manager.api.creator import create_tentacles_package
 from octobot_tentacles_manager.api.installer import install_all_tentacles
@@ -65,6 +65,10 @@ async def test_create_folder_tentacles_package(install_tentacles):
     generated_folder_path = path.join(TENTACLES_PATH, TENTACLES_TRADING_PATH, "__pycache__")
     mkdir(generated_folder_path)
 
+    # add gitignore file that should not be copied
+    with open(path.join(TENTACLES_PATH, ".gitignore"), "w+") as ignored_file:
+        ignored_file.write(random_content)
+
     # create folder to force folder merge
     mkdir(TENTACLE_PACKAGE)
 
@@ -85,6 +89,9 @@ async def test_create_folder_tentacles_package(install_tentacles):
 
     # file that is not in tentacles arch is copied since it's not in a zip
     assert path.exists(path.join(TENTACLE_PACKAGE, "not_tentacle_file"))
+
+    # ignored file is not copied
+    assert not path.exists(path.join(TENTACLE_PACKAGE, ".gitignore"))
 
     # generated file not copied
     assert not path.exists(path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH, "file.pyc"))
@@ -109,6 +116,36 @@ async def test_create_folder_tentacles_package(install_tentacles):
     evaluator_path = path.join(TENTACLE_PACKAGE, TENTACLES_EVALUATOR_PATH)
     assert not path.exists(path.join(evaluator_path, PYTHON_INIT_FILE))
     assert not path.exists(path.join(evaluator_path, TENTACLES_EVALUATOR_REALTIME_PATH, PYTHON_INIT_FILE))
+
+    # add every not in dev tentacles
+    python_files = tuple(e[2] for e in walk(TENTACLE_PACKAGE) if any(i for i in e[2] if i.endswith(".py")))
+    assert len(python_files) == 10
+
+
+async def test_create_folder_tentacles_package_with_package_selector(install_tentacles):
+    tentacle_path = path.join(TENTACLES_PATH, TENTACLES_TRADING_PATH, TENTACLES_TRADING_MODE_PATH)
+    with open(path.join(tentacle_path, "daily_trading_mode", TENTACLE_METADATA), "w+") as metadata:
+        new_metadata = {
+          METADATA_VERSION: "1.2.0",
+          METADATA_ORIGIN_PACKAGE: "OctoBot-Not-Quite-Default-Tentacles",
+          METADATA_TENTACLES: ["DailyTradingMode"],
+          METADATA_TENTACLES_REQUIREMENTS: [],
+          METADATA_DEV_MODE: False
+        }
+        json.dump(new_metadata, metadata)
+
+    assert await create_tentacles_package(TENTACLE_PACKAGE, in_zip=False,
+                                          exported_tentacles_package="OctoBot-Not-Quite-Default-Tentacles") == 0
+    assert path.exists(TENTACLE_PACKAGE)
+
+    # added daily_trading_mode
+    trading_mode_tentacle_path = path.join(TENTACLE_PACKAGE, TENTACLES_TRADING_PATH, TENTACLES_TRADING_MODE_PATH)
+    assert path.exists(path.join(trading_mode_tentacle_path, "daily_trading_mode"))
+    assert path.exists(path.join(trading_mode_tentacle_path, "daily_trading_mode", "daily_trading_mode.py"))
+
+    # did not add anything else then daily trading mode files and tests
+    python_files = tuple(e[2] for e in walk(TENTACLE_PACKAGE) if any(i for i in e[2] if i.endswith(".py")))
+    assert len(python_files) == 2
 
 
 async def test_create_zipped_tentacles_package(install_tentacles):
