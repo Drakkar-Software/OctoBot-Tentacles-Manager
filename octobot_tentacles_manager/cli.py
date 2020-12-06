@@ -131,7 +131,7 @@ def handle_tentacles_manager_command(starting_args,
         single_tentacle_path = starting_args.single_tentacle_install[0]
         single_tentacle_type = starting_args.single_tentacle_install[1]
     export_tentacles_output = starting_args.export[0] if starting_args.export else export_tentacles_output
-    exported_tentacles_package = starting_args.export[1] if len(starting_args.export) > 1 \
+    exported_tentacles_package = starting_args.export[1] if starting_args.export and len(starting_args.export) > 1 \
         else exported_tentacles_package
     packed_tentacles_output = starting_args.pack[0] if starting_args.pack else packed_tentacles_output
     quite_mode = starting_args.quite or quite
