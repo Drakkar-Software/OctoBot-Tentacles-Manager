@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import os 
+import os
 import os.path as path
 
 import octobot_tentacles_manager.constants as constants

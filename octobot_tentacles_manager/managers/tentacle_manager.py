@@ -13,9 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import os 
+import os
 import os.path as path
-import shutil 
+import shutil
 
 import octobot_commons.logging as logging
 
