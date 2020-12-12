@@ -16,7 +16,7 @@
 import json
 import os.path as path
 
-import octobot_commons.config_manager as config_manager
+import octobot_commons.configuration as configuration
 
 
 def read_config(config_file: str) -> dict:
@@ -28,6 +28,6 @@ def read_config(config_file: str) -> dict:
 
 def write_config(config_file: str, content: dict) -> None:
     # create config content before opening file not to clear file or json dump exception
-    config_content = config_manager.dump_json(content)
+    config_content = configuration.dump_formatted_json(content)
     with open(config_file, "w+") as config_file_w:
         config_file_w.write(config_content)
