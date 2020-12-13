@@ -95,7 +95,7 @@ class TentacleManager:
                         and not config_file_entry.name.endswith(constants.CONFIG_SCHEMA_EXT):
                     target_user_path = \
                         path.join(self.bot_installation_path,
-                                  constants.USER_TENTACLE_SPECIFIC_CONFIG_PATH,
+                                  constants.USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH,
                                   config_file_entry.name)
                     if replace or not path.exists(target_user_path):
                         shutil.copyfile(path.join(target_tentacle_config_path, config_file_entry.name),

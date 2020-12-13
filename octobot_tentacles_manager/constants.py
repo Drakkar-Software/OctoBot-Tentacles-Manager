@@ -26,7 +26,6 @@ PYTHON_INIT_FILE = "__init__.py"
 CYTHON_HEADER_INIT_FILE = "__init__.pxd"
 PYTHON_EXT = ".py"
 CYTHON_EXT = ".pxd"
-CONFIG_TENTACLES_FILE = "tentacles_config.json"
 CONFIG_EXT = ".json"
 DOCUMENTATION_EXT = ".md"
 CONFIG_SCHEMA_EXT = "_schema.json"
@@ -48,9 +47,12 @@ METADATA_TENTACLES_GROUP = "tentacles_group"
 TENTACLE_REQUIREMENT_VERSION_EQUALS = "=="
 
 # Tentacle user config files and folders
-USER_TENTACLE_CONFIG_PATH = path.join(constants.USER_FOLDER, "tentacles_config")
-USER_TENTACLE_CONFIG_FILE_PATH = path.join(USER_TENTACLE_CONFIG_PATH, CONFIG_TENTACLES_FILE)
-USER_TENTACLE_SPECIFIC_CONFIG_PATH = path.join(USER_TENTACLE_CONFIG_PATH, "specific_config")
+USER_REFERENCE_TENTACLE_CONFIG_PATH = path.join(constants.USER_FOLDER, "reference_tentacles_config")
+USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH = path.join(USER_REFERENCE_TENTACLE_CONFIG_PATH,
+                                                     constants.CONFIG_TENTACLES_FILE)
+TENTACLES_SPECIFIC_CONFIG_FOLDER = "specific_config"
+USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH = path.join(USER_REFERENCE_TENTACLE_CONFIG_PATH,
+                                                         TENTACLES_SPECIFIC_CONFIG_FOLDER)
 
 # Current minimum default tentacles version
 TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION = "1.2.0"

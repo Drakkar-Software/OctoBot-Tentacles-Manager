@@ -21,8 +21,8 @@ from shutil import rmtree
 from os import walk, path
 
 from octobot_commons.logging.logging_util import set_logging_level
-from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, USER_TENTACLE_SPECIFIC_CONFIG_PATH, \
-    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH, \
+from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_CONFIG_PATH, USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, \
+    TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH, \
     UNKNOWN_TENTACLES_PACKAGE_LOCATION
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 from octobot_tentacles_manager.models.tentacle import Tentacle
@@ -51,7 +51,7 @@ async def test_install_two_tentacles():
     assert trading_mode_files_count == 1
     backtesting_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Backtesting", "importers")))
     assert backtesting_mode_files_count == 7
-    config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
     assert config_files_count == 1
     assert "InstantFluctuationsEvaluator.json" in config_files[0][2]
@@ -59,7 +59,7 @@ async def test_install_two_tentacles():
     assert len(config_files[0][2]) == 1
 
     # test tentacles config
-    with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
+    with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
@@ -92,12 +92,12 @@ async def test_install_one_tentacle_with_requirement():
     # test installed files
     trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 1
-    config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     assert len(config_files) == 1
     assert len(config_files[0][2]) == 0
 
     # test tentacles config
-    with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
+    with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': UNKNOWN_TENTACLES_PACKAGE_LOCATION
@@ -127,14 +127,14 @@ async def test_install_all_tentacles():
     # test installed files
     trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
-    config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
     assert config_files_count == 1
     assert "DailyTradingMode.json" in config_files[0][2]
     assert len(config_files[0][2]) == 5
 
     # test tentacles config
-    with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
+    with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
@@ -189,7 +189,7 @@ async def test_install_all_tentacles_fetching_requirements():
 
     trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
-    config_files = [f for f in walk(USER_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
     assert config_files_count == 1
     # ensure fetched InstantFluctuationsEvaluator requirement
@@ -209,5 +209,5 @@ def _cleanup():
         rmtree(temp_dir)
     if path.exists(TENTACLES_PATH):
         rmtree(TENTACLES_PATH)
-    if path.exists(USER_TENTACLE_CONFIG_PATH):
-        rmtree(USER_TENTACLE_CONFIG_PATH)
+    if path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH):
+        rmtree(USER_REFERENCE_TENTACLE_CONFIG_PATH)
