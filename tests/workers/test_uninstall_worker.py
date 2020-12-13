@@ -20,8 +20,8 @@ from shutil import rmtree
 from os import walk, path
 
 from octobot_commons.logging.logging_util import set_logging_level
-from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, TENTACLES_PATH, \
-    USER_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH
+from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_CONFIG_PATH, TENTACLES_PATH, \
+    USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 
 # All test coroutines will be treated as marked.
@@ -53,7 +53,7 @@ async def test_uninstall_two_tentacles():
     assert await uninstall_worker.process(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
     tentacles_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert tentacles_files_count < 60
-    with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
+    with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
@@ -99,7 +99,7 @@ async def test_uninstall_all_tentacles():
     assert await uninstall_worker.process() == 0
     tentacles_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert tentacles_files_count == 24
-    with open(USER_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
+    with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'registered_tentacles': {},
             'tentacle_activation': {
@@ -121,5 +121,5 @@ def _cleanup():
         rmtree(temp_dir)
     if path.exists(TENTACLES_PATH):
         rmtree(TENTACLES_PATH)
-    if path.exists(USER_TENTACLE_CONFIG_PATH):
-        rmtree(USER_TENTACLE_CONFIG_PATH)
+    if path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH):
+        rmtree(USER_REFERENCE_TENTACLE_CONFIG_PATH)

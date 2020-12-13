@@ -21,29 +21,31 @@ import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.loaders as loaders
 
 
-def get_config(klass) -> dict:
-    return configuration.read_config(_get_config_file_path(klass))
+def get_config(tentacles_setup_config, klass) -> dict:
+    return configuration.read_config(_get_config_file_path(tentacles_setup_config, klass))
 
 
-def update_config(klass, config_update) -> None:
-    config_file = _get_config_file_path(klass)
+def update_config(tentacles_setup_config, klass, config_update) -> None:
+    config_file = _get_config_file_path(tentacles_setup_config, klass)
     current_config = configuration.read_config(config_file)
     # only update values in config update not to erase values in root config (might not be editable)
     current_config.update(config_update)
     configuration.write_config(config_file, current_config)
 
 
-def factory_reset_config(klass) -> None:
+def factory_reset_config(tentacles_setup_config, klass) -> None:
     reference_config_path = path.join(_get_reference_config_path(klass), _get_config_file_name(klass))
-    shutil.copy(reference_config_path, _get_config_file_path(klass))
+    shutil.copy(reference_config_path, _get_config_file_path(tentacles_setup_config, klass))
 
 
 def get_config_schema_path(klass) -> str:
     return path.join(_get_reference_config_path(klass), f"{klass.get_name()}{constants.CONFIG_SCHEMA_EXT}")
 
 
-def _get_config_file_path(klass) -> str:
-    return path.join(constants.USER_TENTACLE_SPECIFIC_CONFIG_PATH, _get_config_file_name(klass))
+def _get_config_file_path(tentacles_setup_config, klass) -> str:
+    return path.join(tentacles_setup_config.get_config_folder(),
+                     constants.TENTACLES_SPECIFIC_CONFIG_FOLDER,
+                     _get_config_file_name(klass))
 
 
 def _get_reference_config_path(klass) -> str:

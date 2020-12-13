@@ -22,12 +22,13 @@ import aiohttp
 import pytest
 from os import path, walk
 
+import octobot_commons.constants as commons_constants
 from octobot_tentacles_manager.api.installer import install_all_tentacles, install_tentacles, install_single_tentacle, \
     repair_installation
 from octobot_tentacles_manager.configuration.tentacles_setup_configuration import TentaclesSetupConfiguration
 from octobot_tentacles_manager.constants import TENTACLES_PATH, TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, \
-    PYTHON_INIT_FILE, TENTACLES_NOTIFIERS_PATH, USER_TENTACLE_CONFIG_PATH, CONFIG_TENTACLES_FILE, \
-    USER_TENTACLE_SPECIFIC_CONFIG_PATH, TENTACLES_SERVICES_PATH, TENTACLES_BACKTESTING_PATH, TENTACLES_EVALUATOR_PATH
+    PYTHON_INIT_FILE, TENTACLES_NOTIFIERS_PATH, USER_REFERENCE_TENTACLE_CONFIG_PATH, \
+    USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, TENTACLES_SERVICES_PATH, TENTACLES_BACKTESTING_PATH, TENTACLES_EVALUATOR_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 from tests import event_loop
 
@@ -99,15 +100,15 @@ async def test_repair_installation():
                "OtherInstantFluctuationsEvaluator, SecondOtherInstantFluctuationsEvaluator" in f.readlines()
 
     # restore tentacles_config.json validity and content
-    user_config_path = path.join(broken_install, USER_TENTACLE_CONFIG_PATH)
-    with open(path.join(user_config_path, CONFIG_TENTACLES_FILE)) as f:
+    user_config_path = path.join(broken_install, USER_REFERENCE_TENTACLE_CONFIG_PATH)
+    with open(path.join(user_config_path, commons_constants.CONFIG_TENTACLES_FILE)) as f:
         activations = json.load(f)[TentaclesSetupConfiguration.TENTACLE_ACTIVATION_KEY]
         # SecondOtherInstantFluctuationsEvaluator is activated because there is no available default config in
         # this context
         assert activations[TENTACLES_EVALUATOR_PATH]["SecondOtherInstantFluctuationsEvaluator"] is True
 
     # restore DailyTradingMode config file
-    assert path.isfile(path.join(broken_install, USER_TENTACLE_SPECIFIC_CONFIG_PATH, "DailyTradingMode.json"))
+    assert path.isfile(path.join(broken_install, USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, "DailyTradingMode.json"))
 
     rmtree(broken_install)
 

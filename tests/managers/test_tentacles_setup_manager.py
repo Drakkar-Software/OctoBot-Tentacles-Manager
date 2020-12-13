@@ -17,7 +17,7 @@ import pytest
 from shutil import rmtree
 from os import walk, path
 
-from octobot_tentacles_manager.constants import USER_TENTACLE_CONFIG_PATH, \
+from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_CONFIG_PATH, \
     TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, TENTACLES_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 
@@ -33,7 +33,7 @@ async def test_create_missing_tentacles_arch():
     await tentacles_setup_manager.create_missing_tentacles_arch()
     trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
     assert trading_mode_files_count == 24
-    assert path.exists(USER_TENTACLE_CONFIG_PATH)
+    assert path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH)
     _cleanup()
 
 
@@ -44,5 +44,5 @@ def _cleanup():
         rmtree(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
     if path.exists(TENTACLES_PATH):
         rmtree(TENTACLES_PATH)
-    if path.exists(USER_TENTACLE_CONFIG_PATH):
-        rmtree(USER_TENTACLE_CONFIG_PATH)
+    if path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH):
+        rmtree(USER_REFERENCE_TENTACLE_CONFIG_PATH)

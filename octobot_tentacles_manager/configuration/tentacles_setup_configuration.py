@@ -26,7 +26,7 @@ import octobot_tentacles_manager.loaders as loaders
 
 class TentaclesSetupConfiguration:
     TENTACLE_ACTIVATION_KEY = "tentacle_activation"
-    REGISTERED_TENTANCLES_KEY = "registered_tentacles"
+    REGISTERED_TENTACLES_KEY = "registered_tentacles"
     DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES = {
         constants.TENTACLES_EVALUATOR_REALTIME_PATH,
         constants.TENTACLES_EVALUATOR_TA_PATH,
@@ -36,11 +36,14 @@ class TentaclesSetupConfiguration:
     }
 
     def __init__(self, bot_installation_path=constants.DEFAULT_BOT_PATH,
-                 config_path=constants.USER_TENTACLE_CONFIG_FILE_PATH):
+                 config_path=constants.USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH):
         self.logger = logging.get_logger(self.__class__.__name__)
         self.config_path = path.join(bot_installation_path, config_path)
         self.tentacles_activation = {}
         self.registered_tentacles = {}
+
+    def get_config_folder(self) -> str:
+        return os.path.split(self.config_path)[0]
 
     def register_tentacles_package(self, package_name, package_location):
         self.registered_tentacles[package_name] = package_location
@@ -228,11 +231,11 @@ class TentaclesSetupConfiguration:
     def _from_dict(self, input_dict):
         if self.TENTACLE_ACTIVATION_KEY in input_dict:
             self.tentacles_activation = input_dict[self.TENTACLE_ACTIVATION_KEY]
-        if self.REGISTERED_TENTANCLES_KEY in input_dict:
-            self.registered_tentacles = input_dict[self.REGISTERED_TENTANCLES_KEY]
+        if self.REGISTERED_TENTACLES_KEY in input_dict:
+            self.registered_tentacles = input_dict[self.REGISTERED_TENTACLES_KEY]
 
     def _to_dict(self):
         return {
             self.TENTACLE_ACTIVATION_KEY: self.tentacles_activation,
-            self.REGISTERED_TENTANCLES_KEY: self.registered_tentacles
+            self.REGISTERED_TENTACLES_KEY: self.registered_tentacles
         }

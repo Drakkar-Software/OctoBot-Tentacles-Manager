@@ -60,7 +60,7 @@ class TentaclesSetupManager:
 
     async def create_missing_tentacles_arch(self):
         # tentacle user config folder
-        await util.find_or_create(path.join(self.bot_installation_path, constants.USER_TENTACLE_SPECIFIC_CONFIG_PATH))
+        await util.find_or_create(path.join(self.bot_installation_path, constants.USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH))
         # tentacles folder
         found_existing_installation = not await util.find_or_create(self.tentacle_setup_root_path)
         # tentacle main python init file
@@ -119,8 +119,8 @@ class TentaclesSetupManager:
         if TentaclesSetupManager.is_tentacles_arch_valid(verbose=False, raises=raises) \
                 or (force and path.exists(path.join(bot_installation_path, constants.TENTACLES_PATH))):
             shutil.rmtree(path.join(bot_installation_path, constants.TENTACLES_PATH))
-        if with_user_config and path.exists(path.join(bot_installation_path, constants.USER_TENTACLE_CONFIG_PATH)):
-            shutil.rmtree(path.join(bot_installation_path, constants.USER_TENTACLE_CONFIG_PATH))
+        if with_user_config and path.exists(path.join(bot_installation_path, constants.USER_REFERENCE_TENTACLE_CONFIG_PATH)):
+            shutil.rmtree(path.join(bot_installation_path, constants.USER_REFERENCE_TENTACLE_CONFIG_PATH))
 
     @staticmethod
     def get_available_tentacles_repos():
