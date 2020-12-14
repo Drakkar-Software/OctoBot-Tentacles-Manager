@@ -16,42 +16,39 @@
 import json
 import aiohttp
 import pytest
+import os
 from logging import INFO
-from shutil import rmtree
-from os import walk, path
 
+import octobot_commons.constants as commons_constants
 from octobot_commons.logging.logging_util import set_logging_level
-from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_CONFIG_PATH, USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, \
+from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, \
     TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH, \
-    UNKNOWN_TENTACLES_PACKAGE_LOCATION
+    UNKNOWN_TENTACLES_PACKAGE_LOCATION, TENTACLES_SPECIFIC_CONFIG_FOLDER
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
-from tests import event_loop
+from tests import event_loop, clean, fake_profiles, TEMP_DIR, OTHER_PROFILE
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
-temp_dir = "temp_tests"
 
-
-async def test_install_two_tentacles():
-    _cleanup()
+async def test_install_two_tentacles(clean):
     _enable_loggers()
-    tentacles_path = path.join("tests", "static", "tentacles.zip")
-    await fetch_and_extract_tentacles(temp_dir, tentacles_path, None)
-    worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    tentacles_path = os.path.join("tests", "static", "tentacles.zip")
+    await fetch_and_extract_tentacles(TEMP_DIR, tentacles_path, None)
+    worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     worker.tentacles_path_or_url = tentacles_path
     worker.tentacles_setup_manager.default_tentacle_config = \
-        path.join("tests", "static", "default_tentacle_config.json")
+        os.path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.process(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
 
     # test installed files
-    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in os.walk(os.path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 1
-    backtesting_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Backtesting", "importers")))
+    backtesting_mode_files_count = sum(1 for _ in os.walk(os.path.join(TENTACLES_PATH, "Backtesting", "importers")))
     assert backtesting_mode_files_count == 7
-    config_files = [f for f in walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in os.walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
     assert config_files_count == 1
     assert "InstantFluctuationsEvaluator.json" in config_files[0][2]
@@ -60,7 +57,8 @@ async def test_install_two_tentacles():
 
     # test tentacles config
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
-        assert json.load(config_f) == {
+        ref_profile_config = json.load(config_f)
+        assert ref_profile_config == {
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
             },
@@ -73,26 +71,24 @@ async def test_install_two_tentacles():
                 }
             }
         }
-    _cleanup()
 
 
-async def test_install_one_tentacle_with_requirement():
+async def test_install_one_tentacle_with_requirement(clean):
     async with aiohttp.ClientSession() as session:
-        _cleanup()
         _enable_loggers()
-        await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-        worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, session)
+        await fetch_and_extract_tentacles(TEMP_DIR, os.path.join("tests", "static", "tentacles.zip"), None)
+        worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, session)
         worker.tentacles_setup_manager.default_tentacle_config = \
-            path.join("tests", "static", "default_tentacle_config.json")
+            os.path.join("tests", "static", "default_tentacle_config.json")
         assert await worker.process(["reddit_service_feed"]) == 0
 
     # test removed temporary requirements files
-    assert not path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
+    assert not os.path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
 
     # test installed files
-    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in os.walk(os.path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 1
-    config_files = [f for f in walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in os.walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     assert len(config_files) == 1
     assert len(config_files[0][2]) == 0
 
@@ -109,25 +105,24 @@ async def test_install_one_tentacle_with_requirement():
                 }
             }
         }
-    assert path.exists(path.join("tentacles", "Services", "Services_bases", "reddit_service", "reddit_service.py"))
-    _cleanup()
+    assert os.path.exists(
+        os.path.join("tentacles", "Services", "Services_bases", "reddit_service", "reddit_service.py"))
 
 
-async def test_install_all_tentacles():
-    _cleanup()
+async def test_install_all_tentacles(clean):
     _enable_loggers()
-    tentacles_path = path.join("tests", "static", "tentacles.zip")
-    await fetch_and_extract_tentacles(temp_dir, tentacles_path, None)
-    worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    tentacles_path = os.path.join("tests", "static", "tentacles.zip")
+    await fetch_and_extract_tentacles(TEMP_DIR, tentacles_path, None)
+    worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     worker.tentacles_path_or_url = tentacles_path
     worker.tentacles_setup_manager.default_tentacle_config = \
-        path.join("tests", "static", "default_tentacle_config.json")
+        os.path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.process() == 0
 
     # test installed files
-    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in os.walk(os.path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
-    config_files = [f for f in walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in os.walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
     assert config_files_count == 1
     assert "DailyTradingMode.json" in config_files[0][2]
@@ -161,53 +156,81 @@ async def test_install_all_tentacles():
                 }
             }
         }
-    _cleanup()
 
 
-async def test_install_all_tentacles_twice():
-    _cleanup()
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+async def test_profiles_update(clean, fake_profiles):
+    _enable_loggers()
+    tentacles_path = os.path.join("tests", "static", "tentacles.zip")
+    await fetch_and_extract_tentacles(TEMP_DIR, tentacles_path, None)
+    worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    worker.tentacles_path_or_url = tentacles_path
     worker.tentacles_setup_manager.default_tentacle_config = \
-        path.join("tests", "static", "default_tentacle_config.json")
+        os.path.join("tests", "static", "default_tentacle_config.json")
+    # install all tentacles
+    assert await worker.process() == 0
+
+    # test tentacles setup config
+    with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH) as config_f:
+        ref_profile_config = json.load(config_f)
+
+        # test profiles tentacles config
+        with open(os.path.join(commons_constants.USER_PROFILES_FOLDER,
+                               commons_constants.DEFAULT_PROFILE,
+                               commons_constants.CONFIG_TENTACLES_FILE)) as default_c:
+            assert ref_profile_config == json.load(default_c)
+        with open(os.path.join(commons_constants.USER_PROFILES_FOLDER,
+                               OTHER_PROFILE,
+                               commons_constants.CONFIG_TENTACLES_FILE)) as other_c:
+            assert ref_profile_config == json.load(other_c)
+
+    # test specific tentacles config
+    default_profile_tentacles_config = os.path.join(commons_constants.USER_PROFILES_FOLDER,
+                                                    commons_constants.DEFAULT_PROFILE,
+                                                    TENTACLES_SPECIFIC_CONFIG_FOLDER)
+    other_profile_tentacles_config = os.path.join(commons_constants.USER_PROFILES_FOLDER,
+                                                  OTHER_PROFILE,
+                                                  TENTACLES_SPECIFIC_CONFIG_FOLDER)
+    for tentacle_config in os.scandir(os.path.join(os.path.split(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH)[0],
+                                                   TENTACLES_SPECIFIC_CONFIG_FOLDER)):
+        with open(tentacle_config) as ref_config_file:
+            ref_config = json.load(ref_config_file)
+        with open(os.path.join(default_profile_tentacles_config, tentacle_config.name)) as default_profile_config_file:
+            assert ref_config == json.load(default_profile_config_file)
+        with open(os.path.join(other_profile_tentacles_config, tentacle_config.name)) as other_profile_config_file:
+            assert ref_config == json.load(other_profile_config_file)
+
+
+async def test_install_all_tentacles_twice(clean):
+    await fetch_and_extract_tentacles(TEMP_DIR, os.path.join("tests", "static", "tentacles.zip"), None)
+    worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    worker.tentacles_setup_manager.default_tentacle_config = \
+        os.path.join("tests", "static", "default_tentacle_config.json")
     assert await worker.process() == 0
     assert await worker.process() == 0
-    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in os.walk(os.path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
-    _cleanup()
 
 
-async def test_install_all_tentacles_fetching_requirements():
+async def test_install_all_tentacles_fetching_requirements(clean):
     async with aiohttp.ClientSession() as session:
-        _cleanup()
         _enable_loggers()
-        await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "requirements_tentacles.zip"), None)
-        worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, session)
+        await fetch_and_extract_tentacles(TEMP_DIR, os.path.join("tests", "static", "requirements_tentacles.zip"), None)
+        worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, session)
         worker.tentacles_setup_manager.default_tentacle_config = \
-            path.join("tests", "static", "default_tentacle_config.json")
+            os.path.join("tests", "static", "default_tentacle_config.json")
         assert await worker.process() == 0
 
-    trading_mode_files_count = sum(1 for _ in walk(path.join(TENTACLES_PATH, "Trading", "Mode")))
+    trading_mode_files_count = sum(1 for _ in os.walk(os.path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
-    config_files = [f for f in walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in os.walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
     assert config_files_count == 1
     # ensure fetched InstantFluctuationsEvaluator requirement
     assert "InstantFluctuationsEvaluator.json" in config_files[0][2]
-    assert path.exists(path.join("tentacles", "Evaluator", "RealTime",
-                                 "instant_fluctuations_evaluator", "instant_fluctuations_evaluator.py"))
+    assert os.path.exists(os.path.join("tentacles", "Evaluator", "RealTime",
+                                       "instant_fluctuations_evaluator", "instant_fluctuations_evaluator.py"))
     assert len(config_files[0][2]) == 4
-    _cleanup()
 
 
 def _enable_loggers():
     set_logging_level([clazz.__name__ for clazz in [InstallWorker, Tentacle]], INFO)
-
-
-def _cleanup():
-    if path.exists(temp_dir):
-        rmtree(temp_dir)
-    if path.exists(TENTACLES_PATH):
-        rmtree(TENTACLES_PATH)
-    if path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH):
-        rmtree(USER_REFERENCE_TENTACLE_CONFIG_PATH)

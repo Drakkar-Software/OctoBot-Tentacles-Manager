@@ -57,6 +57,11 @@ class TentaclesSetupManager:
             uninstalled_tentacles=uninstalled_tentacles
         )
         tentacle_setup_config.save_config()
+        tentacle_setup_config.refresh_profile_tentacles_config(
+            available_tentacle,
+            newly_installed_tentacles=newly_installed_tentacles,
+            uninstalled_tentacles=uninstalled_tentacles
+        )
 
     async def create_missing_tentacles_arch(self):
         # tentacle user config folder
