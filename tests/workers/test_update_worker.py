@@ -20,40 +20,37 @@ from shutil import rmtree
 from os import walk, path
 
 from octobot_commons.logging.logging_util import set_logging_level
-from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_CONFIG_PATH, USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, \
+from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, \
     USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, TENTACLES_PATH, DEFAULT_BOT_PATH, UNKNOWN_TENTACLES_PACKAGE_LOCATION
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 from octobot_tentacles_manager.models.tentacle_factory import TentacleFactory
 from octobot_tentacles_manager.workers.update_worker import UpdateWorker
-
-# All test coroutines will be treated as marked.
 from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
+from tests import event_loop, clean, TEMP_DIR
 
+# All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
-temp_dir = "temp_tests"
 
-
-async def test_update_two_tentacles():
-    _cleanup()
+async def test_update_two_tentacles(clean):
     _enable_loggers()
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    install_worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    await fetch_and_extract_tentacles(TEMP_DIR, path.join("tests", "static", "tentacles.zip"), None)
+    install_worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     install_worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     await install_worker.process(["instant_fluctuations_evaluator",
                                   "generic_exchange_importer",
                                   "text_analysis"])
-    rmtree(temp_dir)
+    rmtree(TEMP_DIR)
 
     # edit instant_fluctuations_evaluator config to ensure file is not replaced
     config_path = path.join(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, "InstantFluctuationsEvaluator.json")
     with open(config_path, "r+") as config_f:
         new_content = f"{config_f.read()},"
         config_f.write(",")
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "update_tentacles.zip"), None)
-    update_worker = UpdateWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    await fetch_and_extract_tentacles(TEMP_DIR, path.join("tests", "static", "update_tentacles.zip"), None)
+    update_worker = UpdateWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     update_worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     assert await update_worker.process(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
@@ -103,20 +100,18 @@ async def test_update_two_tentacles():
     import tentacles.Evaluator.Util.text_analysis
     ta_tentacle_data = await factory.create_and_load_tentacle_from_module(tentacles.Evaluator.Util.text_analysis)
     assert ta_tentacle_data.version == "1.2.0"
-    _cleanup()
 
 
-async def test_update_all_tentacles():
-    _cleanup()
+async def test_update_all_tentacles(clean):
     _enable_loggers()
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "tentacles.zip"), None)
-    install_worker = InstallWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    await fetch_and_extract_tentacles(TEMP_DIR, path.join("tests", "static", "tentacles.zip"), None)
+    install_worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     install_worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     await install_worker.process()
-    rmtree(temp_dir)
-    await fetch_and_extract_tentacles(temp_dir, path.join("tests", "static", "update_tentacles.zip"), None)
-    update_worker = UpdateWorker(temp_dir, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    rmtree(TEMP_DIR)
+    await fetch_and_extract_tentacles(TEMP_DIR, path.join("tests", "static", "update_tentacles.zip"), None)
+    update_worker = UpdateWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     update_worker.tentacles_setup_manager.default_tentacle_config = \
         path.join("tests", "static", "default_tentacle_config.json")
     assert await update_worker.process() == 0
@@ -136,17 +131,7 @@ async def test_update_all_tentacles():
     import tentacles.Trading.Mode.daily_trading_mode as dtm
     dtm_tentacle_data = await factory.create_and_load_tentacle_from_module(dtm)
     assert dtm_tentacle_data.version == "1.3.0"
-    _cleanup()
 
 
 def _enable_loggers():
     set_logging_level([clazz.__name__ for clazz in [InstallWorker, Tentacle]], INFO)
-
-
-def _cleanup():
-    if path.exists(temp_dir):
-        rmtree(temp_dir)
-    if path.exists(TENTACLES_PATH):
-        rmtree(TENTACLES_PATH)
-    if path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH):
-        rmtree(USER_REFERENCE_TENTACLE_CONFIG_PATH)

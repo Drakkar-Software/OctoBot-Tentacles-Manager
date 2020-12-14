@@ -16,8 +16,17 @@
 import pytest
 import sys
 import asyncio
+import shutil
+import os
+import os.path as path
 
 import octobot_commons.asyncio_tools as asyncio_tools
+import octobot_commons.constants as commons_constants
+import octobot_tentacles_manager.constants as constants
+
+
+TEMP_DIR = "temp_tests"
+OTHER_PROFILE = "other_profile"
 
 
 @pytest.yield_fixture
@@ -43,3 +52,37 @@ def _configure_async_test_loop():
 
 # set default values for async loop
 _configure_async_test_loop()
+
+
+@pytest.yield_fixture
+def clean():
+    _cleanup()
+    yield
+    _cleanup()
+
+
+@pytest.yield_fixture
+def fake_profiles():
+    default_profile = path.join(commons_constants.USER_PROFILES_FOLDER, commons_constants.DEFAULT_PROFILE)
+    other_profile = path.join(commons_constants.USER_PROFILES_FOLDER, OTHER_PROFILE)
+    _reset_profile(default_profile)
+    _reset_profile(other_profile)
+    yield
+    _reset_profile(default_profile, re_create=False)
+    _reset_profile(other_profile, re_create=False)
+
+
+def _cleanup():
+    if path.exists(TEMP_DIR):
+        shutil.rmtree(TEMP_DIR)
+    if path.exists(constants.TENTACLES_PATH):
+        shutil.rmtree(constants.TENTACLES_PATH)
+    if path.exists(constants.USER_REFERENCE_TENTACLE_CONFIG_PATH):
+        shutil.rmtree(constants.USER_REFERENCE_TENTACLE_CONFIG_PATH)
+
+
+def _reset_profile(profile_path, re_create=True):
+    if path.exists(profile_path):
+        shutil.rmtree(profile_path)
+    if re_create:
+        os.makedirs(profile_path)

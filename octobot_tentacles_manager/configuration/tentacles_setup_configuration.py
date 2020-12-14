@@ -13,11 +13,12 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import copy
 import os
 import os.path as path
+import shutil
 
 import octobot_commons.logging as logging
+import octobot_commons.constants as commons_constants
 
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.configuration as configuration
@@ -43,7 +44,7 @@ class TentaclesSetupConfiguration:
         self.registered_tentacles = {}
 
     def get_config_folder(self) -> str:
-        return os.path.split(self.config_path)[0]
+        return path.split(self.config_path)[0]
 
     def register_tentacles_package(self, package_name, package_location):
         self.registered_tentacles[package_name] = package_location
@@ -62,6 +63,17 @@ class TentaclesSetupConfiguration:
                                             uninstalled_tentacles=uninstalled_tentacles)
         if update_location or force_update_registered_tentacles:
             self._update_registered_tentacles(tentacles, update_location)
+
+    def refresh_profile_tentacles_config(self,
+                                         tentacles,
+                                         profiles_path=commons_constants.USER_PROFILES_FOLDER,
+                                         newly_installed_tentacles=None,
+                                         uninstalled_tentacles=None
+                                         ):
+        if path.isdir(profiles_path):
+            for profile_folder in os.scandir(profiles_path):
+                self._refresh_profile_tentacles_config(tentacles, profile_folder,
+                                                       newly_installed_tentacles, uninstalled_tentacles)
 
     def update_activation_configuration(self, new_config, deactivate_other_evaluators,
                                         add_missing_elements, tentacles_path=constants.TENTACLES_PATH):
@@ -126,9 +138,6 @@ class TentaclesSetupConfiguration:
             self.tentacles_activation[element_type][element_name] = False
             return True
         return False
-
-    def replace_tentacle_activation(self, new_config):
-        self.tentacles_activation = copy.copy(new_config)
 
     def read_config(self, tentacles_path=constants.TENTACLES_PATH):
         try:
@@ -201,14 +210,14 @@ class TentaclesSetupConfiguration:
         if newly_installed_tentacles:
             for new_tentacle in newly_installed_tentacles:
                 if new_tentacle.get_simple_tentacle_type() not in self.DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES \
-                  and new_tentacle.tentacle_group != new_tentacle.name:
+                        and new_tentacle.tentacle_group != new_tentacle.name:
                     # activate new_tentacle if part of tentacle to activate by default and has a tentacle group from
                     # which it's not the default tentacle: to avoid double tentacles: deactivate default one
                     self._update_default_tentacles_activation_for_group(tentacles, new_tentacle, False)
         if uninstalled_tentacles:
             for removed_tentacle in uninstalled_tentacles:
                 if removed_tentacle.get_simple_tentacle_type() not in self.DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES \
-                  and removed_tentacle.tentacle_group != removed_tentacle.name:
+                        and removed_tentacle.tentacle_group != removed_tentacle.name:
                     # re-activate default tentacle
                     self._update_default_tentacles_activation_for_group(tentacles, removed_tentacle, True)
 
@@ -223,10 +232,65 @@ class TentaclesSetupConfiguration:
                        for tentacle in tentacles)
         for package in packages:
             if package not in self.registered_tentacles:
-                self.registered_tentacles[package] = update_location or constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
+                self.register_tentacles_package(package,
+                                                update_location or constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION)
         for registered_package in list(self.registered_tentacles):
             if registered_package not in packages:
-                self.registered_tentacles.pop(registered_package)
+                self.unregister_tentacles_package(registered_package)
+
+    # Profiles management
+    def _refresh_profile_tentacles_config(self, tentacles, profile_folder,
+                                          newly_installed_tentacles, uninstalled_tentacles):
+        self._refresh_profile_tentacles_config_file(tentacles,
+                                                    path.join(profile_folder,
+                                                              commons_constants.CONFIG_TENTACLES_FILE),
+                                                    newly_installed_tentacles,
+                                                    uninstalled_tentacles)
+        self._refresh_profile_tentacles_specific_config(path.join(profile_folder,
+                                                                  constants.TENTACLES_SPECIFIC_CONFIG_FOLDER))
+
+    def _refresh_profile_tentacles_config_file(self, tentacles, tentacles_config_file,
+                                               newly_installed_tentacles, uninstalled_tentacles):
+        profile_setup_config = TentaclesSetupConfiguration(config_path=tentacles_config_file)
+        profile_setup_config._from_dict(configuration.read_config(profile_setup_config.config_path))
+        # use self.registered_tentacles as a reference
+        profile_setup_config.registered_tentacles = self.registered_tentacles
+        self._refresh_other_tentacles_activation_from_self(profile_setup_config)
+        profile_setup_config._update_tentacles_groups_activation(tentacles,
+                                                                 newly_installed_tentacles,
+                                                                 uninstalled_tentacles)
+        profile_setup_config.save_config()
+
+    def _refresh_other_tentacles_activation_from_self(self, other):
+        # add any missing element in tentacles activation
+        for element_type, element_names in self.tentacles_activation.items():
+            if element_type not in other.tentacles_activation:
+                other.tentacles_activation[element_type] = {}
+            for element_name in element_names:
+                if element_name not in other.tentacles_activation[element_type]:
+                    other.tentacles_activation[element_type][element_name] = \
+                        self.tentacles_activation[element_type][element_name]
+        # remove deleted tentacles activation
+        for element_type, element_names in other.tentacles_activation.items():
+            to_remove = []
+            for element_name in element_names:
+                try:
+                    self.tentacles_activation[element_type][element_name]
+                except KeyError:
+                    to_remove.append(element_name)
+            for element in to_remove:
+                element_names.pop(element, None)
+
+    def _refresh_profile_tentacles_specific_config(self, tentacles_specific_config_folder):
+        tentacles_config_path = path.join(path.split(self.config_path)[0],
+                                          constants.TENTACLES_SPECIFIC_CONFIG_FOLDER)
+        if not path.isdir(tentacles_specific_config_folder):
+            os.mkdir(tentacles_specific_config_folder)
+        profile_tentacles_configs = os.listdir(tentacles_specific_config_folder)
+        for tentacle_config in os.scandir(tentacles_config_path):
+            # add missing specific tentacles config
+            if tentacle_config.name not in profile_tentacles_configs:
+                shutil.copy(tentacle_config, path.join(tentacles_specific_config_folder, tentacle_config.name))
 
     def _from_dict(self, input_dict):
         if self.TENTACLE_ACTIVATION_KEY in input_dict:
