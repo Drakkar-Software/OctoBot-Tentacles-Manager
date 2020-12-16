@@ -18,19 +18,18 @@ import os.path as path
 
 import aiofiles
 
+import octobot_tentacles_manager.models.artifact as artifact
 import octobot_tentacles_manager.constants as constants
 
 
-class Tentacle:
+class Tentacle(artifact.Artifact):
     def __init__(self, tentacle_root_path, name, tentacle_type):
+        super().__init__(name)
         self.tentacle_root_path = tentacle_root_path
-        self.name = name
         self.tentacle_type = tentacle_type
         self.tentacle_root_type = self.tentacle_type.get_root_type()
         self.tentacle_path = path.join(self.tentacle_root_path, self.tentacle_type.to_path())
-        self.version = None
         self.tentacle_class_names = []
-        self.origin_package = constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
         self.tentacles_requirements = None
         self.tentacle_group = self.name
         self.in_dev_mode = False
@@ -48,16 +47,12 @@ class Tentacle:
         except FileNotFoundError:
             pass
 
-
     @staticmethod
     def find(iterable, name):
         for tentacle in iterable:
             if tentacle.name == name:
                 return tentacle
         return None
-
-    def is_valid(self):
-        return self.version is not None
 
     def get_simple_tentacle_type(self):
         return self.tentacle_type.get_last_element()
