@@ -56,6 +56,9 @@ USER_TENTACLE_SPECIFIC_CONFIG_PATH = path.join(USER_TENTACLE_CONFIG_PATH, "speci
 TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION = "1.2.0"
 DEFAULT_TENTACLES_PACKAGE = "OctoBot-Default-Tentacles"
 
+# Tentacles repository
+UNKNOWN_REPOSITORY_LOCATION = "Unknown repository location"
+
 # Tentacles packages
 UNKNOWN_TENTACLES_PACKAGE_LOCATION = "Unknown package location"
 
