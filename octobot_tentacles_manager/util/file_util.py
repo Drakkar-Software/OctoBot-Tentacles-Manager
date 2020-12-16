@@ -53,3 +53,23 @@ async def replace_with_remove_or_rename(new_file_or_dir_entry, dest_file_or_dir)
         shutil.copyfile(new_file_or_dir_entry, dest_file_or_dir)
     else:
         shutil.copytree(new_file_or_dir_entry, dest_file_or_dir)
+
+
+def merge_folders(to_merge_folder, dest_folder, ignore_func):
+    dest_folder_elements = {
+        element.name: element for element in os.scandir(dest_folder)
+    }
+    elements = list(os.scandir(to_merge_folder))
+    ignored_elements = ignore_func(to_merge_folder, (e.name for e in elements))
+    filtered_elements = [element
+                         for element in elements
+                         if element.name not in ignored_elements]
+    for element in filtered_elements:
+        dest = path.join(dest_folder, element.name)
+        if element.is_file():
+            shutil.copy(element.path, dest)
+        else:
+            if element.name not in dest_folder_elements:
+                shutil.copytree(element.path, dest, ignore=ignore_func)
+            else:
+                merge_folders(element.path, dest_folder_elements[element.name].path, ignore_func)

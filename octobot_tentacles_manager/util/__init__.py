@@ -16,6 +16,8 @@
 
 from octobot_tentacles_manager.util import tentacle_fetching
 from octobot_tentacles_manager.util import tentacle_explorer
+from octobot_tentacles_manager.util import tentacle_filter
+from octobot_tentacles_manager.util import tentacle_cleaner
 from octobot_tentacles_manager.util import file_util
 
 from octobot_tentacles_manager.util.tentacle_fetching import (
@@ -30,6 +32,14 @@ from octobot_tentacles_manager.util.tentacle_explorer import (
 from octobot_tentacles_manager.util.file_util import (
     find_or_create,
     replace_with_remove_or_rename,
+    merge_folders,
+)
+from octobot_tentacles_manager.util.tentacle_filter import (
+    TentacleFilter,
+)
+from octobot_tentacles_manager.util.tentacle_cleaner import (
+    remove_unnecessary_files,
+    remove_non_tentacles_files,
 )
 
 __all__ = [
@@ -41,4 +51,8 @@ __all__ = [
     "find_or_create",
     "get_tentacles_from_package",
     "replace_with_remove_or_rename",
+    "merge_folders",
+    "TentacleFilter",
+    "remove_unnecessary_files",
+    "remove_non_tentacles_files",
 ]
