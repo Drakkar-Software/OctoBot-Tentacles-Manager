@@ -1,0 +1,45 @@
+#  Drakkar-Software OctoBot-Tentacles-Manager
+#  Copyright (c) Drakkar-Software, All rights reserved.
+#
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation; either
+#  version 3.0 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library.
+
+import os
+import shutil
+
+import octobot_tentacles_manager.constants as constants
+
+
+def remove_unnecessary_files(directory):
+    for element in os.scandir(directory):
+        element_ext = element.name.split(".")[-1]
+        if element.name in constants.PYTHON_GENERATED_ELEMENTS or \
+                (element_ext in constants.PYTHON_GENERATED_ELEMENTS_EXTENSION and element.is_file()):
+            if element.is_dir():
+                shutil.rmtree(element)
+            elif element.is_file():
+                os.remove(element)
+        elif element.is_dir():
+            remove_unnecessary_files(element)
+
+
+def remove_non_tentacles_files(directory, logger):
+    for element in os.scandir(directory):
+        if element.name not in set(constants.TENTACLES_FOLDERS_ARCH):
+            try:
+                if element.is_dir():
+                    shutil.rmtree(element)
+                elif element.is_file():
+                    os.remove(element)
+            except Exception as e:
+                logger.error(f"Error when cleaning up temporary folder: {e}")
