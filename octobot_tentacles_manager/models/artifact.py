@@ -14,28 +14,21 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from octobot_tentacles_manager.models import artifact
-from octobot_tentacles_manager.models.artifact import (
-    Artifact,
-)
+import octobot_tentacles_manager.constants as constants
 
-from octobot_tentacles_manager.models import tentacle_type
-from octobot_tentacles_manager.models import tentacle_factory
-from octobot_tentacles_manager.models import tentacle
 
-from octobot_tentacles_manager.models.tentacle_type import (
-    TentacleType,
-)
-from octobot_tentacles_manager.models.tentacle_factory import (
-    TentacleFactory,
-)
-from octobot_tentacles_manager.models.tentacle import (
-    Tentacle,
-)
+class Artifact:
+    def __init__(self, name):
+        self.name = name
+        self.version = None
+        self.origin_package = constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
 
-__all__ = [
-    "Artifact",
-    "TentacleType",
-    "TentacleFactory",
-    "Tentacle",
-]
+    def is_valid(self):
+        return self.version is not None
+
+    def __str__(self):
+        str_rep = f"{self.name} artifact ["
+        if self.is_valid():
+            return f"version: {self.version}]"
+        else:
+            return f"{str_rep}]"
