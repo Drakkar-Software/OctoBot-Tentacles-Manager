@@ -22,6 +22,7 @@ class Artifact:
         self.name = name
         self.version = None
         self.origin_package = constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
+        self.origin_repository = constants.UNKNOWN_REPOSITORY_LOCATION
 
     def is_valid(self):
         return self.version is not None
