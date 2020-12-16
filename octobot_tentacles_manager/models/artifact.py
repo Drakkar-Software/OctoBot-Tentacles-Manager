@@ -18,17 +18,19 @@ import octobot_tentacles_manager.constants as constants
 
 
 class Artifact:
+    ARTIFACT_NAME = "artifact"
+
     def __init__(self, name):
-        self.name = name
-        self.version = None
-        self.origin_package = constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
-        self.origin_repository = constants.UNKNOWN_REPOSITORY_LOCATION
+        self.name: str = name
+        self.version: str = None
+        self.origin_package: str = constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
+        self.origin_repository: str = constants.UNKNOWN_REPOSITORY_LOCATION
 
     def is_valid(self):
         return self.version is not None
 
     def __str__(self):
-        str_rep = f"{self.name} artifact ["
+        str_rep = f"{self.name} {Artifact.ARTIFACT_NAME} ["
         if self.is_valid():
             return f"version: {self.version}]"
         else:

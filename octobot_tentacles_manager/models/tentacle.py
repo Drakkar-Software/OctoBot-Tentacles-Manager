@@ -23,6 +23,8 @@ import octobot_tentacles_manager.constants as constants
 
 
 class Tentacle(artifact.Artifact):
+    ARTIFACT_NAME = "tentacle"
+
     def __init__(self, tentacle_root_path, name, tentacle_type):
         super().__init__(name)
         self.tentacle_root_path = tentacle_root_path
@@ -58,7 +60,7 @@ class Tentacle(artifact.Artifact):
         return self.tentacle_type.get_last_element()
 
     def __str__(self):
-        str_rep = f"{self.name} tentacle [type: {self.tentacle_type}"
+        str_rep = f"{self.name} {Tentacle.ARTIFACT_NAME} [type: {self.tentacle_type}"
         if self.is_valid():
             return f"{str_rep}, version: {self.version}]"
         else:
