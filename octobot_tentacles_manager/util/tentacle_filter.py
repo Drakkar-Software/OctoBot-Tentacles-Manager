@@ -17,6 +17,26 @@
 import os.path as path
 
 import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.util.tentacle_explorer as explorer
+
+
+def filter_tentacles_by_dev_mode_and_package(tentacles: list,
+                                             with_dev_mode: bool = False,
+                                             package_filter: str = None) -> list:
+    # remove dev-mode tentacles if necessary
+    tentacles_white_list = tentacles if with_dev_mode else _filter_in_dev_tentacles(tentacles)
+    if package_filter is not None:
+        # only keep tentacles from the tentacles package to export
+        tentacles_white_list = explorer.get_tentacles_from_package(tentacles_white_list, package_filter)
+    return tentacles_white_list
+
+
+def _filter_in_dev_tentacles(tentacles):
+    return [
+        tentacle
+        for tentacle in tentacles
+        if not tentacle.in_dev_mode
+    ]
 
 
 class TentacleFilter:

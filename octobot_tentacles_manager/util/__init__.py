@@ -36,6 +36,7 @@ from octobot_tentacles_manager.util.file_util import (
 )
 from octobot_tentacles_manager.util.tentacle_filter import (
     TentacleFilter,
+    filter_tentacles_by_dev_mode_and_package,
 )
 from octobot_tentacles_manager.util.tentacle_cleaner import (
     remove_unnecessary_files,
@@ -55,4 +56,5 @@ __all__ = [
     "TentacleFilter",
     "remove_unnecessary_files",
     "remove_non_tentacles_files",
+    "filter_tentacles_by_dev_mode_and_package",
 ]

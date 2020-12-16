@@ -15,6 +15,9 @@
 #  License along with this library.
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.creators as tentacle_creator
+import octobot_tentacles_manager.exporters as exporters
+import octobot_tentacles_manager.models as models
+import octobot_tentacles_manager.util as util
 
 
 def start_tentacle_creator(config, commands) -> int:
@@ -22,10 +25,19 @@ def start_tentacle_creator(config, commands) -> int:
     return tentacle_creator_inst.parse_commands(commands)
 
 
-async def create_tentacles_package(package_name, tentacles_folder=constants.TENTACLES_PATH,
+async def create_tentacles_package(package_name,
+                                   tentacles_folder=constants.TENTACLES_PATH,
                                    exported_tentacles_package=None,
-                                   in_zip=True, with_dev_mode=False, cythonize=False) -> int:
-    return await tentacle_creator.create_tentacles_package_from_local_tentacles(package_name, tentacles_folder,
-                                                                                         exported_tentacles_package,
-                                                                                         in_zip, with_dev_mode,
-                                                                                         cythonize)
+                                   in_zip=True,
+                                   with_dev_mode=False,
+                                   cythonize=False) -> int:
+    return await exporters.TentaclePackageExporter(artifact=models.TentaclePackage(package_name),
+                                                   tentacles_folder=tentacles_folder,
+                                                   exported_tentacles_package=exported_tentacles_package,
+                                                   should_zip=in_zip,
+                                                   with_dev_mode=with_dev_mode,
+                                                   should_cythonize=cythonize).export()
+
+
+async def create_all_tentacles_bundle():
+    tentacles = util.load_tentacle_with_metadata(self.tentacles_folder)

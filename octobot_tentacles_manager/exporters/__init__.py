@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Tentacles-Manager-Launcher
+#  Drakkar-Software OctoBot-Tentacles-Manager
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -14,19 +14,23 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from octobot_tentacles_manager.creators import tentacle_creator
-from octobot_tentacles_manager.creators import compiled_package_manager
-
-from octobot_tentacles_manager.creators.tentacle_creator import (
-    TentacleCreator,
-    CreatedTentacle,
+from octobot_tentacles_manager.exporters import artifact_exporter
+from octobot_tentacles_manager.exporters.artifact_exporter import (
+    ArtifactExporter,
 )
-from octobot_tentacles_manager.creators.compiled_package_manager import (
-    cythonize_and_compile_tentacles,
+
+from octobot_tentacles_manager.exporters import tentacle_exporter
+from octobot_tentacles_manager.exporters import tentacle_package_exporter
+
+from octobot_tentacles_manager.exporters.tentacle_exporter import (
+    TentacleExporter,
+)
+from octobot_tentacles_manager.exporters.tentacle_package_exporter import (
+    TentaclePackageExporter,
 )
 
 __all__ = [
-    "TentacleCreator",
-    "CreatedTentacle",
-    "cythonize_and_compile_tentacles",
+    "ArtifactExporter",
+    "TentacleExporter",
+    "TentaclePackageExporter"
 ]

@@ -18,12 +18,14 @@ import octobot_tentacles_manager.models.artifact as artifact
 
 
 class TentaclePackage(artifact.Artifact):
+    ARTIFACT_NAME = "tentacle package"
+
     def __init__(self, name):
         super().__init__(name)
         self.tentacles = []
 
     def __str__(self):
-        str_rep = f"{self.name} tentacle package ["
+        str_rep = f"{self.name} {TentaclePackage.ARTIFACT_NAME} ["
         if self.is_valid():
             return f"version: {self.version}]"
         else:
