@@ -23,6 +23,7 @@ from octobot_tentacles_manager.models import tentacle_type
 from octobot_tentacles_manager.models import tentacle_factory
 from octobot_tentacles_manager.models import tentacle
 from octobot_tentacles_manager.models import tentacle_package
+from octobot_tentacles_manager.models import tentacle_bundle
 
 from octobot_tentacles_manager.models.tentacle_type import (
     TentacleType,
@@ -36,6 +37,9 @@ from octobot_tentacles_manager.models.tentacle import (
 from octobot_tentacles_manager.models.tentacle_package import (
     TentaclePackage,
 )
+from octobot_tentacles_manager.models.tentacle_bundle import (
+    TentacleBundle,
+)
 
 __all__ = [
     "Artifact",
@@ -43,4 +47,5 @@ __all__ = [
     "TentacleFactory",
     "Tentacle",
     "TentaclePackage",
+    "TentacleBundle"
 ]
