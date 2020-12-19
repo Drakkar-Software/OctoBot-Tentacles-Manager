@@ -129,14 +129,18 @@ class TentaclesSetupConfiguration:
         return something_changed
 
     def _deactivate_tentacle_if_evaluator(self, element_name, element_type):
-        if loaders.get_tentacle_classes()[element_name].get_simple_tentacle_type() in {
-            constants.TENTACLES_EVALUATOR_TA_PATH,
-            constants.TENTACLES_EVALUATOR_SOCIAL_PATH,
-            constants.TENTACLES_EVALUATOR_REALTIME_PATH
-        }:
-            self.logger.info(f"Tentacles configuration updated: {element_name} {'deactivated'}")
-            self.tentacles_activation[element_type][element_name] = False
-            return True
+        try:
+            if loaders.get_tentacle_classes()[element_name].get_simple_tentacle_type() in {
+                constants.TENTACLES_EVALUATOR_TA_PATH,
+                constants.TENTACLES_EVALUATOR_SOCIAL_PATH,
+                constants.TENTACLES_EVALUATOR_REALTIME_PATH
+            }:
+                self.logger.info(f"Tentacles configuration updated: {element_name} {'deactivated'}")
+                self.tentacles_activation[element_type][element_name] = False
+                return True
+        except KeyError:
+            # might happen when a tentacle is listed in config but has not been loaded in OctoBot (import fail etc)
+            pass
         return False
 
     def read_config(self, tentacles_path=constants.TENTACLES_PATH):
