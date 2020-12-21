@@ -18,6 +18,7 @@ import octobot_tentacles_manager.creators as tentacle_creator
 import octobot_tentacles_manager.exporters as exporters
 import octobot_tentacles_manager.models as models
 import octobot_tentacles_manager.util as util
+import octobot_commons.logging as logging
 
 
 def start_tentacle_creator(config, commands) -> int:
@@ -39,5 +40,29 @@ async def create_tentacles_package(package_name,
                                                    should_cythonize=cythonize).export()
 
 
-async def create_all_tentacles_bundle():
-    tentacles = util.load_tentacle_with_metadata(self.tentacles_folder)
+async def create_all_tentacles_bundle(tentacles_export_dir,
+                                      tentacles_folder=constants.TENTACLES_PATH,
+                                      exported_tentacles_package=None,
+                                      in_zip=True,
+                                      with_dev_mode=False,
+                                      cythonize=False) -> int:
+    logger = logging.get_logger("TentacleChecker")
+    error_count: int = 0
+    tentacles: list = util.load_tentacle_with_metadata(tentacles_folder)
+    tentacles_white_list = util.filter_tentacles_by_dev_mode_and_package(
+        tentacles=tentacles,
+        with_dev_mode=with_dev_mode,
+        package_filter=exported_tentacles_package
+    )
+    for tentacle in tentacles_white_list:
+        try:
+            await exporters.TentacleExporter(artifact=tentacle,
+                                             tentacles_export_dir=tentacles_export_dir,
+                                             tentacles_folder=tentacles_folder,
+                                             should_zip=in_zip,
+                                             with_dev_mode=with_dev_mode,
+                                             should_cythonize=cythonize).export()
+        except Exception as e:
+            logger.error(f"Error when exporting tentacle {tentacle.name} : {str(e)}")
+            error_count += 1
+    return error_count
