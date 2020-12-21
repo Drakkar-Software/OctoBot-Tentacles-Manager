@@ -34,11 +34,22 @@ from octobot_tentacles_manager.models.tentacle_factory import (
 from octobot_tentacles_manager.models.tentacle import (
     Tentacle,
 )
+from octobot_tentacles_manager.models.profile import (
+    Profile,
+)
 from octobot_tentacles_manager.models.tentacle_package import (
     TentaclePackage,
 )
 from octobot_tentacles_manager.models.tentacle_bundle import (
     TentacleBundle,
+)
+
+from octobot_tentacles_manager.models import metadata
+from octobot_tentacles_manager.models.metadata import (
+    ArtifactMetadata,
+    TentacleMetadata,
+    TentaclePackageMetadata,
+    ProfileMetadata,
 )
 
 __all__ = [
@@ -47,5 +58,10 @@ __all__ = [
     "TentacleFactory",
     "Tentacle",
     "TentaclePackage",
-    "TentacleBundle"
+    "TentacleBundle",
+    "Profile",
+    "ArtifactMetadata",
+    "TentacleMetadata",
+    "TentaclePackageMetadata",
+    "ProfileMetadata",
 ]
