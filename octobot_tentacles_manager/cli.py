@@ -43,20 +43,39 @@ async def _handle_package_manager_command(starting_args,
     LOGGER = logging.get_logger(f"{octobot_tentacles_manager.PROJECT_NAME}-CLI")
     async with aiohttp.ClientSession() as aiohttp_session:
         include_dev_mode = starting_args.include_dev_mode
+        include_tentacles_export = starting_args.include_tentacles_export
         if starting_args.creator:
             error_count = api.start_tentacle_creator({}, starting_args.creator)
         elif starting_args.repair:
             error_count = await api.repair_installation(bot_path=target_dir)
         elif starting_args.export:
-            error_count = await api.create_tentacles_package(export_tentacles_output, target_dir,
+            error_count = await api.create_tentacles_package(export_tentacles_output,
+                                                             target_dir,
                                                              exported_tentacles_package=exported_tentacles_package,
-                                                             in_zip=False, with_dev_mode=include_dev_mode,
+                                                             in_zip=False,
+                                                             with_dev_mode=include_dev_mode,
                                                              cythonize=cythonize)
+            if include_tentacles_export:
+                error_count += await api.create_all_tentacles_bundle(target_dir,
+                                                                     tentacles_folder=target_dir,
+                                                                     exported_tentacles_package=exported_tentacles_package,
+                                                                     in_zip=False,
+                                                                     with_dev_mode=include_dev_mode,
+                                                                     cythonize=cythonize)
         elif starting_args.pack:
-            error_count = await api.create_tentacles_package(packed_tentacles_output, target_dir,
+            error_count = await api.create_tentacles_package(packed_tentacles_output,
+                                                             target_dir,
                                                              exported_tentacles_package=exported_tentacles_package,
-                                                             in_zip=True, with_dev_mode=include_dev_mode,
+                                                             in_zip=True,
+                                                             with_dev_mode=include_dev_mode,
                                                              cythonize=cythonize)
+            if include_tentacles_export:
+                error_count += await api.create_all_tentacles_bundle(target_dir,
+                                                                     tentacles_folder=target_dir,
+                                                                     exported_tentacles_package=exported_tentacles_package,
+                                                                     in_zip=True,
+                                                                     with_dev_mode=include_dev_mode,
+                                                                     cythonize=cythonize)
         elif single_tentacle_path:
             error_count = await api.install_single_tentacle(single_tentacle_path,
                                                             single_tentacle_type,
@@ -184,6 +203,8 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-f", "--force", help="Skip user confirmations.", action='store_true')
     tentacles_parser.add_argument("-idm", "--include-dev-mode", help="Include tentacles in dev mode in export and "
                                                                      "pack commands.", action='store_true')
+    tentacles_parser.add_argument("-ite", "--include-tentacles-export", help="Include tentacles during export and "
+                                                                             "pack commands.", action='store_true')
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')

@@ -70,6 +70,7 @@ from octobot_tentacles_manager.api.uninstaller import (
 from octobot_tentacles_manager.api.creator import (
     start_tentacle_creator,
     create_tentacles_package,
+    create_all_tentacles_bundle,
 )
 from octobot_tentacles_manager.api.installer import (
     install_all_tentacles,
@@ -116,4 +117,5 @@ __all__ = [
     "install_single_tentacle",
     "repair_installation",
     "manage_tentacles",
+    "create_all_tentacles_bundle",
 ]

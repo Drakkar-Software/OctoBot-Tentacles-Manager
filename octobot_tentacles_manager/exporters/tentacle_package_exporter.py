@@ -36,6 +36,7 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
                          should_zip=should_zip,
                          with_dev_mode=with_dev_mode)
         self.exported_tentacles_package: str = exported_tentacles_package
+        self.should_cleanup_working_folder: bool = True
 
         self.tentacles_filter: util.TentacleFilter = None
         self.tentacles_white_list: list = []

@@ -40,6 +40,7 @@ class ArtifactExporter:
         self.artifact = artifact
         self.tentacles_folder: str = tentacles_folder
 
+        self.should_cleanup_working_folder: bool = False
         self.should_cythonize = should_cythonize
         self.should_zip = should_zip
         self.with_dev_mode = with_dev_mode
@@ -58,7 +59,8 @@ class ArtifactExporter:
             return 1
 
         try:
-            await self.cleanup_working_folder()
+            if self.should_cleanup_working_folder:
+                await self.cleanup_working_folder()
 
             # handle tentacles cythonization if required
             if self.should_cythonize:
