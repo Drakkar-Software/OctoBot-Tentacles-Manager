@@ -21,6 +21,7 @@ from octobot_tentacles_manager.exporters.artifact_exporter import (
 
 from octobot_tentacles_manager.exporters import tentacle_exporter
 from octobot_tentacles_manager.exporters import tentacle_package_exporter
+from octobot_tentacles_manager.exporters import tentacle_bundle_exporter
 
 from octobot_tentacles_manager.exporters.tentacle_exporter import (
     TentacleExporter,
@@ -28,9 +29,13 @@ from octobot_tentacles_manager.exporters.tentacle_exporter import (
 from octobot_tentacles_manager.exporters.tentacle_package_exporter import (
     TentaclePackageExporter,
 )
+from octobot_tentacles_manager.exporters.tentacle_bundle_exporter import (
+    TentacleBundleExporter,
+)
 
 __all__ = [
     "ArtifactExporter",
     "TentacleExporter",
-    "TentaclePackageExporter"
+    "TentaclePackageExporter",
+    "TentacleBundleExporter",
 ]
