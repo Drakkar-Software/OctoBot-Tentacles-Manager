@@ -221,13 +221,31 @@ async def test_create_all_tentacles_bundle_not_cleaned_and_zipped(install_tentac
     assert await create_all_tentacles_bundle(TEST_EXPORT_DIR,
                                              in_zip=True,
                                              cythonize=False,
-                                             should_remove_artifacts_after_use=False) == 0
+                                             should_remove_artifacts_after_use=False,
+                                             should_zip_bundle=True) == 0
 
     # test not should_remove_artifacts_after_use
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer.zip"))
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode.zip"))
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0_bundle.zip"))
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0_bundle.zip"))
+    assert not os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0_bundle"))
+    assert not os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0_bundle"))
+    cleanup_test_env()
+
+    assert await create_all_tentacles_bundle(TEST_EXPORT_DIR,
+                                             in_zip=True,
+                                             cythonize=False,
+                                             should_remove_artifacts_after_use=False,
+                                             should_zip_bundle=False) == 0
+
+    # test not should_remove_artifacts_after_use
+    assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer.zip"))
+    assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode.zip"))
+    assert not os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0_bundle.zip"))
+    assert not os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0_bundle.zip"))
+    assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0_bundle"))
+    assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0_bundle"))
     cleanup_test_env()
 
 
