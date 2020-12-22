@@ -33,19 +33,24 @@ class ArtifactExporter:
     def __init__(self,
                  artifact: models.Artifact,
                  tentacles_folder: str,
+                 output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_cythonize: bool = False,
                  should_zip: bool = False,
                  with_dev_mode: bool = False):
         self.logger = logging.get_logger(self.__class__.__name__)
         self.artifact = artifact
         self.tentacles_folder: str = tentacles_folder
+        self.output_dir: str = output_dir if output_dir is not None else constants.DEFAULT_EXPORT_DIR
 
         self.should_cleanup_working_folder: bool = False
         self.should_cythonize = should_cythonize
         self.should_zip = should_zip
         self.with_dev_mode = with_dev_mode
 
-        self.working_folder = self.artifact.name
+        self.artifact.output_dir = self.output_dir
+        self.artifact.output_path = self.artifact.name
+        self.working_folder = constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER \
+            if self.should_zip else os.path.join(self.output_dir, self.artifact.name)
 
     @abc.abstractmethod
     async def prepare_export(self):
@@ -122,7 +127,7 @@ class ArtifactExporter:
         """
         if path.exists(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER):
             shutil.rmtree(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
-        os.mkdir(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
+        # os.mkdir(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
 
     def copy_directory_content_to_temporary_dir(self, folder_to_copy: str, ignore=None) -> None:
         """
@@ -153,7 +158,8 @@ class ArtifactExporter:
         """
         # remove .zip extension if necessary
         file_name = self.artifact.name.split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0]
-        zipped_file = shutil.make_archive(file_name, constants.TENTACLES_PACKAGE_FORMAT, self.working_folder)
+        zipped_file = shutil.make_archive(os.path.join(self.artifact.output_dir, file_name),
+                                          constants.TENTACLES_PACKAGE_FORMAT, self.working_folder)
         try:
             # remove working folder
             shutil.rmtree(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
