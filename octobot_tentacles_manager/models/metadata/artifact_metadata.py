@@ -23,6 +23,7 @@ class ArtifactMetadata:
     METADATA_VERSION = "version"
     METADATA_NAME = "name"
     METADATA_ARTIFACT_TYPE = "type"
+    METADATA_REPOSITORY = "repository"
 
     def __init__(self, artifact: artifact_model.Artifact):
         self.artifact: artifact_model.Artifact = artifact
@@ -34,4 +35,5 @@ class ArtifactMetadata:
             self.METADATA_NAME: self.artifact.name,
             self.METADATA_VERSION: self.artifact.version,
             self.METADATA_ARTIFACT_TYPE: self.artifact_type.value,
+            self.METADATA_REPOSITORY: self.artifact.origin_repository,
         }
