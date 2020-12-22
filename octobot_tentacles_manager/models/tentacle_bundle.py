@@ -19,10 +19,18 @@ import octobot_tentacles_manager.models.artifact as artifact
 
 class TentacleBundle(artifact.Artifact):
     ARTIFACT_NAME = "tentacle bundle"
+    ARTIFACT_SUFFIX = "bundle"
 
     def __init__(self, name):
         super().__init__(name)
         self.artifacts = []
+
+    def add_artifact(self, new_artifact: artifact.Artifact):
+        self.artifacts.append(new_artifact)
+        if len(self.artifacts) == 1:
+            self.name = f"{self.artifacts[0].name}_{self.artifacts[0].version}_{self.ARTIFACT_SUFFIX}"
+        elif len(self.artifacts) > 1:
+            self.name = f"{self.artifacts[0].origin_package}_{self.version}_{self.ARTIFACT_SUFFIX}"
 
     def __str__(self):
         str_rep = f"{self.name} {TentacleBundle.ARTIFACT_NAME} ["
