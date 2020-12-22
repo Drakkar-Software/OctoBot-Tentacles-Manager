@@ -25,21 +25,22 @@ def remove_unnecessary_files(directory):
         element_ext = element.name.split(".")[-1]
         if element.name in constants.PYTHON_GENERATED_ELEMENTS or \
                 (element_ext in constants.PYTHON_GENERATED_ELEMENTS_EXTENSION and element.is_file()):
-            if element.is_dir():
-                shutil.rmtree(element)
-            elif element.is_file():
-                os.remove(element)
+            remove_dir_or_file(element)
         elif element.is_dir():
             remove_unnecessary_files(element)
+
+
+def remove_dir_or_file(element_path: os.path):
+    if element_path.is_dir():
+        shutil.rmtree(element_path)
+    elif element_path.is_file():
+        os.remove(element_path)
 
 
 def remove_non_tentacles_files(directory, logger):
     for element in os.scandir(directory):
         if element.name not in set(constants.TENTACLES_FOLDERS_ARCH):
             try:
-                if element.is_dir():
-                    shutil.rmtree(element)
-                elif element.is_file():
-                    os.remove(element)
+                remove_dir_or_file(element)
             except Exception as e:
                 logger.error(f"Error when cleaning up temporary folder: {e}")
