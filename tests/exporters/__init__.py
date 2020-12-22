@@ -13,12 +13,3 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
-import enum
-
-
-class ArtifactTypes(enum.Enum):
-    TENTACLE = "tentacle"
-    PROFILE = "profile"
-    TENTACLE_PACKAGE = "tentacle_package"
-    TENTACLE_BUNDLE = "tentacle_bundle"

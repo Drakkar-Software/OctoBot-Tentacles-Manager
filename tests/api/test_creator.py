@@ -15,35 +15,22 @@
 #  License along with this library.
 import json
 import os
-from os.path import exists, join, getsize
-from shutil import rmtree
-import aiohttp
-import pytest
 from os import path, remove, mkdir, scandir, walk
+from os.path import join, getsize
+from shutil import rmtree
 
+import pytest
+
+from tests.api import install_tentacles, TENTACLE_PACKAGE, TEST_EXPORT_DIR
 from octobot_tentacles_manager.api.creator import create_tentacles_package, create_all_tentacles_bundle
-from octobot_tentacles_manager.api.installer import install_all_tentacles
-from octobot_tentacles_manager.constants import DEFAULT_EXPORT_DIR, TENTACLES_PATH, \
-    PYTHON_INIT_FILE, TENTACLES_EVALUATOR_PATH, \
+from octobot_tentacles_manager.constants import TENTACLES_PATH, PYTHON_INIT_FILE, TENTACLES_EVALUATOR_PATH, \
     TENTACLES_EVALUATOR_REALTIME_PATH, TENTACLE_METADATA, METADATA_VERSION, METADATA_ORIGIN_PACKAGE, \
     METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, METADATA_DEV_MODE, TENTACLES_TRADING_PATH, \
     TENTACLES_TRADING_MODE_PATH, TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, TENTACLES_SERVICES_PATH, \
     TENTACLES_BACKTESTING_IMPORTERS_PATH, TENTACLES_BACKTESTING_PATH, TENTACLES_BACKTESTING_THIRD_LEVEL_EXCHANGES_PATH
-from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
-TENTACLE_PACKAGE = "tentacle_package"
-TEST_EXPORT_DIR = "test_export_dir"
-
-
-@pytest.yield_fixture()
-async def install_tentacles():
-    _cleanup()
-    async with aiohttp.ClientSession() as session:
-        assert await install_all_tentacles(path.join("tests", "static", "tentacles.zip"), aiohttp_session=session) == 0
-        yield
-    _cleanup()
 
 
 async def test_create_folder_tentacles_package(install_tentacles):
@@ -160,9 +147,7 @@ async def test_create_zipped_tentacles_package(install_tentacles):
 
 
 async def test_create_cythonized_tentacles_package(install_tentacles):
-    # remove evaluator and services tentacles to speed up compilation
-    for folder in (TENTACLES_EVALUATOR_PATH, TENTACLES_SERVICES_PATH):
-        rmtree(join(TENTACLES_PATH, folder))
+    speedup_cythonization()
     exchange_importer_path = join(TENTACLES_PATH,
                                   TENTACLES_BACKTESTING_PATH,
                                   TENTACLES_BACKTESTING_IMPORTERS_PATH,
@@ -189,10 +174,7 @@ async def test_create_cythonized_tentacles_package(install_tentacles):
 
 
 async def test_create_all_tentacles_bundle_cleaned_not_zipped_but_cythonized(install_tentacles):
-    # remove evaluator and services tentacles to speed up compilation
-    for folder in (TENTACLES_EVALUATOR_PATH, TENTACLES_SERVICES_PATH):
-        rmtree(join(TENTACLES_PATH, folder))
-    cleanup_test_env()
+    speedup_cythonization()
     assert await create_all_tentacles_bundle(TEST_EXPORT_DIR,
                                              in_zip=False,
                                              cythonize=True,
@@ -210,14 +192,9 @@ async def test_create_all_tentacles_bundle_cleaned_not_zipped_but_cythonized(ins
     assert_directory_has_file_with_content(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0_bundle"),
                                            "metadata.yaml",
                                            "author: DrakkarSoftware\nname: generic_exchange_importer\nrepository: Unknown repository location\ntype: tentacle\nversion: 1.2.0\n")
-    cleanup_test_env()
 
 
-async def test_create_all_tentacles_bundle_not_cleaned_and_zipped(install_tentacles):
-    # remove evaluator and services tentacles to speed up compilation
-    for folder in (TENTACLES_EVALUATOR_PATH, TENTACLES_SERVICES_PATH):
-        rmtree(join(TENTACLES_PATH, folder))
-    cleanup_test_env()
+async def test_create_all_tentacles_bundle_zipped_not_cleaned_and_zipped(install_tentacles):
     assert await create_all_tentacles_bundle(TEST_EXPORT_DIR,
                                              in_zip=True,
                                              cythonize=False,
@@ -231,8 +208,9 @@ async def test_create_all_tentacles_bundle_not_cleaned_and_zipped(install_tentac
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0_bundle.zip"))
     assert not os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0_bundle"))
     assert not os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0_bundle"))
-    cleanup_test_env()
 
+
+async def test_create_all_tentacles_bundle_not_zipped_not_cleaned_and_zipped(install_tentacles):
     assert await create_all_tentacles_bundle(TEST_EXPORT_DIR,
                                              in_zip=True,
                                              cythonize=False,
@@ -246,7 +224,6 @@ async def test_create_all_tentacles_bundle_not_cleaned_and_zipped(install_tentac
     assert not os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0_bundle.zip"))
     assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0_bundle"))
     assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0_bundle"))
-    cleanup_test_env()
 
 
 def assert_directory_has_file_with_content(directory_to_check, expected_file, expected_content):
@@ -254,12 +231,10 @@ def assert_directory_has_file_with_content(directory_to_check, expected_file, ex
         assert file_to_test.read() == expected_content
 
 
-def cleanup_test_env():
-    if os.path.exists(TEST_EXPORT_DIR):
-        rmtree(TEST_EXPORT_DIR)
-    if os.path.exists(DEFAULT_EXPORT_DIR):
-        rmtree(DEFAULT_EXPORT_DIR)
-
+def speedup_cythonization():
+    # remove evaluator and services tentacles to speed up compilation
+    for folder in (TENTACLES_EVALUATOR_PATH, TENTACLES_SERVICES_PATH):
+        rmtree(join(TENTACLES_PATH, folder))
 
 def _check_compiled_tentacle(tentacle_path, expected_dir_count):
     dir_count = 0
@@ -276,12 +251,3 @@ def _check_compiled_tentacle(tentacle_path, expected_dir_count):
             dir_count += 1
     assert has_compiled_file
     assert dir_count == expected_dir_count
-
-
-def _cleanup():
-    if exists(TENTACLES_PATH):
-        TentaclesSetupManager.delete_tentacles_arch(force=True)
-    if exists(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER):
-        rmtree(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
-    if exists(TENTACLE_PACKAGE):
-        rmtree(TENTACLE_PACKAGE)
