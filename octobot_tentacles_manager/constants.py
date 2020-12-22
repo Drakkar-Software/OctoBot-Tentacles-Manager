@@ -64,6 +64,9 @@ UNKNOWN_REPOSITORY_LOCATION = "Unknown repository location"
 # Tentacles packages
 UNKNOWN_TENTACLES_PACKAGE_LOCATION = "Unknown package location"
 
+# exporter
+DEFAULT_EXPORT_DIR = "output"
+
 # Artifacts
 UNKNOWN_ARTIFACT_VERSION = "unknown_version"
 

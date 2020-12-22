@@ -27,11 +27,13 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
                  artifact: models.TentaclePackage,
                  exported_tentacles_package: str,
                  tentacles_folder: str,
+                 output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_cythonize: bool = False,
                  should_zip: bool = False,
                  with_dev_mode: bool = False):
         super().__init__(artifact,
                          tentacles_folder=tentacles_folder,
+                         output_dir=output_dir,
                          should_cythonize=should_cythonize,
                          should_zip=should_zip,
                          with_dev_mode=with_dev_mode)
@@ -41,10 +43,6 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
         self.tentacles_filter: util.TentacleFilter = None
         self.tentacles_white_list: list = []
         self.tentacles = []
-
-        # create working folder
-        self.working_folder = path.join(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER,
-                                        constants.TENTACLES_ARCHIVE_ROOT) if self.should_zip else self.artifact.name
 
     async def prepare_export(self):
         if not self.with_dev_mode or self.exported_tentacles_package is not None:

@@ -26,6 +26,7 @@ class Artifact:
         self.origin_package: str = constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
         self.origin_repository: str = constants.UNKNOWN_REPOSITORY_LOCATION
         self.output_path: str = None
+        self.output_dir: str = None
 
     def is_valid(self) -> bool:
         """

@@ -56,12 +56,13 @@ async def _handle_package_manager_command(starting_args,
                                                              with_dev_mode=include_dev_mode,
                                                              cythonize=cythonize)
             if include_tentacles_export:
-                error_count += await api.create_all_tentacles_bundle(target_dir,
-                                                                     tentacles_folder=target_dir,
-                                                                     exported_tentacles_package=exported_tentacles_package,
-                                                                     in_zip=False,
-                                                                     with_dev_mode=include_dev_mode,
-                                                                     cythonize=cythonize)
+                error_count += await api.create_all_tentacles_bundle(
+                    output_dir=export_tentacles_output,
+                    tentacles_folder=target_dir,
+                    exported_tentacles_package=exported_tentacles_package,
+                    in_zip=False,
+                    with_dev_mode=include_dev_mode,
+                    cythonize=cythonize)
         elif starting_args.pack:
             error_count = await api.create_tentacles_package(packed_tentacles_output,
                                                              target_dir,
@@ -70,12 +71,13 @@ async def _handle_package_manager_command(starting_args,
                                                              with_dev_mode=include_dev_mode,
                                                              cythonize=cythonize)
             if include_tentacles_export:
-                error_count += await api.create_all_tentacles_bundle(target_dir,
-                                                                     tentacles_folder=target_dir,
-                                                                     exported_tentacles_package=exported_tentacles_package,
-                                                                     in_zip=True,
-                                                                     with_dev_mode=include_dev_mode,
-                                                                     cythonize=cythonize)
+                error_count += await api.create_all_tentacles_bundle(
+                    output_dir=export_tentacles_output,
+                    tentacles_folder=target_dir,
+                    exported_tentacles_package=exported_tentacles_package,
+                    in_zip=True,
+                    with_dev_mode=include_dev_mode,
+                    cythonize=cythonize)
         elif single_tentacle_path:
             error_count = await api.install_single_tentacle(single_tentacle_path,
                                                             single_tentacle_type,

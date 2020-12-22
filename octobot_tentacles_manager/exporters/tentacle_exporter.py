@@ -24,21 +24,17 @@ import octobot_tentacles_manager.constants as constants
 class TentacleExporter(artifact_exporter.ArtifactExporter):
     def __init__(self,
                  artifact: models.Tentacle,
-                 tentacles_export_dir: str,
                  tentacles_folder: str,
+                 output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_cythonize: bool = False,
                  should_zip: bool = False,
                  with_dev_mode: bool = False):
         super().__init__(artifact,
                          tentacles_folder=tentacles_folder,
+                         output_dir=output_dir,
                          should_cythonize=should_cythonize,
                          should_zip=should_zip,
                          with_dev_mode=with_dev_mode)
-        self.tentacles_export_dir = tentacles_export_dir
-        self.tentacles_export_path: str = os.path.join(
-            constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, self.artifact.name) \
-            if self.should_zip else os.path.join(tentacles_export_dir, self.artifact.name)
-        self.working_folder = self.tentacles_export_path
 
     async def prepare_export(self):
         if not os.path.exists(self.working_folder):

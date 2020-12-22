@@ -28,19 +28,16 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
     def __init__(self,
                  artifact: models.TentacleBundle,
                  tentacles_folder: str,
-                 bundle_output_dir: str,
+                 output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_zip: bool = False,
                  should_remove_artifacts_after_use: bool = False):
         super().__init__(artifact,
                          tentacles_folder=tentacles_folder,
+                         output_dir=output_dir,
                          should_cythonize=False,
                          should_zip=should_zip,
                          with_dev_mode=False)
         self.should_remove_artifacts_after_use = should_remove_artifacts_after_use
-        self.bundle_output_dir: str = os.path.join(
-            constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, self.artifact.name) \
-            if self.should_zip else os.path.join(bundle_output_dir, self.artifact.name)
-        self.working_folder = self.bundle_output_dir
 
     async def prepare_export(self):
         if not os.path.exists(self.working_folder):
