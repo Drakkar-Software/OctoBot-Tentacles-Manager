@@ -109,7 +109,10 @@ venv.bak/
 # Tentacles manager temporary files
 octobot_tentacles_manager/creator_temp/
 
-\.idea/
+# ide
+.idea
 
+# tests
 tentacles
-start\.py
+temp_tests
+user
