@@ -19,7 +19,19 @@ import octobot_tentacles_manager.models.artifact as artifact_model
 
 
 class ArtifactMetadata:
+    METADATA_FILE = "metadata.yaml"
+    METADATA_VERSION = "version"
+    METADATA_NAME = "name"
+    METADATA_ARTIFACT_TYPE = "type"
+
     def __init__(self, artifact: artifact_model.Artifact):
         self.artifact: artifact_model.Artifact = artifact
         self.version: str = self.artifact.version
         self.artifact_type: enums.ArtifactTypes = None
+
+    def to_dict(self) -> dict:
+        return {
+            self.METADATA_NAME: self.artifact.name,
+            self.METADATA_VERSION: self.artifact.version,
+            self.METADATA_ARTIFACT_TYPE: self.artifact_type.value,
+        }

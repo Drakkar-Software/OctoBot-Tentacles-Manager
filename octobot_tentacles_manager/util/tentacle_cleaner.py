@@ -48,6 +48,17 @@ def remove_dir_or_file(element_path: os.path) -> None:
         os.remove(element_path)
 
 
+def remove_dir_or_file_from_path(element_path: str) -> None:
+    """
+    Remove an os.path element
+    :param element_path: the element path to remove
+    :return: None
+    """
+    if os.path.isdir(element_path):
+        shutil.rmtree(element_path)
+    elif os.path.isfile(element_path):
+        os.remove(element_path)
+
 def remove_non_tentacles_files(directory, logger) -> None:
     """
     Cleanup a directory from non tentacle files

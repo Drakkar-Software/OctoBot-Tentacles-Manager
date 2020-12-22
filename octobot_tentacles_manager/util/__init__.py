@@ -41,12 +41,14 @@ from octobot_tentacles_manager.util.tentacle_filter import (
 from octobot_tentacles_manager.util.tentacle_cleaner import (
     remove_unnecessary_files,
     remove_non_tentacles_files,
+    remove_dir_or_file_from_path,
     remove_dir_or_file,
 )
 
 __all__ = [
     "cleanup_temp_dirs",
     "remove_dir_or_file",
+    "remove_dir_or_file_from_path",
     "fetch_and_extract_tentacles",
     "get_local_arch_download_path",
     "load_tentacle_with_metadata",
