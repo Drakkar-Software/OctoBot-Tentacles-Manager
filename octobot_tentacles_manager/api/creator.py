@@ -48,7 +48,8 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                                       in_zip: bool = True,
                                       with_dev_mode: bool = False,
                                       cythonize: bool = False,
-                                      should_remove_artifacts_after_use: bool = False) -> int:
+                                      should_remove_artifacts_after_use: bool = False,
+                                      should_zip_bundle: bool = False) -> int:
     logger = logging.get_logger("TentacleChecker")
     error_count: int = 0
     tentacles: list = util.load_tentacle_with_metadata(tentacles_folder)
@@ -72,7 +73,7 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                 artifact=tentacle_bundle,
                 tentacles_folder=tentacles_folder,
                 output_dir=output_dir,
-                should_zip=in_zip,
+                should_zip=should_zip_bundle,
                 should_remove_artifacts_after_use=should_remove_artifacts_after_use)
             await tentacle_bundle.export()
         except Exception as e:
