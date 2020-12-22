@@ -31,7 +31,7 @@ class Tentacle(artifact.Artifact):
         self.tentacle_type = tentacle_type
         self.tentacle_root_type = self.tentacle_type.get_root_type()
         self.tentacle_path = path.join(self.tentacle_root_path, self.tentacle_type.to_path())
-        self.tentacle_module_path = path.join(self.tentacle_path, self.name)
+        self.tentacle_module_path = None
         self.tentacle_class_names = []
         self.tentacles_requirements = None
         self.tentacle_group = self.name
@@ -43,6 +43,7 @@ class Tentacle(artifact.Artifact):
         Initialize a tentacle object with its metadata file
         :return: None
         """
+        self.tentacle_module_path = path.join(self.tentacle_path, self.name)
         async with aiofiles.open(path.join(self.tentacle_module_path,
                                            constants.TENTACLE_METADATA), "r") as metadata_file:
             self._read_metadata_dict(json.loads(await metadata_file.read()))
@@ -53,7 +54,8 @@ class Tentacle(artifact.Artifact):
         :return: None
         """
         try:
-            with open(path.join(self.tentacle_module_path, constants.TENTACLE_METADATA), "r") as metadata_file:
+            self.tentacle_module_path = path.join(self.tentacle_path, self.name)
+            with open(path.join(self.tentacle_path, self.name, constants.TENTACLE_METADATA), "r") as metadata_file:
                 self._read_metadata_dict(json.loads(metadata_file.read()))
         except FileNotFoundError:
             pass
