@@ -20,7 +20,13 @@ import shutil
 import octobot_tentacles_manager.constants as constants
 
 
-def remove_unnecessary_files(directory):
+def remove_unnecessary_files(directory) -> None:
+    """
+    Remove unnecessary files in directory from
+    PYTHON_GENERATED_ELEMENTS and PYTHON_GENERATED_ELEMENTS_EXTENSION list
+    :param directory: the directory to clean
+    :return: None
+    """
     for element in os.scandir(directory):
         element_ext = element.name.split(".")[-1]
         if element.name in constants.PYTHON_GENERATED_ELEMENTS or \
@@ -30,14 +36,25 @@ def remove_unnecessary_files(directory):
             remove_unnecessary_files(element)
 
 
-def remove_dir_or_file(element_path: os.path):
+def remove_dir_or_file(element_path: os.path) -> None:
+    """
+    Remove an os.path element
+    :param element_path: the element to remove
+    :return: None
+    """
     if element_path.is_dir():
         shutil.rmtree(element_path)
     elif element_path.is_file():
         os.remove(element_path)
 
 
-def remove_non_tentacles_files(directory, logger):
+def remove_non_tentacles_files(directory, logger) -> None:
+    """
+    Cleanup a directory from non tentacle files
+    :param directory: the directory path to clean
+    :param logger: the logger to use when an error happened
+    :return: None
+    """
     for element in os.scandir(directory):
         if element.name not in set(constants.TENTACLES_FOLDERS_ARCH):
             try:
