@@ -56,12 +56,15 @@ async def create_all_tentacles_bundle(tentacles_export_dir,
     )
     for tentacle in tentacles_white_list:
         try:
-            await exporters.TentacleExporter(artifact=tentacle,
-                                             tentacles_export_dir=tentacles_export_dir,
-                                             tentacles_folder=tentacles_folder,
-                                             should_zip=in_zip,
-                                             with_dev_mode=with_dev_mode,
-                                             should_cythonize=cythonize).export()
+            tentacle_exporter = exporters.TentacleExporter(artifact=tentacle,
+                                                           tentacles_export_dir=tentacles_export_dir,
+                                                           tentacles_folder=tentacles_folder,
+                                                           should_zip=in_zip,
+                                                           with_dev_mode=with_dev_mode,
+                                                           should_cythonize=cythonize)
+            await tentacle_exporter.export()
+            tentacle_bundle = exporters.TentacleBundleExporter
+
         except Exception as e:
             logger.error(f"Error when exporting tentacle {tentacle.name} : {str(e)}")
             error_count += 1
