@@ -48,3 +48,6 @@ class TentacleExporter(artifact_exporter.ArtifactExporter):
             self.copy_directory_content_to_temporary_dir(self.artifact.tentacle_module_path)
         else:
             self.copy_directory_content_to_working_dir(self.artifact.tentacle_module_path)
+
+    async def after_export(self):
+        pass

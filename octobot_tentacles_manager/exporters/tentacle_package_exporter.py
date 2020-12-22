@@ -63,3 +63,6 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
         else:
             self.copy_directory_content_to_working_dir(self.tentacles_folder,
                                                        ignore=self.tentacles_filter.should_ignore)
+
+    async def after_export(self):
+        pass
