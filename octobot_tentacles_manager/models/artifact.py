@@ -22,9 +22,10 @@ class Artifact:
 
     def __init__(self, name):
         self.name: str = name
-        self.version: str = None
+        self.version: str = constants.UNKNOWN_ARTIFACT_VERSION
         self.origin_package: str = constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
         self.origin_repository: str = constants.UNKNOWN_REPOSITORY_LOCATION
+        self.output_path: str = None
 
     def is_valid(self):
         return self.version is not None
