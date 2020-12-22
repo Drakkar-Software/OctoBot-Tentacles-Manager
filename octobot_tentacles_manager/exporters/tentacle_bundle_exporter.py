@@ -53,11 +53,19 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
                     self.copy_directory_content_to_temporary_dir(artifact.output_path)
                 else:
                     self.copy_directory_content_to_working_dir(artifact.output_path)
+        self.create_metadata_file()
 
-            # add artifact metadata
-            artifact_metadata = models.MetadataFactory(artifact).create_metadata_instance()
-            with open(os.path.join(self.working_folder, constants.ARTIFACT_METADATA_FILE), "w") as metadata_file:
-                metadata_file.write(yaml.dump(artifact_metadata.to_dict()))
+    def create_metadata_file(self) -> None:
+        """
+        Creates metadata file from artifacts count
+        :return: None
+        """
+        if len(self.artifact.artifacts) == 1:
+            artifact_metadata = models.MetadataFactory(self.artifact.artifacts[0]).create_metadata_instance()
+        else:
+            artifact_metadata = models.MetadataFactory(self.artifact).create_metadata_instance()
+        with open(os.path.join(self.working_folder, constants.ARTIFACT_METADATA_FILE), "w") as metadata_file:
+            metadata_file.write(yaml.dump(artifact_metadata.to_dict()))
 
     async def after_export(self) -> None:
         """

@@ -13,3 +13,37 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
+import shutil
+import aiohttp
+import pytest
+
+import octobot_tentacles_manager.api as api
+import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.managers as managers
+
+TENTACLE_PACKAGE = "tentacle_package"
+TEST_EXPORT_DIR = "test_export_dir"
+
+
+@pytest.yield_fixture()
+async def install_tentacles():
+    _cleanup()
+    async with aiohttp.ClientSession() as session:
+        assert await api.install_all_tentacles(os.path.join("tests", "static", "tentacles.zip"),
+                                               aiohttp_session=session) == 0
+        yield
+    _cleanup()
+
+
+def _cleanup():
+    if os.path.exists(constants.TENTACLES_PATH):
+        managers.TentaclesSetupManager.delete_tentacles_arch(force=True)
+    if os.path.exists(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER):
+        shutil.rmtree(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
+    if os.path.exists(TENTACLE_PACKAGE):
+        shutil.rmtree(TENTACLE_PACKAGE)
+    if os.path.exists(TEST_EXPORT_DIR):
+        shutil.rmtree(TEST_EXPORT_DIR)
+    if os.path.exists(constants.DEFAULT_EXPORT_DIR):
+        shutil.rmtree(constants.DEFAULT_EXPORT_DIR)

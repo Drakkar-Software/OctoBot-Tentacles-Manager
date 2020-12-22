@@ -15,18 +15,18 @@
 #  License along with this library.
 import octobot_tentacles_manager.enums as enums
 import octobot_tentacles_manager.constants as constants
-import octobot_tentacles_manager.models.tentacle_package as tentacle_package_model
+import octobot_tentacles_manager.models.tentacle_bundle as tentacle_bundle_model
 import octobot_tentacles_manager.models.metadata.artifact_metadata as artifact_metadata
 
 
-class TentaclePackageMetadata(artifact_metadata.ArtifactMetadata):
-    def __init__(self, artifact: tentacle_package_model.TentaclePackage):
+class TentacleBundleMetadata(artifact_metadata.ArtifactMetadata):
+    def __init__(self, artifact: tentacle_bundle_model.TentacleBundle):
         super().__init__(artifact)
-        self.artifact_type: enums.ArtifactTypes = enums.ArtifactTypes.TENTACLE_PACKAGE
+        self.artifact_type: enums.ArtifactTypes = enums.ArtifactTypes.TENTACLE_BUNDLE
 
     def to_dict(self) -> dict:
         origin_dict = super().to_dict()
-        origin_dict[constants.ARTIFACT_METADATA_TENTACLES] = [
-            tentacle.name for tentacle in self.artifact.tentacles
+        origin_dict[constants.ARTIFACT_METADATA_ARTIFACTS] = [
+            artifact.name for artifact in self.artifact.artifacts
         ]
         return origin_dict

@@ -69,13 +69,13 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                                                            should_cythonize=cythonize)
             await tentacle_exporter.export()
             tentacle_bundle.add_artifact(tentacle)
-            tentacle_bundle = exporters.TentacleBundleExporter(
+            tentacle_bundle_exporter = exporters.TentacleBundleExporter(
                 artifact=tentacle_bundle,
                 tentacles_folder=tentacles_folder,
                 output_dir=output_dir,
                 should_zip=should_zip_bundle,
                 should_remove_artifacts_after_use=should_remove_artifacts_after_use)
-            await tentacle_bundle.export()
+            await tentacle_bundle_exporter.export()
         except Exception as e:
             logger.error(f"Error when exporting tentacle {tentacle.name} : {str(e)}")
             error_count += 1

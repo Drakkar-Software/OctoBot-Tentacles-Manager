@@ -49,6 +49,7 @@ from octobot_tentacles_manager.models import metadata
 from octobot_tentacles_manager.models.metadata import (
     ArtifactMetadata,
     TentacleMetadata,
+    TentacleBundleMetadata,
     TentaclePackageMetadata,
     ProfileMetadata,
     MetadataFactory,
@@ -61,6 +62,7 @@ __all__ = [
     "Tentacle",
     "TentaclePackage",
     "TentacleBundle",
+    "TentacleBundleMetadata",
     "Profile",
     "ArtifactMetadata",
     "TentacleMetadata",
