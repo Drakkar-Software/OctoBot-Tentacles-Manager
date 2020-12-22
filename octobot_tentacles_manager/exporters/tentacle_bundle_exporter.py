@@ -56,7 +56,7 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
 
             # add artifact metadata
             artifact_metadata = models.MetadataFactory(artifact).create_metadata_instance()
-            with open(os.path.join(self.working_folder, artifact_metadata.METADATA_FILE), "w") as metadata_file:
+            with open(os.path.join(self.working_folder, constants.ARTIFACT_METADATA_FILE), "w") as metadata_file:
                 metadata_file.write(yaml.dump(artifact_metadata.to_dict()))
 
     async def after_export(self) -> None:

@@ -15,25 +15,22 @@
 #  License along with this library.
 
 import octobot_tentacles_manager.enums as enums
+import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.models.artifact as artifact_model
 
 
 class ArtifactMetadata:
-    METADATA_FILE = "metadata.yaml"
-    METADATA_VERSION = "version"
-    METADATA_NAME = "name"
-    METADATA_ARTIFACT_TYPE = "type"
-    METADATA_REPOSITORY = "repository"
-
     def __init__(self, artifact: artifact_model.Artifact):
         self.artifact: artifact_model.Artifact = artifact
         self.version: str = self.artifact.version
+        self.author: str = constants.DEFAULT_ARTIFACT_METADATA_AUTHOR
         self.artifact_type: enums.ArtifactTypes = None
 
     def to_dict(self) -> dict:
         return {
-            self.METADATA_NAME: self.artifact.name,
-            self.METADATA_VERSION: self.artifact.version,
-            self.METADATA_ARTIFACT_TYPE: self.artifact_type.value,
-            self.METADATA_REPOSITORY: self.artifact.origin_repository,
+            constants.ARTIFACT_METADATA_NAME: self.artifact.name,
+            constants.ARTIFACT_METADATA_VERSION: self.artifact.version,
+            constants.ARTIFACT_METADATA_ARTIFACT_TYPE: self.artifact_type.value,
+            constants.ARTIFACT_METADATA_REPOSITORY: self.artifact.origin_repository,
+            constants.ARTIFACT_METADATA_AUTHOR: self.author,
         }
