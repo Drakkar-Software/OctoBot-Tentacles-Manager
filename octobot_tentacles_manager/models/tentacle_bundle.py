@@ -21,7 +21,7 @@ class TentacleBundle(artifact.Artifact):
     ARTIFACT_NAME = "tentacle bundle"
     ARTIFACT_SUFFIX = "bundle"
 
-    def __init__(self, name):
+    def __init__(self, name=None):
         super().__init__(name)
         self.artifacts: list = []
 

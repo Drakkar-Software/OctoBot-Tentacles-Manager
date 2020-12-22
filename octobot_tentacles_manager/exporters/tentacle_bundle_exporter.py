@@ -16,6 +16,7 @@
 
 import os
 import shutil
+import yaml
 
 import octobot_tentacles_manager.exporters.artifact_exporter as artifact_exporter
 import octobot_tentacles_manager.models as models
@@ -48,7 +49,8 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
         for artifact in self.artifact.artifacts:
             # copy artifact content
             if os.path.isfile(artifact.output_path):
-                shutil.copyfile(artifact.output_path, self.working_folder)
+                shutil.copyfile(artifact.output_path, os.path.join(self.working_folder,
+                                                                   os.path.basename(artifact.output_path)))
             else:
                 if self.should_zip:
                     self.copy_directory_content_to_temporary_dir(artifact.output_path)
@@ -56,6 +58,9 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
                     self.copy_directory_content_to_working_dir(artifact.output_path)
 
             # add artifact metadata
+            artifact_metadata = models.MetadataFactory(artifact).create_metadata_instance()
+            with open(os.path.join(self.working_folder, artifact_metadata.METADATA_FILE), "w") as metadata_file:
+                metadata_file.write(yaml.dump(artifact_metadata.to_dict()))
 
     async def after_export(self) -> None:
         """
@@ -64,4 +69,4 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
         """
         if self.should_remove_artifacts_after_use:
             for artifact in self.artifact.artifacts:
-                util.remove_dir_or_file(os.path.abspath(artifact.output_path))
+                util.remove_dir_or_file_from_path(artifact.output_path)
