@@ -27,8 +27,11 @@ class Artifact:
         self.origin_repository: str = constants.UNKNOWN_REPOSITORY_LOCATION
         self.output_path: str = None
 
-    def is_valid(self):
-        return self.version is not None
+    def is_valid(self) -> bool:
+        """
+        :return: True if the artifact version is not a None or a default value
+        """
+        return self.version is not None and self.version != constants.UNKNOWN_ARTIFACT_VERSION
 
     def __str__(self):
         str_rep = f"{self.name} {Artifact.ARTIFACT_NAME} ["
