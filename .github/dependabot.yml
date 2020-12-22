@@ -2,7 +2,7 @@ version: 2
 updates:
 - package-ecosystem: pip
   directory: "/"
-  target_branch: "0.4.0"
+  target_branch: "master"
   schedule:
     interval: "daily"
   open-pull-requests-limit: 10
