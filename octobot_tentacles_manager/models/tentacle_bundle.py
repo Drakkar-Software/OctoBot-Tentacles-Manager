@@ -23,9 +23,17 @@ class TentacleBundle(artifact.Artifact):
 
     def __init__(self, name):
         super().__init__(name)
-        self.artifacts = []
+        self.artifacts: list = []
 
-    def add_artifact(self, new_artifact: artifact.Artifact):
+    def add_artifact(self, new_artifact: artifact.Artifact) -> None:
+        """
+        Add a new artifact to the bundle
+        Used to manage the artifact name :
+        - If only one artifact is present in the bundle -> use its name and version
+        - If more artifacts are present, use the first artifact package as name
+        :param new_artifact: the artifact to add
+        :return: None
+        """
         self.artifacts.append(new_artifact)
         if len(self.artifacts) == 1:
             self.name = f"{self.artifacts[0].name}_{self.artifacts[0].version}_{self.ARTIFACT_SUFFIX}"

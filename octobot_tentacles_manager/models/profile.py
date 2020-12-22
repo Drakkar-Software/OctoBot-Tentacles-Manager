@@ -24,7 +24,7 @@ class Profile(artifact.Artifact):
         super().__init__(name)
 
     def __str__(self):
-        str_rep = f"{self.name} {Profile.ARTIFACT_NAME} ["
+        str_rep: str = f"{self.name} {Profile.ARTIFACT_NAME} ["
         if self.is_valid():
             return f"version: {self.version}]"
         else:

@@ -17,27 +17,41 @@ import os.path as path
 
 
 class TentacleType:
-
-    def __init__(self, type_path, module_name=None):
-        self.path = type_path
-        self.module_name = module_name
+    def __init__(self, type_path: str, module_name: str = None):
+        self.path: str = type_path
+        self.module_name: str = module_name
 
     @staticmethod
-    def from_import_path(root, import_path):
+    def from_import_path(root: str, import_path: str):
+        """
+        Create a tentacle type from a path
+        :param root: the root path
+        :param import_path: the import path
+        :return: the created TentacleType instance
+        """
         module_name = import_path.split(".")[-1]
         tentacle_type_path = import_path.split(f"{root}.")[-1]\
             .replace(f".{module_name}", "")\
             .replace(f".", path.sep)
         return TentacleType(tentacle_type_path, module_name)
 
-    def get_last_element(self):
+    def get_last_element(self) -> str:
+        """
+        :return: the path last element
+        """
         return self.path.split(path.sep)[-1]
 
-    def get_root_type(self):
+    def get_root_type(self) -> str:
+        """
+        :return: the root type
+        """
         return self.path.split(path.sep)[0]
 
-    def to_path(self):
+    def to_path(self) -> str:
+        """
+        :return: the tentacle type path
+        """
         return self.path
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.path.replace(path.sep, ".")

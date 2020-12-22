@@ -38,12 +38,20 @@ class Tentacle(artifact.Artifact):
         self.in_dev_mode = False
         self.metadata = {}
 
-    async def initialize(self):
+    async def initialize(self) -> None:
+        """
+        Initialize a tentacle object with its metadata file
+        :return: None
+        """
         async with aiofiles.open(path.join(self.tentacle_module_path,
                                            constants.TENTACLE_METADATA), "r") as metadata_file:
             self._read_metadata_dict(json.loads(await metadata_file.read()))
 
-    def sync_initialize(self):
+    def sync_initialize(self) -> None:
+        """
+        Synchronize a tentacle object with its metadata file
+        :return: None
+        """
         try:
             with open(path.join(self.tentacle_module_path, constants.TENTACLE_METADATA), "r") as metadata_file:
                 self._read_metadata_dict(json.loads(metadata_file.read()))
@@ -51,26 +59,43 @@ class Tentacle(artifact.Artifact):
             pass
 
     @staticmethod
-    def find(iterable, name):
+    def find(iterable, name) -> object:
+        """
+        Find a tentacle from an iterable
+        :param iterable: the iterable
+        :param name: the tentacle name
+        :return: the tentacle if found else None
+        """
         for tentacle in iterable:
             if tentacle.name == name:
                 return tentacle
         return None
 
-    def get_simple_tentacle_type(self):
+    def get_simple_tentacle_type(self) -> str:
+        """
+        :return: the tentacle type from its last element
+        """
         return self.tentacle_type.get_last_element()
 
-    def __str__(self):
-        str_rep = f"{self.name} {Tentacle.ARTIFACT_NAME} [type: {self.tentacle_type}"
+    def __str__(self) -> str:
+        str_rep: str = f"{self.name} {Tentacle.ARTIFACT_NAME} [type: {self.tentacle_type}"
         if self.is_valid():
             return f"{str_rep}, version: {self.version}]"
         else:
             return f"{str_rep}]"
 
-    def extract_tentacle_requirements(self):
+    def extract_tentacle_requirements(self) -> list:
+        """
+        :return: The tentacle requirement list
+        """
         return [self._parse_requirements(component) for component in self.tentacles_requirements]
 
-    def _read_metadata_dict(self, metadata):
+    def _read_metadata_dict(self, metadata: dict) -> None:
+        """
+        Load tentacle metadata from its dict
+        :param metadata: the tentacle metadata dict
+        :return: None
+        """
         self.metadata = metadata
         self.version = self.metadata[constants.METADATA_VERSION]
         self.origin_package = self.metadata[constants.METADATA_ORIGIN_PACKAGE]
@@ -82,7 +107,12 @@ class Tentacle(artifact.Artifact):
             self.in_dev_mode = self.metadata[constants.METADATA_DEV_MODE]
 
     @staticmethod
-    def _parse_requirements(requirement):
+    def _parse_requirements(requirement) -> list:
+        """
+        Parse tentacle requirements
+        :param requirement: tentacle requirements
+        :return: parsed tentacle requirements
+        """
         if constants.TENTACLE_REQUIREMENT_VERSION_EQUALS in requirement:
             return requirement.split(constants.TENTACLE_REQUIREMENT_VERSION_EQUALS)
         else:
