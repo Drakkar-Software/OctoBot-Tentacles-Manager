@@ -64,6 +64,9 @@ UNKNOWN_REPOSITORY_LOCATION = "Unknown repository location"
 # Tentacles packages
 UNKNOWN_TENTACLES_PACKAGE_LOCATION = "Unknown package location"
 
+# Artifacts
+UNKNOWN_ARTIFACT_VERSION = "unknown_version"
+
 # Tentacles installation folders
 TENTACLES_INSTALL_TEMP_DIR = "temp_tentacles"
 TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR = "requirements_temp_tentacles"
