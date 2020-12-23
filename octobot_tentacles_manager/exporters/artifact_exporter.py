@@ -127,7 +127,6 @@ class ArtifactExporter:
         """
         if path.exists(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER):
             shutil.rmtree(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
-        # os.mkdir(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
 
     def copy_directory_content_to_temporary_dir(self, folder_to_copy: str, ignore=None) -> None:
         """

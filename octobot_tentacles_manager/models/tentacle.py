@@ -50,7 +50,7 @@ class Tentacle(artifact.Artifact):
 
     def sync_initialize(self) -> None:
         """
-        Synchronize a tentacle object with its metadata file
+        Initialize synchronously a tentacle object with its metadata file
         :return: None
         """
         try:
@@ -75,7 +75,7 @@ class Tentacle(artifact.Artifact):
 
     def get_simple_tentacle_type(self) -> str:
         """
-        :return: the tentacle type from its last element
+        :return: the tentacle type from its folder in tentacle files architecture
         """
         return self.tentacle_type.get_last_element()
 
