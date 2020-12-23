@@ -17,12 +17,10 @@
 import octobot_tentacles_manager.models.tentacle as tentacle_model
 import octobot_tentacles_manager.models.tentacle_package as tentacle_package_model
 import octobot_tentacles_manager.models.profile as profile_model
-import octobot_tentacles_manager.models.tentacle_bundle as tentacle_bundle_model
 
 import octobot_tentacles_manager.models.metadata.tentacle_metadata as tentacle_metadata
 import octobot_tentacles_manager.models.metadata.tentacle_package_metadata as tentacle_package_metadata
 import octobot_tentacles_manager.models.metadata.profile_metadata as profile_metadata
-import octobot_tentacles_manager.models.metadata.tentacle_bundle_metadata as tentacle_bundle_metadata
 
 
 class MetadataFactory:
@@ -36,6 +34,4 @@ class MetadataFactory:
             return tentacle_package_metadata.TentaclePackageMetadata(self.artifact)
         elif isinstance(self.artifact, profile_model.Profile):
             return profile_metadata.ProfileMetadata(self.artifact)
-        elif isinstance(self.artifact, tentacle_bundle_model.TentacleBundle):
-            return tentacle_bundle_metadata.TentacleBundleMetadata(self.artifact)
         return None

@@ -60,7 +60,7 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
     )
     for tentacle in tentacles_white_list:
         try:
-            tentacle_bundle = models.TentacleBundle()
+            tentacle_package = models.TentaclePackage()
             tentacle_exporter = exporters.TentacleExporter(artifact=tentacle,
                                                            output_dir=output_dir,
                                                            tentacles_folder=tentacles_folder,
@@ -68,9 +68,9 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                                                            with_dev_mode=with_dev_mode,
                                                            should_cythonize=cythonize)
             await tentacle_exporter.export()
-            tentacle_bundle.add_artifact(tentacle)
+            tentacle_package.add_artifact(tentacle)
             tentacle_bundle_exporter = exporters.TentacleBundleExporter(
-                artifact=tentacle_bundle,
+                artifact=tentacle_package,
                 tentacles_folder=tentacles_folder,
                 output_dir=output_dir,
                 should_zip=should_zip_bundle,

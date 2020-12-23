@@ -21,4 +21,3 @@ class ArtifactTypes(enum.Enum):
     TENTACLE = "tentacle"
     PROFILE = "profile"
     TENTACLE_PACKAGE = "tentacle_package"
-    TENTACLE_BUNDLE = "tentacle_bundle"
