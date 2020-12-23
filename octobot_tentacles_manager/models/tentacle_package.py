@@ -31,7 +31,7 @@ class TentaclePackage(artifact.Artifact):
         Add a new artifact to the package
         Used to manage the artifact name :
         - If only one artifact is present in the package -> use its name and version
-        - If more artifacts are present, use the first artifact package as name
+        - If more artifacts are present, use the first artifact's origin package as name
         :param new_artifact: the artifact to add
         :return: None
         """
