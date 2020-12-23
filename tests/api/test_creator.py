@@ -181,15 +181,15 @@ async def test_create_all_tentacles_bundle_cleaned_not_zipped_but_cythonized(ins
                                              should_remove_artifacts_after_use=True) == 0
 
     # test compiled content
-    _check_compiled_tentacle(join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0"), 2)
-    _check_compiled_tentacle(join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0"), 2)
+    _check_compiled_tentacle(join(TEST_EXPORT_DIR, "generic_exchange_importer@1.2.0"), 2)
+    _check_compiled_tentacle(join(TEST_EXPORT_DIR, "daily_trading_mode@1.2.0"), 2)
 
     # test should_remove_artifacts_after_use
     assert not os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer"))
     assert not os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode"))
 
     # test bundle metadata
-    assert_directory_has_file_with_content(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0"),
+    assert_directory_has_file_with_content(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer@1.2.0"),
                                            "metadata.yaml",
                                            "author: DrakkarSoftware\nname: generic_exchange_importer\nrepository: Unknown repository location\ntype: tentacle\nversion: 1.2.0\n")
 
@@ -206,8 +206,8 @@ async def test_create_all_tentacles_bundle_zipped_not_cleaned_and_zipped(install
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode.zip"))
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0.zip"))
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0.zip"))
-    assert not os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0"))
-    assert not os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0"))
+    assert not os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer@1.2.0"))
+    assert not os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode@1.2.0"))
 
 
 async def test_create_all_tentacles_bundle_not_zipped_not_cleaned_and_zipped(install_tentacles):
@@ -222,8 +222,8 @@ async def test_create_all_tentacles_bundle_not_zipped_not_cleaned_and_zipped(ins
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode.zip"))
     assert not os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0.zip"))
     assert not os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0.zip"))
-    assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer_1.2.0"))
-    assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0"))
+    assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer@1.2.0"))
+    assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode@1.2.0"))
 
 
 def assert_directory_has_file_with_content(directory_to_check, expected_file, expected_content):

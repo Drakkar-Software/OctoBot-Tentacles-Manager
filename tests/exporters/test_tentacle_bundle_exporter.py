@@ -42,8 +42,8 @@ async def test_each_tentacle_bundle_exporter(install_tentacles):
     output_files = os.listdir(constants.DEFAULT_EXPORT_DIR)
     assert len(output_files) == 20
     assert "daily_trading_mode.zip" in output_files
-    assert "generic_exchange_importer_1.2.0" in output_files
-    assert "other_instant_fluctuations_evaluator_1.2.0" in output_files
+    assert "generic_exchange_importer@1.2.0" in output_files
+    assert "other_instant_fluctuations_evaluator@1.2.0" in output_files
     assert "mixed_strategies_evaluator.zip" in output_files
     assert "mixed_strategies_evaluator" not in output_files
 
@@ -66,8 +66,8 @@ async def test_all_tentacle_bundle_exporter(install_tentacles):
     output_files = os.listdir(exported_bundle_path)
     assert len(output_files) == 11
     assert "daily_trading_mode.zip" in output_files
-    assert "generic_exchange_importer_1.2.0_package" not in output_files
-    assert "other_instant_fluctuations_evaluator_1.2.0_package" not in output_files
+    assert "generic_exchange_importer@1.2.0_package" not in output_files
+    assert "other_instant_fluctuations_evaluator@1.2.0_package" not in output_files
     assert "mixed_strategies_evaluator.zip" in output_files
     assert "mixed_strategies_evaluator" not in output_files
     assert constants.ARTIFACT_METADATA_FILE in output_files

@@ -157,7 +157,8 @@ class ArtifactExporter:
         :return: the path of the archive
         """
         # remove .zip extension if necessary
-        file_name = self.artifact.name.split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0]
+        file_name = self.artifact.name.split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0].\
+            replace(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR, "_")
         zipped_file = shutil.make_archive(os.path.join(self.artifact.output_dir, file_name),
                                           constants.TENTACLES_PACKAGE_FORMAT, self.working_folder)
         try:
