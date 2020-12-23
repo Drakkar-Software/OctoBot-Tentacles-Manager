@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import asyncio
 import os
 
 import octobot_tentacles_manager.constants as constants
@@ -87,8 +88,9 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
             error_count += 1
 
     if upload_url is not None:
-        for exported_tentacle_bundle in tentacle_bundle_exported_list:
-            await _upload_exported_tentacle_bundle(upload_url, exported_tentacle_bundle)
+        await asyncio.gather(
+            *[_upload_exported_tentacle_bundle(upload_url, exported_tentacle_bundle)
+              for exported_tentacle_bundle in tentacle_bundle_exported_list])
 
     return error_count
 
