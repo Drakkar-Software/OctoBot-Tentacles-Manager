@@ -14,5 +14,5 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-VERSION = "2.3.8"
+VERSION = "2.3.9"
 PROJECT_NAME = "OctoBot-Tentacles-Manager"
