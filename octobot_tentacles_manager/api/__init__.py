@@ -22,9 +22,15 @@ from octobot_tentacles_manager.api import uninstaller
 from octobot_tentacles_manager.api import creator
 from octobot_tentacles_manager.api import installer
 from octobot_tentacles_manager.api import util
+from octobot_tentacles_manager.api import uploader
 
 from octobot_tentacles_manager.api.util import (
     manage_tentacles,
+)
+
+from octobot_tentacles_manager.api.uploader import (
+    upload_file_to_nexus,
+    upload_folder_to_nexus,
 )
 
 from octobot_tentacles_manager.api.configurator import (
@@ -118,4 +124,6 @@ __all__ = [
     "repair_installation",
     "manage_tentacles",
     "create_all_tentacles_bundle",
+    "upload_file_to_nexus",
+    "upload_folder_to_nexus",
 ]
