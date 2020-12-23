@@ -13,11 +13,14 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
+
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.creators as tentacle_creator
 import octobot_tentacles_manager.exporters as exporters
 import octobot_tentacles_manager.models as models
 import octobot_tentacles_manager.util as util
+import octobot_tentacles_manager.api.uploader as uploader_api
 import octobot_commons.logging as logging
 
 
@@ -49,9 +52,11 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                                       with_dev_mode: bool = False,
                                       cythonize: bool = False,
                                       should_remove_artifacts_after_use: bool = False,
+                                      upload_url: str = None,
                                       should_zip_bundle: bool = False) -> int:
     logger = logging.get_logger("TentacleManagerApi")
     error_count: int = 0
+    tentacle_bundle_exported_list = []
     tentacles: list = util.load_tentacle_with_metadata(tentacles_folder)
     tentacles_white_list = util.filter_tentacles_by_dev_mode_and_package(
         tentacles=tentacles,
@@ -76,7 +81,24 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                 should_zip=should_zip_bundle,
                 should_remove_artifacts_after_use=should_remove_artifacts_after_use)
             await tentacle_bundle_exporter.export()
+            tentacle_bundle_exported_list.append(tentacle_bundle_exporter)
         except Exception as e:
             logger.error(f"Error when exporting tentacle {tentacle.name} : {str(e)}")
             error_count += 1
+
+    if upload_url is not None:
+        for exported_tentacle_bundle in tentacle_bundle_exported_list:
+            await _upload_exported_tentacle_bundle(upload_url, exported_tentacle_bundle)
+
     return error_count
+
+
+async def _upload_exported_tentacle_bundle(upload_url: str, exported_tentacle_bundle: exporters.TentacleBundleExporter):
+    export_path = exported_tentacle_bundle.artifact.output_path
+    alias_path = os.path.basename(export_path)
+    if models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR in export_path:
+        alias_name, alias_version = alias_path.split(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR)
+        alias_path = f"{alias_name}/{alias_version}"
+    await uploader_api.upload_file_or_folder_to_nexus(nexus_path=upload_url,
+                                                      artifact_path=export_path,
+                                                      artifact_alias=alias_path)

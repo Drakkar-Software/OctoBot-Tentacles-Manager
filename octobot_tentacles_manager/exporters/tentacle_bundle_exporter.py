@@ -37,7 +37,7 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
                          should_cythonize=False,
                          should_zip=should_zip,
                          with_dev_mode=False)
-        self.should_remove_artifacts_after_use = should_remove_artifacts_after_use
+        self.should_remove_artifacts_after_use: bool = should_remove_artifacts_after_use
 
     async def prepare_export(self):
         if not os.path.exists(self.working_folder):
