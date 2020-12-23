@@ -30,32 +30,32 @@ pytestmark = pytest.mark.asyncio
 
 async def test_each_tentacle_bundle_exporter(install_tentacles):
     for tentacle in util.load_tentacle_with_metadata(constants.TENTACLES_PATH):
-        tentacle_bundle = models.TentacleBundle()
+        tentacle_package = models.TentaclePackage()
         await exporters.TentacleExporter(artifact=tentacle, should_zip=True,
                                          tentacles_folder=constants.TENTACLES_PATH).export()
-        tentacle_bundle.add_artifact(tentacle)
+        tentacle_package.add_artifact(tentacle)
         await exporters.TentacleBundleExporter(
-            artifact=tentacle_bundle,
+            artifact=tentacle_package,
             tentacles_folder=constants.TENTACLES_PATH).export()
 
     # check files count
     output_files = os.listdir(constants.DEFAULT_EXPORT_DIR)
     assert len(output_files) == 20
     assert "daily_trading_mode.zip" in output_files
-    assert "generic_exchange_importer_1.2.0_bundle" in output_files
-    assert "other_instant_fluctuations_evaluator_1.2.0_bundle" in output_files
+    assert "generic_exchange_importer_1.2.0_package" in output_files
+    assert "other_instant_fluctuations_evaluator_1.2.0_package" in output_files
     assert "mixed_strategies_evaluator.zip" in output_files
     assert "mixed_strategies_evaluator" not in output_files
 
 
 async def test_all_tentacle_bundle_exporter(install_tentacles):
-    tentacle_bundle = models.TentacleBundle()
+    tentacle_package = models.TentaclePackage()
     for tentacle in util.load_tentacle_with_metadata(constants.TENTACLES_PATH):
         await exporters.TentacleExporter(artifact=tentacle, should_zip=True,
                                          tentacles_folder=constants.TENTACLES_PATH).export()
-        tentacle_bundle.add_artifact(tentacle)
+        tentacle_package.add_artifact(tentacle)
     await exporters.TentacleBundleExporter(
-        artifact=tentacle_bundle,
+        artifact=tentacle_package,
         tentacles_folder=constants.TENTACLES_PATH,
         should_remove_artifacts_after_use=True).export()
 
@@ -66,8 +66,8 @@ async def test_all_tentacle_bundle_exporter(install_tentacles):
     output_files = os.listdir(exported_bundle_path)
     assert len(output_files) == 11
     assert "daily_trading_mode.zip" in output_files
-    assert "generic_exchange_importer_1.2.0_bundle" not in output_files
-    assert "other_instant_fluctuations_evaluator_1.2.0_bundle" not in output_files
+    assert "generic_exchange_importer_1.2.0_package" not in output_files
+    assert "other_instant_fluctuations_evaluator_1.2.0_package" not in output_files
     assert "mixed_strategies_evaluator.zip" in output_files
     assert "mixed_strategies_evaluator" not in output_files
     assert constants.ARTIFACT_METADATA_FILE in output_files
@@ -75,6 +75,6 @@ async def test_all_tentacle_bundle_exporter(install_tentacles):
     # test multiple tentacle bundle metadata
     with open(os.path.join(exported_bundle_path, constants.ARTIFACT_METADATA_FILE)) as metadata_file:
         metadata_content = yaml.load(metadata_file.read())
-        assert metadata_content[constants.ARTIFACT_METADATA_ARTIFACT_TYPE] == "tentacle_bundle"
+        assert metadata_content[constants.ARTIFACT_METADATA_ARTIFACT_TYPE] == "tentacle_package"
         assert len(metadata_content[constants.ARTIFACT_METADATA_ARTIFACTS]) == 10
         assert "forum_evaluator" in metadata_content[constants.ARTIFACT_METADATA_ARTIFACTS]

@@ -26,7 +26,7 @@ import octobot_tentacles_manager.constants as constants
 
 class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
     def __init__(self,
-                 artifact: models.TentacleBundle,
+                 artifact: models.TentaclePackage,
                  tentacles_folder: str,
                  output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_zip: bool = False,

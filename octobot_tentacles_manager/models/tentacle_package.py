@@ -19,10 +19,26 @@ import octobot_tentacles_manager.models.artifact as artifact
 
 class TentaclePackage(artifact.Artifact):
     ARTIFACT_NAME = "tentacle package"
+    ARTIFACT_SUFFIX = "package"
 
-    def __init__(self, name):
+    def __init__(self, name=None):
         super().__init__(name)
-        self.tentacles = []
+        self.artifacts: list = []
+
+    def add_artifact(self, new_artifact: artifact.Artifact) -> None:
+        """
+        Add a new artifact to the package
+        Used to manage the artifact name :
+        - If only one artifact is present in the package -> use its name and version
+        - If more artifacts are present, use the first artifact package as name
+        :param new_artifact: the artifact to add
+        :return: None
+        """
+        self.artifacts.append(new_artifact)
+        if len(self.artifacts) == 1:
+            self.name = f"{self.artifacts[0].name}_{self.artifacts[0].version}_{self.ARTIFACT_SUFFIX}"
+        elif len(self.artifacts) > 1:
+            self.name = f"{self.artifacts[0].origin_package}_{self.version}_{self.ARTIFACT_SUFFIX}"
 
     def __str__(self):
         str_rep = f"{self.name} {TentaclePackage.ARTIFACT_NAME} ["

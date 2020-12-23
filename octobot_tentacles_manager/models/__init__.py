@@ -22,7 +22,7 @@ from octobot_tentacles_manager.models.artifact import (
 from octobot_tentacles_manager.models import tentacle_type
 from octobot_tentacles_manager.models import tentacle
 from octobot_tentacles_manager.models import tentacle_package
-from octobot_tentacles_manager.models import tentacle_bundle
+from octobot_tentacles_manager.models import tentacle_package
 
 from octobot_tentacles_manager.models.tentacle_type import (
     TentacleType,
@@ -36,9 +36,6 @@ from octobot_tentacles_manager.models.profile import (
 from octobot_tentacles_manager.models.tentacle_package import (
     TentaclePackage,
 )
-from octobot_tentacles_manager.models.tentacle_bundle import (
-    TentacleBundle,
-)
 
 from octobot_tentacles_manager.models import tentacle_factory
 from octobot_tentacles_manager.models.tentacle_factory import (
@@ -49,7 +46,6 @@ from octobot_tentacles_manager.models import metadata
 from octobot_tentacles_manager.models.metadata import (
     ArtifactMetadata,
     TentacleMetadata,
-    TentacleBundleMetadata,
     TentaclePackageMetadata,
     ProfileMetadata,
     MetadataFactory,
@@ -61,8 +57,6 @@ __all__ = [
     "TentacleFactory",
     "Tentacle",
     "TentaclePackage",
-    "TentacleBundle",
-    "TentacleBundleMetadata",
     "Profile",
     "ArtifactMetadata",
     "TentacleMetadata",
