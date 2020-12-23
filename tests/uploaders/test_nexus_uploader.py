@@ -25,6 +25,7 @@ import pytest
 
 import octobot_tentacles_manager.api.uploader as uploader_api
 import octobot_tentacles_manager.uploaders as uploaders
+import octobot_tentacles_manager.constants as constants
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -58,13 +59,28 @@ async def test_upload_file(nexus_tests):
     downloaded_file_path: str = await download_file_from_nexus(f"{TEST_NEXUS_PATH}/{nexus_test_file_name}",
                                                                "downloaded_file")
 
-    with open(downloaded_file_path, "r") as downloaded_file:
-        assert json.loads(downloaded_file.read()) == {
-            'test-key': 1
-        }
+    # with open(downloaded_file_path, "r") as downloaded_file:
+    #     assert json.loads(downloaded_file.read()) == {
+    #         'test-key': 1
+    #     }
 
 
-async def test_upload_folder():
+async def test_upload_folder(nexus_tests):
+    test_dir_path = os.path.join(TEST_NEXUS_DIRECTORY, "test-dir")
+    os.mkdir(test_dir_path)
+
+    nexus_test_file_name: str = f"{time.time_ns()}"
+    local_file_name: str = os.path.join(test_dir_path, f"{TEST_NEXUS_FILE_NAME}.json")
+    local_zip_path: str = os.path.join(test_dir_path, f"{TEST_NEXUS_FILE_NAME}")
+
+    # test upload file
+    with open(local_file_name, "w") as test_file:
+        test_file.write(json.dumps("{'test-key': 1}"))
+    shutil.make_archive(local_zip_path, constants.TENTACLES_PACKAGE_FORMAT, test_dir_path)
+    assert await uploader_api.upload_file_or_folder_to_nexus(nexus_path=TEST_NEXUS_PATH,
+                                                             artifact_path=test_dir_path,
+                                                             artifact_alias=nexus_test_file_name) == 0
+    # test download folder files
     pass
 
 
