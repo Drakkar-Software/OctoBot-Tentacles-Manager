@@ -61,6 +61,7 @@ async def _handle_package_manager_command(starting_args,
                     tentacles_folder=target_dir,
                     exported_tentacles_package=exported_tentacles_package,
                     in_zip=False,
+                    should_remove_artifacts_after_use=True,
                     with_dev_mode=include_dev_mode,
                     cythonize=cythonize)
         elif starting_args.pack:
@@ -77,6 +78,7 @@ async def _handle_package_manager_command(starting_args,
                     exported_tentacles_package=exported_tentacles_package,
                     in_zip=True,
                     with_dev_mode=include_dev_mode,
+                    should_remove_artifacts_after_use=True,
                     cythonize=cythonize)
         elif single_tentacle_path:
             error_count = await api.install_single_tentacle(single_tentacle_path,
