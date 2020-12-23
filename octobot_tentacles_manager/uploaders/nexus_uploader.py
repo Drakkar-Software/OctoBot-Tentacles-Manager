@@ -43,7 +43,7 @@ class NexusUploader(uploader.Uploader):
             file_path)
         upload_file_url: str = f"{self.nexus_url}/{upload_path}/{dest_file_name}"
         self.logger.info(f"Uploading {file_path} to nexus at {upload_file_url}...")
-        await self._upload(file_url_on_nexus=upload_file_url, local_file_path=file_path)
+        return await self._upload(file_url_on_nexus=upload_file_url, local_file_path=file_path)
 
     async def upload_folder(self, upload_path: str, folder_path: str, destination_folder_name: str = None) -> int:
         """
