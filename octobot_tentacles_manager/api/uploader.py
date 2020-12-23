@@ -13,8 +13,20 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
 
 import octobot_tentacles_manager.uploaders.nexus_uploader as nexus_uploader
+
+
+async def upload_file_or_folder_to_nexus(nexus_path: str, artifact_path: str, artifact_alias: str = None) -> int:
+    if os.path.isfile(artifact_path):
+        return await upload_file_to_nexus(nexus_path=nexus_path,
+                                          file_path=artifact_path,
+                                          alias_file_name=artifact_alias)
+    elif os.path.isdir(artifact_path):
+        return await upload_folder_to_nexus(nexus_path=nexus_path,
+                                            folder_path=artifact_path,
+                                            alias_folder_name=artifact_alias)
 
 
 async def upload_file_to_nexus(nexus_path: str, file_path: str, alias_file_name: str = None) -> int:

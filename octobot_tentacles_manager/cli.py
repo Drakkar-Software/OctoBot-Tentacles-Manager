@@ -64,6 +64,8 @@ async def _handle_package_manager_command(starting_args,
                     exported_tentacles_package=exported_tentacles_package,
                     in_zip=False,
                     should_remove_artifacts_after_use=True,
+                    upload_url=starting_args.upload_tentacles_export[0]
+                    if len(starting_args.upload_tentacles_export) > 0 else None,
                     with_dev_mode=include_dev_mode,
                     cythonize=cythonize)
         elif starting_args.pack:
@@ -81,6 +83,8 @@ async def _handle_package_manager_command(starting_args,
                     in_zip=True,
                     with_dev_mode=include_dev_mode,
                     should_remove_artifacts_after_use=True,
+                    upload_url=starting_args.upload_tentacles_export[0]
+                    if len(starting_args.upload_tentacles_export) > 0 else None,
                     cythonize=cythonize)
         elif single_tentacle_path:
             error_count = await api.install_single_tentacle(single_tentacle_path,
@@ -92,16 +96,11 @@ async def _handle_package_manager_command(starting_args,
             if 2 <= len(starting_args.nexus_upload) <= 3:
                 file_or_folder_path = starting_args.nexus_upload[1]
                 file_or_folder_alias = starting_args.nexus_upload[2] if len(starting_args.nexus_upload) == 3 else None
-                if os.path.isfile(file_or_folder_path):
-                    error_count += await api.upload_file_to_nexus(nexus_path=starting_args.nexus_upload[0],
-                                                                  file_path=file_or_folder_path,
-                                                                  alias_file_name=file_or_folder_alias)
-                elif os.path.isdir(file_or_folder_path):
-                    error_count += await api.upload_folder_to_nexus(nexus_path=starting_args.nexus_upload[0],
-                                                                    folder_path=file_or_folder_path,
-                                                                    alias_folder_name=file_or_folder_alias)
+                error_count += await api.upload_file_or_folder_to_nexus(nexus_path=starting_args.nexus_upload[0],
+                                                                        artifact_path=file_or_folder_path,
+                                                                        artifact_alias=file_or_folder_alias)
             else:
-                raise Exception("Missing arguments. Usage : <nexus_path> <file_or_folder_path>.")
+                raise Exception("Missing arguments. Usage : <nexus_path> <file_or_folder_path> [file_or_folder_alias].")
 
         elif not (starting_args.all or starting_args.tentacle_names):
             LOGGER.error("Please provide at least one tentacle name or add the '--all' parameter")
@@ -227,13 +226,17 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
                                                                      "pack commands.", action='store_true')
     tentacles_parser.add_argument("-ite", "--include-tentacles-export", help="Include tentacles during export and "
                                                                              "pack commands.", action='store_true')
+    tentacles_parser.add_argument("-ute", "--upload-tentacles-export", help="Upload tentacles during export and "
+                                                                            "pack commands. Usage: <nexus_path>",
+                                  nargs=1)
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')
     tentacles_parser.add_argument("-cy", "--cythonize", help="Option for the --pack command: cythonize and "
                                                              "compile the packed tentacles.", action='store_true')
     tentacles_parser.add_argument("-nu", "--nexus-upload", help="Upload a file or files of folder to nexus at path."
-                                                                "Usage : <nexus_path> <file_or_folder_path>"
+                                                                "Usage : <nexus_path> <file_or_folder_path> "
+                                                                "[file_or_folder_alias]"
                                                                 "Example : officials/base/ 0.4.0.zip",
                                   nargs='+')
     tentacles_parser.add_argument("-q", "--quite", help="Only display errors in logs.", action='store_true')
