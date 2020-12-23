@@ -36,7 +36,7 @@ class TentaclePackage(artifact.Artifact):
         """
         self.artifacts.append(new_artifact)
         if len(self.artifacts) == 1:
-            self.name = f"{self.artifacts[0].name}_{self.artifacts[0].version}_{self.ARTIFACT_SUFFIX}"
+            self.name = f"{self.artifacts[0].name}_{self.artifacts[0].version}"
         elif len(self.artifacts) > 1:
             self.name = f"{self.artifacts[0].origin_package}_{self.version}_{self.ARTIFACT_SUFFIX}"
 
