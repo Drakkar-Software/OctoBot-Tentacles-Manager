@@ -15,6 +15,7 @@
 #  License along with this library.
 import asyncio
 
+import octobot_commons.constants as commons_constants
 import octobot_tentacles_manager.managers as managers
 import octobot_tentacles_manager.workers as workers
 import octobot_tentacles_manager.models as models
@@ -36,6 +37,10 @@ class InstallWorker(workers.TentaclesWorker):
         self.total_steps = len(to_install_tentacles)
         self.register_to_process_tentacles_modules(to_install_tentacles)
         await asyncio.gather(*[self._install_tentacle(tentacle) for tentacle in to_install_tentacles])
+        # install profiles if any
+        self._import_profiles_if_any()
+        # now that profiles are imported, update tentacles setup config
+        # and include missing tentacles in profile tentacles config
         await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
             self.tentacles_setup_config_to_update,
             self.tentacles_path_or_url,
@@ -75,3 +80,7 @@ class InstallWorker(workers.TentaclesWorker):
                     await self._install_tentacle(to_install_tentacle)
                 else:
                     raise RuntimeError(f"Can't find {requirement} tentacle required for {tentacle.name}")
+
+    def _import_profiles_if_any(self):
+        for profile_folder in managers.get_profile_folders(self.reference_tentacles_root):
+            managers.import_profile(profile_folder, self.bot_install_dir)

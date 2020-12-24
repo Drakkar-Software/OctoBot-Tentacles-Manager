@@ -79,6 +79,8 @@ def _cleanup():
         shutil.rmtree(constants.TENTACLES_PATH)
     if path.exists(constants.USER_REFERENCE_TENTACLE_CONFIG_PATH):
         shutil.rmtree(constants.USER_REFERENCE_TENTACLE_CONFIG_PATH)
+    if os.path.isdir(commons_constants.USER_PROFILES_FOLDER):
+        shutil.rmtree(commons_constants.USER_PROFILES_FOLDER)
 
 
 def _reset_profile(profile_path, re_create=True):

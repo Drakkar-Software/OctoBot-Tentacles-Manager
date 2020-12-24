@@ -73,6 +73,7 @@ UNKNOWN_REPOSITORY_LOCATION = "Unknown repository location"
 
 # Tentacles packages
 UNKNOWN_TENTACLES_PACKAGE_LOCATION = "Unknown package location"
+TENTACLES_PACKAGE_PROFILES_PATH = "profiles"
 
 # exporter
 DEFAULT_EXPORT_DIR = "output"

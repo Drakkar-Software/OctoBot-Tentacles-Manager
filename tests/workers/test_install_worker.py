@@ -158,6 +158,35 @@ async def test_install_all_tentacles(clean):
         }
 
 
+async def test_install_all_tentacles_with_profile(clean):
+    _enable_loggers()
+    profile_path = os.path.join(commons_constants.USER_PROFILES_FOLDER, "many_traded_elements")
+    assert not os.path.isfile(os.path.join(profile_path, commons_constants.PROFILE_CONFIG_FILE))
+    tentacles_path = os.path.join("tests", "static", "tentacles_with_profile.zip")
+    await fetch_and_extract_tentacles(TEMP_DIR, tentacles_path, None)
+    worker = InstallWorker(TEMP_DIR, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
+    worker.tentacles_path_or_url = tentacles_path
+    worker.tentacles_setup_manager.default_tentacle_config = \
+        os.path.join("tests", "static", "default_tentacle_config.json")
+    assert await worker.process() == 0
+
+    # test installed files to ensure tentacles installation got well
+    trading_mode_files_count = sum(1 for _ in os.walk(os.path.join(TENTACLES_PATH, "Trading", "Mode")))
+    assert trading_mode_files_count == 5
+    config_files = [f for f in os.walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files_count = len(config_files)
+    assert config_files_count == 1
+    assert "DailyTradingMode.json" in config_files[0][2]
+    assert len(config_files[0][2]) == 5
+
+    # test installed profile
+    assert os.path.isfile(os.path.join(profile_path, commons_constants.PROFILE_CONFIG_FILE))
+    assert os.path.isfile(os.path.join(profile_path, "default_profile.png"))
+    assert os.path.isfile(os.path.join(profile_path, commons_constants.CONFIG_TENTACLES_FILE))
+    assert os.path.isfile(os.path.join(profile_path, TENTACLES_SPECIFIC_CONFIG_FOLDER, "DailyTradingMode.json"))
+    assert os.path.isfile(os.path.join(profile_path, TENTACLES_SPECIFIC_CONFIG_FOLDER, "TwitterNewsEvaluator.json"))
+
+
 async def test_profiles_update(clean, fake_profiles):
     _enable_loggers()
     tentacles_path = os.path.join("tests", "static", "tentacles.zip")
