@@ -39,6 +39,7 @@ class TentaclesSetupConfiguration:
     def __init__(self, bot_installation_path=constants.DEFAULT_BOT_PATH,
                  config_path=constants.USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH):
         self.logger = logging.get_logger(self.__class__.__name__)
+        self.bot_installation_path = bot_installation_path
         self.config_path = path.join(bot_installation_path, config_path)
         self.tentacles_activation = {}
         self.registered_tentacles = {}
@@ -70,8 +71,9 @@ class TentaclesSetupConfiguration:
                                          newly_installed_tentacles=None,
                                          uninstalled_tentacles=None
                                          ):
-        if path.isdir(profiles_path):
-            for profile_folder in os.scandir(profiles_path):
+        bot_profiles_path = os.path.join(self.bot_installation_path, profiles_path)
+        if path.isdir(bot_profiles_path):
+            for profile_folder in os.scandir(bot_profiles_path):
                 self._refresh_profile_tentacles_config(tentacles, profile_folder,
                                                        newly_installed_tentacles, uninstalled_tentacles)
 
