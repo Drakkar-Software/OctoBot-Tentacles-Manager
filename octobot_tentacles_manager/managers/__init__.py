@@ -18,6 +18,7 @@ from octobot_tentacles_manager.managers import tentacle_manager
 from octobot_tentacles_manager.managers import tentacles_setup_manager
 from octobot_tentacles_manager.managers import tentacles_init_files_manager
 from octobot_tentacles_manager.managers import python_modules_requirements_manager
+from octobot_tentacles_manager.managers import profiles_manager
 
 from octobot_tentacles_manager.managers.tentacle_manager import (
     TentacleManager,
@@ -37,6 +38,10 @@ from octobot_tentacles_manager.managers.python_modules_requirements_manager impo
     update_tentacle,
     list_installed_tentacles,
 )
+from octobot_tentacles_manager.managers.profiles_manager import (
+    get_profile_folders,
+    import_profile,
+)
 
 __all__ = [
     "TentacleManager",
@@ -49,4 +54,6 @@ __all__ = [
     "install_tentacle",
     "update_tentacle",
     "list_installed_tentacles",
+    "get_profile_folders",
+    "import_profile",
 ]

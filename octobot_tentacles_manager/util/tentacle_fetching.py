@@ -86,7 +86,7 @@ def _is_tentacle_valid_tentacle_file(archive_member):
     member_path = archive_member.split("/")
     return len(member_path) >= 2 \
         and member_path[0] == constants.TENTACLES_ARCHIVE_ROOT \
-        and member_path[1] in constants.TENTACLE_TYPES
+        and (member_path[1] in constants.TENTACLE_TYPES or member_path[1] == constants.TENTACLES_PACKAGE_PROFILES_PATH)
 
 
 def _is_url(string):
