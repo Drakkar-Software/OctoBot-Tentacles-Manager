@@ -15,7 +15,6 @@
 #  License along with this library.
 import asyncio
 
-import octobot_commons.constants as commons_constants
 import octobot_tentacles_manager.managers as managers
 import octobot_tentacles_manager.workers as workers
 import octobot_tentacles_manager.models as models
