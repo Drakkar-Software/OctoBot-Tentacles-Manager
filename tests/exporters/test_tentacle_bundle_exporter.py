@@ -79,7 +79,7 @@ async def test_tentacle_bundle_exporter_for_an_unique_bundle_containing_all_tent
 
     # test multiple tentacle bundle metadata
     with open(os.path.join(exported_bundle_path, constants.ARTIFACT_METADATA_FILE)) as metadata_file:
-        metadata_content = yaml.load(metadata_file.read())
+        metadata_content = yaml.load(metadata_file.read(), Loader=yaml.SafeLoader)
         assert metadata_content[constants.ARTIFACT_METADATA_ARTIFACT_TYPE] == "tentacle_package"
         assert len(metadata_content[constants.ARTIFACT_METADATA_ARTIFACTS]) == 10
         assert "forum_evaluator" in metadata_content[constants.ARTIFACT_METADATA_ARTIFACTS]
