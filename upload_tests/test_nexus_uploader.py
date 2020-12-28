@@ -47,6 +47,7 @@ async def nexus_tests():
 
 
 async def test_upload_file(nexus_tests):
+    aiohttp_session = aiohttp.ClientSession()
     nexus_test_file_name: str = f"{time.time_ns()}.json"
     local_file_name: str = os.path.join(TEST_NEXUS_DIRECTORY, f"{TEST_NEXUS_FILE_NAME}.json")
 
@@ -57,7 +58,8 @@ async def test_upload_file(nexus_tests):
                                                              artifact_path=local_file_name,
                                                              artifact_alias=nexus_test_file_name) == 0
     # test download file
-    downloaded_file_path: str = await download_file_from_nexus(f"{TEST_NEXUS_PATH}{nexus_test_file_name}",
+    downloaded_file_path: str = await download_file_from_nexus(aiohttp_session,
+                                                               f"{TEST_NEXUS_PATH}{nexus_test_file_name}",
                                                                "downloaded_file")
 
     with open(downloaded_file_path, "r") as downloaded_file:
@@ -67,6 +69,7 @@ async def test_upload_file(nexus_tests):
 
 
 async def test_upload_folder(nexus_tests):
+    aiohttp_session = aiohttp.ClientSession()
     test_dir_path = os.path.join(TEST_NEXUS_DIRECTORY, "test-dir")
     os.mkdir(test_dir_path)
 
@@ -82,9 +85,11 @@ async def test_upload_folder(nexus_tests):
                                                              artifact_path=test_dir_path,
                                                              artifact_alias=nexus_test_file_name) == 0
     # test download folder files
-    downloaded_file_path: str = await download_file_from_nexus(f"{TEST_NEXUS_PATH}{nexus_test_file_name}/test.json",
+    downloaded_file_path: str = await download_file_from_nexus(aiohttp_session,
+                                                               f"{TEST_NEXUS_PATH}{nexus_test_file_name}/test.json",
                                                                "downloaded_test.json")
-    downloaded_zip_path: str = await download_file_from_nexus(f"{TEST_NEXUS_PATH}{nexus_test_file_name}/test.zip",
+    downloaded_zip_path: str = await download_file_from_nexus(aiohttp_session,
+                                                              f"{TEST_NEXUS_PATH}{nexus_test_file_name}/test.zip",
                                                               "downloaded_test.zip")
     with open(downloaded_file_path, "r") as downloaded_file:
         assert json.loads(downloaded_file.read()) == {
@@ -93,11 +98,12 @@ async def test_upload_folder(nexus_tests):
     zipfile.is_zipfile(downloaded_zip_path)
 
 
-async def download_file_from_nexus(file_url: str, local_file_name: str) -> str:
+async def download_file_from_nexus(aiohttp_session: aiohttp.ClientSession,
+                                   file_url: str,
+                                   local_file_name: str) -> str:
     downloaded_file_path: str = os.path.join(TEST_NEXUS_DIRECTORY, local_file_name)
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f"{os.getenv(uploaders.NexusUploader.ENV_NEXUS_URL)}/{file_url}") as resp:
-            assert resp.status == 200
-            async with aiofiles.open(downloaded_file_path, mode='wb') as downloaded_file:
-                await downloaded_file.write(await resp.read())
+    resp = await aiohttp_session.get(f"{os.getenv(uploaders.NexusUploader.ENV_NEXUS_URL)}/{file_url}")
+    assert resp.status == 200
+    async with aiofiles.open(downloaded_file_path, mode='wb') as downloaded_file:
+        await downloaded_file.write(await resp.read())
     return downloaded_file_path
