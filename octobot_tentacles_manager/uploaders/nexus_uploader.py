@@ -74,14 +74,15 @@ class NexusUploader(uploader.Uploader):
         :return: 0 if upload succeed else 1
         """
         async with aiohttp.ClientSession() as aiohttp_session:
-            with aiohttp.MultipartWriter('mixed') as multipart_writer:
-                multipart_writer.append(open(local_file_path, 'rb'))
-                async with aiohttp_session.put(file_url_on_nexus,
-                                               data=multipart_writer,
-                                               auth=aiohttp.BasicAuth(self.nexus_username,
-                                                                      self.nexus_password)) as response:
-                    if response.status in NexusUploader.NEXUS_EXPECTED_RESPONSE_STATUS:
-                        return 0
-                    self.logger.error(f"Failed to upload file on nexus "
-                                      f"(status code {response.status}) : {await response.text()}")
-                    return 1
+            with open(local_file_path, 'rb') as file_content:
+                async with aiohttp_session.request('put',
+                                                   file_url_on_nexus,
+                                                   data=file_content,
+                                                   auth=aiohttp.BasicAuth(self.nexus_username,
+                                                                          self.nexus_password)
+                                                   ) as response:
+                    if response.status not in NexusUploader.NEXUS_EXPECTED_RESPONSE_STATUS:
+                        self.logger.error(f"Failed to upload file on nexus "
+                                          f"(status code {response.status}) : {await response.text()}")
+                        return 1
+        return 0
