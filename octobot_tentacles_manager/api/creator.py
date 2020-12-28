@@ -36,14 +36,23 @@ async def create_tentacles_package(package_name: str,
                                    exported_tentacles_package: str = None,
                                    in_zip: bool = True,
                                    with_dev_mode: bool = False,
+                                   upload_details: list = None,
                                    cythonize: bool = False) -> int:
-    return await exporters.TentaclePackageExporter(artifact=models.TentaclePackage(package_name),
-                                                   tentacles_folder=tentacles_folder,
-                                                   exported_tentacles_package=exported_tentacles_package,
-                                                   output_dir=output_dir,
-                                                   should_zip=in_zip,
-                                                   with_dev_mode=with_dev_mode,
-                                                   should_cythonize=cythonize).export()
+    tentacle_package: models.TentaclePackage = models.TentaclePackage(package_name)
+    export_result: int = await exporters.TentaclePackageExporter(artifact=tentacle_package,
+                                                                 tentacles_folder=tentacles_folder,
+                                                                 exported_tentacles_package=exported_tentacles_package,
+                                                                 output_dir=output_dir,
+                                                                 should_zip=in_zip,
+                                                                 with_dev_mode=with_dev_mode,
+                                                                 should_cythonize=cythonize).export()
+    if upload_details is not None and len(upload_details) > 0:
+        export_path: str = tentacle_package.output_path
+        alias_name: str = upload_details[1] if len(upload_details) > 1 else os.path.basename(export_path)
+        await uploader_api.upload_file_or_folder_to_nexus(nexus_path=upload_details[0],
+                                                          artifact_path=export_path,
+                                                          artifact_alias=alias_name)
+    return export_result
 
 
 async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT_DIR,
