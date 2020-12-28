@@ -27,6 +27,7 @@ class NexusUploader(uploader.Uploader):
 
     def __init__(self):
         super().__init__()
+        self.aiohttp_session: aiohttp.ClientSession = aiohttp.ClientSession()
         self.nexus_username: str = os.getenv(NexusUploader.ENV_NEXUS_USERNAME, None)
         self.nexus_password: str = os.getenv(NexusUploader.ENV_NEXUS_PASSWORD, None)
         self.nexus_url: str = os.getenv(NexusUploader.ENV_NEXUS_URL, None)
@@ -74,16 +75,14 @@ class NexusUploader(uploader.Uploader):
         :param local_file_path: the local file path
         :return: 0 if upload succeed else 1
         """
-        async with aiohttp.ClientSession() as aiohttp_session:
-            with open(local_file_path, 'rb') as file_content:
-                async with aiohttp_session.request('put',
-                                                   file_url_on_nexus,
-                                                   data=file_content,
-                                                   auth=aiohttp.BasicAuth(self.nexus_username,
-                                                                          self.nexus_password)
-                                                   ) as response:
-                    if response.status not in NexusUploader.NEXUS_EXPECTED_RESPONSE_STATUS:
-                        self.logger.error(f"Failed to upload file on nexus "
-                                          f"(status code {response.status}) : {await response.text()}")
-                        return 1
+        with open(local_file_path, 'rb') as file_content:
+            response = await self.aiohttp_session.request('put',
+                                                          file_url_on_nexus,
+                                                          data=file_content,
+                                                          auth=aiohttp.BasicAuth(self.nexus_username,
+                                                                                 self.nexus_password))
+            if response.status not in NexusUploader.NEXUS_EXPECTED_RESPONSE_STATUS:
+                self.logger.error(f"Failed to upload file on nexus "
+                                  f"(status code {response.status}) : {await response.text()}")
+                return 1
         return 0
