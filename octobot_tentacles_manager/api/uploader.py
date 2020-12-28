@@ -30,14 +30,18 @@ async def upload_file_or_folder_to_nexus(nexus_path: str, artifact_path: str, ar
 
 
 async def upload_file_to_nexus(nexus_path: str, file_path: str, alias_file_name: str = None) -> int:
-    uploader = nexus_uploader.NexusUploader()
-    return await uploader.upload_file(upload_path=nexus_path,
-                                      file_path=file_path,
-                                      destination_file_name=alias_file_name)
+    uploader: nexus_uploader.NexusUploader = nexus_uploader.NexusUploader()
+    upload_result: int = await uploader.upload_file(upload_path=nexus_path,
+                                                    file_path=file_path,
+                                                    destination_file_name=alias_file_name)
+    await uploader.close_session()
+    return upload_result
 
 
 async def upload_folder_to_nexus(nexus_path: str, folder_path: str, alias_folder_name: str = None) -> int:
-    uploader = nexus_uploader.NexusUploader()
-    return await uploader.upload_folder(upload_path=nexus_path,
-                                        folder_path=folder_path,
-                                        destination_folder_name=alias_folder_name)
+    uploader: nexus_uploader.NexusUploader = nexus_uploader.NexusUploader()
+    upload_result: int = await uploader.upload_folder(upload_path=nexus_path,
+                                                      folder_path=folder_path,
+                                                      destination_folder_name=alias_folder_name)
+    await uploader.close_session()
+    return upload_result
