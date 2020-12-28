@@ -66,6 +66,7 @@ async def test_upload_file(nexus_tests):
         assert json.loads(downloaded_file.read()) == {
             'test-key': 1
         }
+    await aiohttp_session.close()
 
 
 async def test_upload_folder(nexus_tests):
@@ -96,6 +97,7 @@ async def test_upload_folder(nexus_tests):
             'test-key': 1
         }
     zipfile.is_zipfile(downloaded_zip_path)
+    await aiohttp_session.close()
 
 
 async def download_file_from_nexus(aiohttp_session: aiohttp.ClientSession,

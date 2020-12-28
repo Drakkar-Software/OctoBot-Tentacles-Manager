@@ -27,7 +27,7 @@ class NexusUploader(uploader.Uploader):
 
     def __init__(self):
         super().__init__()
-        self.aiohttp_session: aiohttp.ClientSession = aiohttp.ClientSession()
+        self.aiohttp_session: aiohttp.ClientSession = None
         self.nexus_username: str = os.getenv(NexusUploader.ENV_NEXUS_USERNAME, None)
         self.nexus_password: str = os.getenv(NexusUploader.ENV_NEXUS_PASSWORD, None)
         self.nexus_url: str = os.getenv(NexusUploader.ENV_NEXUS_URL, None)
@@ -68,13 +68,30 @@ class NexusUploader(uploader.Uploader):
                                               local_file_path=os.path.join(folder_path, file_path))
         return error_count
 
-    async def _upload(self, file_url_on_nexus: str, local_file_path: str):
+    async def create_session(self) -> None:
+        """
+        Create aiohttp session if necessary
+        :return: None
+        """
+        if self.aiohttp_session is None:
+            self.aiohttp_session = aiohttp.ClientSession()
+
+    async def close_session(self) -> None:
+        """
+        Close aiohttp session if necessary
+        :return: None
+        """
+        if self.aiohttp_session is not None:
+            await self.aiohttp_session.close()
+
+    async def _upload(self, file_url_on_nexus: str, local_file_path: str) -> int:
         """
         Upload a file on nexus
         :param file_url_on_nexus: the complete upload url
         :param local_file_path: the local file path
         :return: 0 if upload succeed else 1
         """
+        await self.create_session()
         with open(local_file_path, 'rb') as file_content:
             response = await self.aiohttp_session.request('put',
                                                           file_url_on_nexus,
