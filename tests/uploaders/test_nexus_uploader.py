@@ -16,6 +16,7 @@
 import json
 import os
 import shutil
+import zipfile
 
 import aiofiles
 import aiohttp
@@ -51,18 +52,18 @@ async def test_upload_file(nexus_tests):
 
     # test upload file
     with open(local_file_name, "w") as test_file:
-        test_file.write(json.dumps("{'test-key': 1}"))
+        test_file.write(json.dumps({'test-key': 1}))
     assert await uploader_api.upload_file_or_folder_to_nexus(nexus_path=TEST_NEXUS_PATH,
                                                              artifact_path=local_file_name,
                                                              artifact_alias=nexus_test_file_name) == 0
     # test download file
-    downloaded_file_path: str = await download_file_from_nexus(f"{TEST_NEXUS_PATH}/{nexus_test_file_name}",
+    downloaded_file_path: str = await download_file_from_nexus(f"{TEST_NEXUS_PATH}{nexus_test_file_name}",
                                                                "downloaded_file")
 
-    # with open(downloaded_file_path, "r") as downloaded_file:
-    #     assert json.loads(downloaded_file.read()) == {
-    #         'test-key': 1
-    #     }
+    with open(downloaded_file_path, "r") as downloaded_file:
+        assert json.loads(downloaded_file.read()) == {
+            'test-key': 1
+        }
 
 
 async def test_upload_folder(nexus_tests):
@@ -75,13 +76,21 @@ async def test_upload_folder(nexus_tests):
 
     # test upload file
     with open(local_file_name, "w") as test_file:
-        test_file.write(json.dumps("{'test-key': 1}"))
+        test_file.write(json.dumps({'test-key': 1}))
     shutil.make_archive(local_zip_path, constants.TENTACLES_PACKAGE_FORMAT, test_dir_path)
     assert await uploader_api.upload_file_or_folder_to_nexus(nexus_path=TEST_NEXUS_PATH,
                                                              artifact_path=test_dir_path,
                                                              artifact_alias=nexus_test_file_name) == 0
     # test download folder files
-    pass
+    downloaded_file_path: str = await download_file_from_nexus(f"{TEST_NEXUS_PATH}{nexus_test_file_name}/test.json",
+                                                               "downloaded_test.json")
+    downloaded_zip_path: str = await download_file_from_nexus(f"{TEST_NEXUS_PATH}{nexus_test_file_name}/test.zip",
+                                                              "downloaded_test.zip")
+    with open(downloaded_file_path, "r") as downloaded_file:
+        assert json.loads(downloaded_file.read()) == {
+            'test-key': 1
+        }
+    zipfile.is_zipfile(downloaded_zip_path)
 
 
 async def download_file_from_nexus(file_url: str, local_file_name: str) -> str:
@@ -90,5 +99,5 @@ async def download_file_from_nexus(file_url: str, local_file_name: str) -> str:
         async with session.get(f"{os.getenv(uploaders.NexusUploader.ENV_NEXUS_URL)}/{file_url}") as resp:
             assert resp.status == 200
             async with aiofiles.open(downloaded_file_path, mode='wb') as downloaded_file:
-                downloaded_file.write(await resp.read())
+                await downloaded_file.write(await resp.read())
     return downloaded_file_path
