@@ -56,6 +56,7 @@ async def _handle_package_manager_command(starting_args,
                                                              exported_tentacles_package=exported_tentacles_package,
                                                              in_zip=False,
                                                              with_dev_mode=include_dev_mode,
+                                                             upload_details=starting_args.upload_package_export,
                                                              cythonize=cythonize)
             if include_tentacles_export:
                 error_count += await api.create_all_tentacles_bundle(
@@ -74,6 +75,7 @@ async def _handle_package_manager_command(starting_args,
                                                              exported_tentacles_package=exported_tentacles_package,
                                                              in_zip=True,
                                                              with_dev_mode=include_dev_mode,
+                                                             upload_details=starting_args.upload_package_export,
                                                              cythonize=cythonize)
             if include_tentacles_export:
                 error_count += await api.create_all_tentacles_bundle(
@@ -229,6 +231,10 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-ute", "--upload-tentacles-export", help="Upload tentacles during export and "
                                                                             "pack commands. Usage: <nexus_path>",
                                   nargs=1)
+    tentacles_parser.add_argument("-upe", "--upload-package-export", help="Upload package during export and "
+                                                                          "pack commands. "
+                                                                          "Usage: <nexus_path> [package_alias]",
+                                  nargs='+')
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')
