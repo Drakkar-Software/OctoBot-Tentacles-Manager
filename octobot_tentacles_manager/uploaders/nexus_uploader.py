@@ -27,9 +27,11 @@ class NexusUploader(uploader.Uploader):
 
     def __init__(self):
         super().__init__()
-        self.nexus_username: str = os.getenv(NexusUploader.ENV_NEXUS_USERNAME)
-        self.nexus_password: str = os.getenv(NexusUploader.ENV_NEXUS_PASSWORD)
-        self.nexus_url: str = os.getenv(NexusUploader.ENV_NEXUS_URL)
+        self.nexus_username: str = os.getenv(NexusUploader.ENV_NEXUS_USERNAME, None)
+        self.nexus_password: str = os.getenv(NexusUploader.ENV_NEXUS_PASSWORD, None)
+        self.nexus_url: str = os.getenv(NexusUploader.ENV_NEXUS_URL, None)
+        if None in [self.nexus_username, self.nexus_password, self.nexus_url]:
+            raise TypeError("Some nexus environment variables are missing.")
 
     async def upload_file(self, upload_path: str, file_path: str, destination_file_name: str = None) -> int:
         """
