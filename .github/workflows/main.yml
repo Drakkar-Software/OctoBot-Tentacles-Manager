@@ -46,6 +46,10 @@ jobs:
 
     - name: Pytests
       run: pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
+      env:
+        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        NEXUS_URL: ${{ secrets.NEXUS_URL }}
+        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
 
     - name: Publish coverage
       if: matrix.type == 'sources'
