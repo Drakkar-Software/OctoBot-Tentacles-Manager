@@ -45,7 +45,9 @@ jobs:
       run: pip install --prefer-binary -r dev_requirements.txt -r requirements.txt
 
     - name: Pytests
-      run: pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
+      run: |
+        pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
+        pytest upload_tests
       env:
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         NEXUS_URL: ${{ secrets.NEXUS_URL }}
