@@ -69,7 +69,7 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
         Include artifact output_path in output_dir if any
         :return: final output_dir
         """
-        if artifact.output_path is not None and artifact.output_path:
+        if artifact.output_path:
             return os.path.join(output_dir, artifact.output_path) \
                 if output_dir != constants.CURRENT_DIR_PATH else artifact.output_path
         return output_dir
