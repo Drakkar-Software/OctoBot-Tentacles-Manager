@@ -17,9 +17,11 @@ import os.path as path
 import octobot_commons.constants as constants
 import octobot_commons.enums as enums
 
+CURRENT_DIR_PATH = "."
+
 # Default tests tentacles URL
 DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/officials/base/tests/0.0.2-tests.zip"
-DEFAULT_BOT_INSTALL_DIR = "."
+DEFAULT_BOT_INSTALL_DIR = CURRENT_DIR_PATH
 
 # Tentacles files
 PYTHON_INIT_FILE = "__init__.py"
@@ -89,7 +91,7 @@ TO_REMOVE_FOLDER = "_to_rm"
 
 # Tentacles folders
 TENTACLES_PATH = "tentacles"
-DEFAULT_BOT_PATH = "."
+DEFAULT_BOT_PATH = CURRENT_DIR_PATH
 TENTACLES_BACKTESTING_PATH = "Backtesting"
 TENTACLES_EVALUATOR_PATH = "Evaluator"
 TENTACLES_INTERFACES_PATH = "Interfaces"

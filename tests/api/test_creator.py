@@ -25,7 +25,7 @@ from tests.api import install_tentacles, TENTACLE_PACKAGE, TEST_EXPORT_DIR
 from octobot_tentacles_manager.api.creator import create_tentacles_package, create_all_tentacles_bundle
 from octobot_tentacles_manager.constants import TENTACLES_PATH, PYTHON_INIT_FILE, TENTACLES_EVALUATOR_PATH, \
     TENTACLES_EVALUATOR_REALTIME_PATH, TENTACLE_METADATA, METADATA_VERSION, METADATA_ORIGIN_PACKAGE, \
-    METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, METADATA_DEV_MODE, TENTACLES_TRADING_PATH, \
+    METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, METADATA_DEV_MODE, TENTACLES_TRADING_PATH, CURRENT_DIR_PATH, \
     TENTACLES_TRADING_MODE_PATH, TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, TENTACLES_SERVICES_PATH, \
     TENTACLES_BACKTESTING_IMPORTERS_PATH, TENTACLES_BACKTESTING_PATH, TENTACLES_BACKTESTING_THIRD_LEVEL_EXCHANGES_PATH
 
@@ -224,6 +224,25 @@ async def test_create_all_tentacles_bundle_not_zipped_not_cleaned_and_zipped(ins
     assert not os.path.isfile(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode_1.2.0.zip"))
     assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer@1.2.0"))
     assert os.path.isdir(os.path.join(TEST_EXPORT_DIR, "daily_trading_mode@1.2.0"))
+
+
+async def test_create_tentacles_package_in_previous_dir(install_tentacles):
+    # with current dir as ouput_dir
+    file_path: str = "../test.zip"
+    expected_file_path: str = "../test.zip"
+    assert await create_tentacles_package(package_name=file_path,
+                                          output_dir=CURRENT_DIR_PATH,
+                                          in_zip=True) == 0
+    assert os.path.exists(expected_file_path)
+    os.remove(expected_file_path)
+
+    # with default output_dir
+    file_path: str = "../test2.zip"
+    expected_file_path: str = "test2.zip"  # output/../test2.zip
+    assert await create_tentacles_package(package_name=file_path,
+                                          in_zip=True) == 0
+    assert os.path.exists(expected_file_path)
+    os.remove(expected_file_path)
 
 
 def assert_directory_has_file_with_content(directory_to_check, expected_file, expected_content):

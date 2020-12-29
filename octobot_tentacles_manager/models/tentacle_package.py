@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
 
 import octobot_tentacles_manager.models.artifact as artifact
 
@@ -25,6 +26,7 @@ class TentaclePackage(artifact.Artifact):
     def __init__(self, name=None):
         super().__init__(name)
         self.artifacts: list = []
+        self.parse_path_in_name_if_any()
 
     def add_artifact(self, new_artifact: artifact.Artifact) -> None:
         """
@@ -42,6 +44,17 @@ class TentaclePackage(artifact.Artifact):
         elif len(self.artifacts) > 1:
             self.name = f"{self.artifacts[0].origin_package}{TentaclePackage.ARTIFACT_VERSION_SEPARATOR}" \
                         f"{self.version}_{self.ARTIFACT_SUFFIX}"
+
+    def parse_path_in_name_if_any(self) -> None:
+        """
+        Parse path in package name if any
+        :return: None
+        """
+        if self.name \
+                and len(os.path.split(self.name)) > 1 \
+                and os.path.split(self.name)[0]:
+            self.output_path = os.path.split(self.name)[0]
+            self.name = os.path.split(self.name)[1]
 
     def __str__(self):
         str_rep = f"{self.name} {TentaclePackage.ARTIFACT_NAME} ["
