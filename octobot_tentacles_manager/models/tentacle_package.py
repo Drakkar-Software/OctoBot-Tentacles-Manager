@@ -52,9 +52,9 @@ class TentaclePackage(artifact.Artifact):
         """
         if self.name \
                 and len(os.path.split(self.name)) > 1 \
-                and os.path.split(self.name)[0]:
-            self.output_path = os.path.split(self.name)[0]
-            self.name = os.path.split(self.name)[1]
+                and (split_path := os.path.split(self.name))[0]:
+            self.output_path = split_path[0]
+            self.name = split_path[1]
 
     def __str__(self):
         str_rep = f"{self.name} {TentaclePackage.ARTIFACT_NAME} ["
