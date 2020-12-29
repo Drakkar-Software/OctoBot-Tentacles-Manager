@@ -48,9 +48,9 @@ class ArtifactExporter:
         self.with_dev_mode = with_dev_mode
 
         self.artifact.output_dir = self.output_dir
-        self.artifact.output_path = self.artifact.name
+        self.artifact.output_path = os.path.join(self.output_dir, self.artifact.name)
         self.working_folder = constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER \
-            if self.should_zip else os.path.join(self.output_dir, self.artifact.name)
+            if self.should_zip else self.artifact.output_path
 
     @abc.abstractmethod
     async def prepare_export(self):

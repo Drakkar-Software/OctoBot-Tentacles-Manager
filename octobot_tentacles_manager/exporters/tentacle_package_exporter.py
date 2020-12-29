@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-
+import os
 import os.path as path
 
 import octobot_tentacles_manager.exporters.artifact_exporter as artifact_exporter
@@ -31,6 +31,7 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
                  should_cythonize: bool = False,
                  should_zip: bool = False,
                  with_dev_mode: bool = False):
+        output_dir = TentaclePackageExporter.include_output_dir_in_package_name_if_any(artifact, output_dir)
         super().__init__(artifact,
                          tentacles_folder=tentacles_folder,
                          output_dir=output_dir,
@@ -61,6 +62,17 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
         else:
             self.copy_directory_content_to_working_dir(self.tentacles_folder,
                                                        ignore=self.tentacles_filter.should_ignore)
+
+    @staticmethod
+    def include_output_dir_in_package_name_if_any(artifact: models.TentaclePackage, output_dir: str) -> str:
+        """
+        Include artifact output_path in output_dir if any
+        :return: final output_dir
+        """
+        if artifact.output_path is not None and artifact.output_path:
+            return os.path.join(output_dir, artifact.output_path) \
+                if output_dir != constants.CURRENT_DIR_PATH else artifact.output_path
+        return output_dir
 
     async def after_export(self):
         pass
