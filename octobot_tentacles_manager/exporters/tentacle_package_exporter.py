@@ -14,7 +14,6 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import os
-import os.path as path
 
 import octobot_tentacles_manager.exporters.artifact_exporter as artifact_exporter
 import octobot_tentacles_manager.models as models
@@ -44,6 +43,9 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
         self.tentacles_filter: util.TentacleFilter = None
         self.tentacles_white_list: list = []
         self.tentacles = []
+
+        if self.should_zip:
+            self.working_folder = os.path.join(self.working_folder, constants.TENTACLES_ARCHIVE_ROOT)
 
     async def prepare_export(self):
         if not self.with_dev_mode or self.exported_tentacles_package is not None:

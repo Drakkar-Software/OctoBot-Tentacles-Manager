@@ -99,7 +99,7 @@ class ArtifactExporter:
 
         # Zip if required
         if self.should_zip:
-            self.artifact.output_path = self.zip_working_folder()
+            self.artifact.output_path = self.zip_temporary_folder()
             self.logger.info(f"Zipped {self.artifact.ARTIFACT_NAME} available at: {self.artifact.output_path}")
         else:
             self.artifact.output_path = os.path.abspath(self.working_folder)
@@ -150,7 +150,7 @@ class ArtifactExporter:
         else:
             util.merge_folders(folder_to_copy, self.working_folder, ignore)
 
-    def zip_working_folder(self) -> str:
+    def zip_temporary_folder(self) -> str:
         """
         Archive creator temporary dir to a zip file
         :return: the path of the archive
@@ -159,7 +159,8 @@ class ArtifactExporter:
         file_name = self.artifact.name.split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0].\
             replace(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR, "_")
         zipped_file = shutil.make_archive(os.path.join(self.artifact.output_dir, file_name),
-                                          constants.TENTACLES_PACKAGE_FORMAT, self.working_folder)
+                                          constants.TENTACLES_PACKAGE_FORMAT,
+                                          constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
         try:
             # remove working folder
             shutil.rmtree(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
