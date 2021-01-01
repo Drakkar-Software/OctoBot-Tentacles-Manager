@@ -32,7 +32,7 @@ import octobot_tentacles_manager.constants as constants
 pytestmark = pytest.mark.asyncio
 
 TEST_NEXUS_DIRECTORY = "nexus-tests"
-TEST_NEXUS_PATH = "officials/base/dev/tests/tentacle-manager/"
+TEST_NEXUS_PATH = "dev/tests/tentacle-manager/"
 TEST_NEXUS_FILE_NAME = "test"
 
 

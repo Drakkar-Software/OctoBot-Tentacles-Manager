@@ -20,7 +20,7 @@ import octobot_commons.enums as enums
 CURRENT_DIR_PATH = "."
 
 # Default tests tentacles URL
-DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/officials/base/tests/0.0.2-tests.zip"
+DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/dev/packages/tests/0.0.2.zip"
 DEFAULT_BOT_INSTALL_DIR = CURRENT_DIR_PATH
 
 # Tentacles files
