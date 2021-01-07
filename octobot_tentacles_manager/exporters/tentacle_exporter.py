@@ -28,13 +28,15 @@ class TentacleExporter(artifact_exporter.ArtifactExporter):
                  output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_cythonize: bool = False,
                  should_zip: bool = False,
-                 with_dev_mode: bool = False):
+                 with_dev_mode: bool = False,
+                 use_package_as_file_name: bool = False):
         super().__init__(artifact,
                          tentacles_folder=tentacles_folder,
                          output_dir=output_dir,
                          should_cythonize=should_cythonize,
                          should_zip=should_zip,
-                         with_dev_mode=with_dev_mode)
+                         with_dev_mode=with_dev_mode,
+                         use_package_as_file_name=use_package_as_file_name)
 
     async def prepare_export(self):
         if not os.path.exists(self.working_folder):

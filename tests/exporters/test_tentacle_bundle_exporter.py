@@ -34,11 +34,13 @@ async def test_tentacle_bundle_exporter_for_each_tentacle(install_tentacles):
     for tentacle in util.load_tentacle_with_metadata(constants.TENTACLES_PATH):
         tentacle_package = models.TentaclePackage()
         await exporters.TentacleExporter(artifact=tentacle, should_zip=True,
-                                         tentacles_folder=constants.TENTACLES_PATH).export()
+                                         tentacles_folder=constants.TENTACLES_PATH,
+                                         use_package_as_file_name=True).export()
         tentacle_package.add_artifact(tentacle)
         await exporters.TentacleBundleExporter(
             artifact=tentacle_package,
-            tentacles_folder=constants.TENTACLES_PATH).export()
+            tentacles_folder=constants.TENTACLES_PATH,
+            use_package_as_file_name=True).export()
 
     # Check if each tentacle bundle has been generated
     # check files count
@@ -56,12 +58,14 @@ async def test_tentacle_bundle_exporter_for_an_unique_bundle_containing_all_tent
     tentacle_package = models.TentaclePackage()
     for tentacle in util.load_tentacle_with_metadata(constants.TENTACLES_PATH):
         await exporters.TentacleExporter(artifact=tentacle, should_zip=True,
-                                         tentacles_folder=constants.TENTACLES_PATH).export()
+                                         tentacles_folder=constants.TENTACLES_PATH,
+                                         use_package_as_file_name=True).export()
         tentacle_package.add_artifact(tentacle)
     await exporters.TentacleBundleExporter(
         artifact=tentacle_package,
         tentacles_folder=constants.TENTACLES_PATH,
-        should_remove_artifacts_after_use=True).export()
+        should_remove_artifacts_after_use=True,
+        use_package_as_file_name=True).export()
 
     # Check if the final bundle contains all exported tentacles and a metadata file
     # check files count
@@ -93,12 +97,14 @@ async def test_tentacle_bundle_exporter_with_specified_output_dir(install_tentac
         await exporters.TentacleExporter(artifact=tentacle,
                                          should_zip=True,
                                          output_dir=specified_output_dir,
-                                         tentacles_folder=constants.TENTACLES_PATH).export()
+                                         tentacles_folder=constants.TENTACLES_PATH,
+                                         use_package_as_file_name=True).export()
         tentacle_package.add_artifact(tentacle)
         await exporters.TentacleBundleExporter(
             artifact=tentacle_package,
             output_dir=specified_output_dir,
-            tentacles_folder=constants.TENTACLES_PATH).export()
+            tentacles_folder=constants.TENTACLES_PATH,
+            use_package_as_file_name=True).export()
 
     # Check if each tentacle bundle has been generated in the specified directory
     output_files = os.listdir(specified_output_dir)

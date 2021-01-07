@@ -15,19 +15,17 @@
 #  License along with this library.
 import argparse
 import asyncio
-import os
 
-import sys
 import aiohttp
-
 import octobot_commons.logging as logging
+import sys
 
+import octobot_tentacles_manager
 import octobot_tentacles_manager.api as api
-import octobot_tentacles_manager.api.updater as updater_api
 import octobot_tentacles_manager.api.installer as installer_api
 import octobot_tentacles_manager.api.uninstaller as uninstaller_api
+import octobot_tentacles_manager.api.updater as updater_api
 import octobot_tentacles_manager.constants as constants
-import octobot_tentacles_manager
 
 
 async def _handle_package_manager_command(starting_args,
@@ -46,18 +44,21 @@ async def _handle_package_manager_command(starting_args,
     async with aiohttp.ClientSession() as aiohttp_session:
         include_dev_mode = starting_args.include_dev_mode
         include_tentacles_export = starting_args.include_tentacles_export
+        should_use_package_name_when_exporting = starting_args.export_with_package_name
         if starting_args.creator:
             error_count = api.start_tentacle_creator({}, starting_args.creator)
         elif starting_args.repair:
             error_count = await api.repair_installation(bot_path=target_dir)
         elif starting_args.export:
-            error_count = await api.create_tentacles_package(export_tentacles_output,
-                                                             target_dir,
-                                                             exported_tentacles_package=exported_tentacles_package,
-                                                             in_zip=False,
-                                                             with_dev_mode=include_dev_mode,
-                                                             upload_details=starting_args.upload_package_export,
-                                                             cythonize=cythonize)
+            error_count = await api.create_tentacles_package(
+                export_tentacles_output,
+                target_dir,
+                exported_tentacles_package=exported_tentacles_package,
+                in_zip=False,
+                with_dev_mode=include_dev_mode,
+                upload_details=starting_args.upload_package_export,
+                cythonize=cythonize,
+                use_package_as_file_name=should_use_package_name_when_exporting)
             if include_tentacles_export:
                 error_count += await api.create_all_tentacles_bundle(
                     output_dir=export_tentacles_output,
@@ -70,13 +71,15 @@ async def _handle_package_manager_command(starting_args,
                     with_dev_mode=include_dev_mode,
                     cythonize=cythonize)
         elif starting_args.pack:
-            error_count = await api.create_tentacles_package(packed_tentacles_output,
-                                                             target_dir,
-                                                             exported_tentacles_package=exported_tentacles_package,
-                                                             in_zip=True,
-                                                             with_dev_mode=include_dev_mode,
-                                                             upload_details=starting_args.upload_package_export,
-                                                             cythonize=cythonize)
+            error_count = await api.create_tentacles_package(
+                packed_tentacles_output,
+                target_dir,
+                exported_tentacles_package=exported_tentacles_package,
+                in_zip=True,
+                with_dev_mode=include_dev_mode,
+                upload_details=starting_args.upload_package_export,
+                cythonize=cythonize,
+                use_package_as_file_name=should_use_package_name_when_exporting)
             if include_tentacles_export:
                 error_count += await api.create_all_tentacles_bundle(
                     output_dir=export_tentacles_output,
@@ -218,6 +221,8 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
                                                          "package): -e myTentaclesFolder OctoBot-Default-Tentacles "
                                                          "-d ./tentacles", nargs="+")
     tentacles_parser.add_argument("-a", "--all", help="Apply command to all available Tentacles.", action='store_true')
+    tentacles_parser.add_argument("--export-with-package-name", help="Export package with its artifact name",
+                                  action='store_true')
     tentacles_parser.add_argument("-d", "--directory", help=f"Path to the root of the OctoBot installation folder "
                                                             f"to operate on. Default is '{constants.DEFAULT_BOT_PATH}'.",
                                   nargs=1)

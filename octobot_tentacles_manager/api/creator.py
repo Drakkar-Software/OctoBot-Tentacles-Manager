@@ -36,6 +36,7 @@ async def create_tentacles_package(package_name: str,
                                    exported_tentacles_package: str = None,
                                    in_zip: bool = True,
                                    with_dev_mode: bool = False,
+                                   use_package_as_file_name: bool = False,
                                    upload_details: list = None,
                                    cythonize: bool = False) -> int:
     tentacle_package: models.TentaclePackage = models.TentaclePackage(package_name)
@@ -45,6 +46,7 @@ async def create_tentacles_package(package_name: str,
                                                                  output_dir=output_dir,
                                                                  should_zip=in_zip,
                                                                  with_dev_mode=with_dev_mode,
+                                                                 use_package_as_file_name=use_package_as_file_name,
                                                                  should_cythonize=cythonize).export()
     if upload_details is not None and len(upload_details) > 0:
         export_path: str = tentacle_package.output_path
@@ -81,7 +83,8 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                                                            tentacles_folder=tentacles_folder,
                                                            should_zip=in_zip,
                                                            with_dev_mode=with_dev_mode,
-                                                           should_cythonize=cythonize)
+                                                           should_cythonize=cythonize,
+                                                           use_package_as_file_name=True)
             await tentacle_exporter.export()
             tentacle_package.add_artifact(tentacle)
             tentacle_bundle_exporter = exporters.TentacleBundleExporter(
@@ -89,7 +92,8 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                 tentacles_folder=tentacles_folder,
                 output_dir=output_dir,
                 should_zip=should_zip_bundle,
-                should_remove_artifacts_after_use=should_remove_artifacts_after_use)
+                should_remove_artifacts_after_use=should_remove_artifacts_after_use,
+                use_package_as_file_name=True)
             await tentacle_bundle_exporter.export()
             tentacle_bundle_exported_list.append(tentacle_bundle_exporter)
         except Exception as e:

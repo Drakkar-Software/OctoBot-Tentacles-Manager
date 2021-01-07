@@ -27,7 +27,8 @@ from octobot_tentacles_manager.constants import TENTACLES_PATH, PYTHON_INIT_FILE
     TENTACLES_EVALUATOR_REALTIME_PATH, TENTACLE_METADATA, METADATA_VERSION, METADATA_ORIGIN_PACKAGE, \
     METADATA_TENTACLES, METADATA_TENTACLES_REQUIREMENTS, METADATA_DEV_MODE, TENTACLES_TRADING_PATH, CURRENT_DIR_PATH, \
     TENTACLES_TRADING_MODE_PATH, TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER, TENTACLES_SERVICES_PATH, \
-    TENTACLES_BACKTESTING_IMPORTERS_PATH, TENTACLES_BACKTESTING_PATH, TENTACLES_BACKTESTING_THIRD_LEVEL_EXCHANGES_PATH
+    TENTACLES_BACKTESTING_IMPORTERS_PATH, TENTACLES_BACKTESTING_PATH, TENTACLES_BACKTESTING_THIRD_LEVEL_EXCHANGES_PATH, \
+    ANY_PLATFORM_FILE_NAME
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -140,10 +141,16 @@ async def test_create_folder_tentacles_package_with_package_selector(install_ten
 
 async def test_create_zipped_tentacles_package(install_tentacles):
     tentacle_package = "tentacle_package.zip"
-    assert await create_tentacles_package(tentacle_package, output_dir=".") == 0
+    assert await create_tentacles_package(tentacle_package, output_dir=".", use_package_as_file_name=True) == 0
     assert path.exists(tentacle_package)
     assert not path.exists(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
     remove(tentacle_package)
+
+    expected_file_name = f"{ANY_PLATFORM_FILE_NAME}.zip"
+    assert await create_tentacles_package(tentacle_package, output_dir=".", use_package_as_file_name=False) == 0
+    assert path.exists(expected_file_name)
+    assert not path.exists(TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
+    remove(expected_file_name)
 
 
 async def test_create_cythonized_tentacles_package(install_tentacles):
@@ -232,7 +239,8 @@ async def test_create_tentacles_package_in_previous_dir(install_tentacles):
     expected_file_path: str = "../test.zip"
     assert await create_tentacles_package(package_name=file_path,
                                           output_dir=CURRENT_DIR_PATH,
-                                          in_zip=True) == 0
+                                          in_zip=True,
+                                          use_package_as_file_name=True) == 0
     assert os.path.exists(expected_file_path)
     os.remove(expected_file_path)
 
@@ -240,7 +248,8 @@ async def test_create_tentacles_package_in_previous_dir(install_tentacles):
     file_path: str = "../test2.zip"
     expected_file_path: str = "test2.zip"  # output/../test2.zip
     assert await create_tentacles_package(package_name=file_path,
-                                          in_zip=True) == 0
+                                          in_zip=True,
+                                          use_package_as_file_name=True) == 0
     assert os.path.exists(expected_file_path)
     os.remove(expected_file_path)
 

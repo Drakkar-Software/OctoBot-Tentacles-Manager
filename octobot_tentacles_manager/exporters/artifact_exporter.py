@@ -36,7 +36,8 @@ class ArtifactExporter:
                  output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_cythonize: bool = False,
                  should_zip: bool = False,
-                 with_dev_mode: bool = False):
+                 with_dev_mode: bool = False,
+                 use_package_as_file_name: bool = False):
         self.logger = logging.get_logger(self.__class__.__name__)
         self.artifact = artifact
         self.tentacles_folder: str = tentacles_folder
@@ -46,6 +47,7 @@ class ArtifactExporter:
         self.should_cythonize = should_cythonize
         self.should_zip = should_zip
         self.with_dev_mode = with_dev_mode
+        self.use_package_as_file_name = use_package_as_file_name
 
         self.artifact.output_dir = self.output_dir
         self.artifact.output_path = os.path.join(self.output_dir, self.artifact.name)
@@ -174,5 +176,6 @@ class ArtifactExporter:
         """
         if self.should_cythonize:
             return f"{util.get_os_str()}_{util.get_arch_str()}"
-        else:
-            return constants.ANY_PLATFORM_FILE_NAME
+        if self.use_package_as_file_name:
+            return self.artifact.name
+        return constants.ANY_PLATFORM_FILE_NAME
