@@ -29,14 +29,16 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
                  output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_cythonize: bool = False,
                  should_zip: bool = False,
-                 with_dev_mode: bool = False):
+                 with_dev_mode: bool = False,
+                 use_package_as_file_name: bool = False):
         output_dir = TentaclePackageExporter.include_output_dir_in_package_name_if_any(artifact, output_dir)
         super().__init__(artifact,
                          tentacles_folder=tentacles_folder,
                          output_dir=output_dir,
                          should_cythonize=should_cythonize,
                          should_zip=should_zip,
-                         with_dev_mode=with_dev_mode)
+                         with_dev_mode=with_dev_mode,
+                         use_package_as_file_name=use_package_as_file_name)
         self.exported_tentacles_package: str = exported_tentacles_package
         self.should_cleanup_working_folder: bool = True
 

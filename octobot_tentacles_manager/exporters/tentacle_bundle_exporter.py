@@ -30,13 +30,15 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
                  tentacles_folder: str,
                  output_dir: str = constants.DEFAULT_EXPORT_DIR,
                  should_zip: bool = False,
-                 should_remove_artifacts_after_use: bool = False):
+                 should_remove_artifacts_after_use: bool = False,
+                 use_package_as_file_name: bool = False):
         super().__init__(artifact,
                          tentacles_folder=tentacles_folder,
                          output_dir=output_dir,
                          should_cythonize=False,
                          should_zip=should_zip,
-                         with_dev_mode=False)
+                         with_dev_mode=False,
+                         use_package_as_file_name=use_package_as_file_name)
         self.should_remove_artifacts_after_use: bool = should_remove_artifacts_after_use
 
     async def prepare_export(self):
