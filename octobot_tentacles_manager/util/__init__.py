@@ -20,6 +20,10 @@ from octobot_tentacles_manager.util import tentacle_filter
 from octobot_tentacles_manager.util import tentacle_cleaner
 from octobot_tentacles_manager.util import file_util
 
+from octobot_tentacles_manager.util.os_util import (
+    get_os_str,
+    get_arch_str,
+)
 from octobot_tentacles_manager.util.tentacle_fetching import (
     cleanup_temp_dirs,
     fetch_and_extract_tentacles,
@@ -61,4 +65,6 @@ __all__ = [
     "remove_unnecessary_files",
     "remove_non_tentacles_files",
     "filter_tentacles_by_dev_mode_and_package",
+    "get_arch_str",
+    "get_os_str",
 ]

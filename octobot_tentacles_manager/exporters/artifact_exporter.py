@@ -156,7 +156,7 @@ class ArtifactExporter:
         :return: the path of the archive
         """
         # remove .zip extension if necessary
-        file_name = self.artifact.name.split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0].\
+        file_name = self.get_exported_file_name().split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0].\
             replace(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR, "_")
         zipped_file = shutil.make_archive(os.path.join(self.artifact.output_dir, file_name),
                                           constants.TENTACLES_PACKAGE_FORMAT,
@@ -167,3 +167,12 @@ class ArtifactExporter:
         except Exception as e:
             self.logger.error(f"Error when cleaning up temporary folder: {e}")
         return zipped_file
+
+    def get_exported_file_name(self) -> str:
+        """
+        :return: the export file name depending on compilation
+        """
+        if self.should_cythonize:
+            return f"{util.get_os_str()}_{util.get_arch_str()}"
+        else:
+            return constants.ANY_PLATFORM_FILE_NAME
