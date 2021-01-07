@@ -157,7 +157,7 @@ class ArtifactExporter:
         Archive creator temporary dir to a zip file
         :return: the path of the archive
         """
-        # remove .zip extension if necessary
+        # set package name using artifact name or platform data when cythonized and remove .zip extension if necessary
         file_name = self.get_exported_file_name().split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0].\
             replace(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR, "_")
         zipped_file = shutil.make_archive(os.path.join(self.artifact.output_dir, file_name),
@@ -172,10 +172,10 @@ class ArtifactExporter:
 
     def get_exported_file_name(self) -> str:
         """
-        :return: the export file name depending on compilation
+        return: the export file name depending on compilation and self.use_package_as_file_name value
         """
-        if self.should_cythonize:
-            return f"{util.get_os_str()}_{util.get_arch_str()}"
         if self.use_package_as_file_name:
             return self.artifact.name
+        if self.should_cythonize:
+            return f"{util.get_os_str()}_{util.get_arch_str()}"
         return constants.ANY_PLATFORM_FILE_NAME
