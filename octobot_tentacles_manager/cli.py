@@ -45,6 +45,8 @@ async def _handle_package_manager_command(starting_args,
         include_dev_mode = starting_args.include_dev_mode
         include_tentacles_export = starting_args.include_tentacles_export
         should_use_package_name_when_exporting = starting_args.export_with_package_name
+        upload_tentacles_export_list = starting_args.upload_tentacles_export \
+            if starting_args.upload_tentacles_export else []
         if starting_args.creator:
             error_count = api.start_tentacle_creator({}, starting_args.creator)
         elif starting_args.repair:
@@ -66,8 +68,8 @@ async def _handle_package_manager_command(starting_args,
                     exported_tentacles_package=exported_tentacles_package,
                     in_zip=False,
                     should_remove_artifacts_after_use=True,
-                    upload_url=starting_args.upload_tentacles_export[0]
-                    if len(starting_args.upload_tentacles_export) > 0 else None,
+                    upload_url=upload_tentacles_export_list[0]
+                    if len(upload_tentacles_export_list) > 0 else None,
                     with_dev_mode=include_dev_mode,
                     cythonize=cythonize)
         elif starting_args.pack:
@@ -88,8 +90,8 @@ async def _handle_package_manager_command(starting_args,
                     in_zip=True,
                     with_dev_mode=include_dev_mode,
                     should_remove_artifacts_after_use=True,
-                    upload_url=starting_args.upload_tentacles_export[0]
-                    if len(starting_args.upload_tentacles_export) > 0 else None,
+                    upload_url=upload_tentacles_export_list[0]
+                    if len(upload_tentacles_export_list) > 0 else None,
                     cythonize=cythonize)
         elif single_tentacle_path:
             error_count = await api.install_single_tentacle(single_tentacle_path,
