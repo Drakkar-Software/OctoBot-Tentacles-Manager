@@ -79,6 +79,7 @@ TENTACLES_PACKAGE_PROFILES_PATH = "profiles"
 
 # exporter
 DEFAULT_EXPORT_DIR = "output"
+ANY_PLATFORM_FILE_NAME = "any_platform"
 
 # Artifacts
 UNKNOWN_ARTIFACT_VERSION = "unknown_version"
