@@ -64,6 +64,7 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                                       with_dev_mode: bool = False,
                                       cythonize: bool = False,
                                       should_remove_artifacts_after_use: bool = False,
+                                      use_package_as_file_name: bool = False,
                                       upload_url: str = None,
                                       should_zip_bundle: bool = False) -> int:
     logger = logging.get_logger("TentacleManagerApi")
@@ -84,7 +85,7 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                                                            should_zip=in_zip,
                                                            with_dev_mode=with_dev_mode,
                                                            should_cythonize=cythonize,
-                                                           use_package_as_file_name=True)
+                                                           use_package_as_file_name=use_package_as_file_name)
             await tentacle_exporter.export()
             tentacle_package.add_artifact(tentacle)
             tentacle_bundle_exporter = exporters.TentacleBundleExporter(
@@ -93,7 +94,7 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
                 output_dir=output_dir,
                 should_zip=should_zip_bundle,
                 should_remove_artifacts_after_use=should_remove_artifacts_after_use,
-                use_package_as_file_name=True)
+                use_package_as_file_name=use_package_as_file_name)
             await tentacle_bundle_exporter.export()
             tentacle_bundle_exported_list.append(tentacle_bundle_exporter)
         except Exception as e:

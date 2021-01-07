@@ -206,7 +206,8 @@ async def test_create_all_tentacles_bundle_zipped_not_cleaned_and_zipped(install
                                              in_zip=True,
                                              cythonize=False,
                                              should_remove_artifacts_after_use=False,
-                                             should_zip_bundle=True) == 0
+                                             should_zip_bundle=True,
+                                             use_package_as_file_name=True) == 0
 
     # test not should_remove_artifacts_after_use
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer.zip"))
@@ -222,7 +223,8 @@ async def test_create_all_tentacles_bundle_not_zipped_not_cleaned_and_zipped(ins
                                              in_zip=True,
                                              cythonize=False,
                                              should_remove_artifacts_after_use=False,
-                                             should_zip_bundle=False) == 0
+                                             should_zip_bundle=False,
+                                             use_package_as_file_name=True) == 0
 
     # test not should_remove_artifacts_after_use
     assert os.path.isfile(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer.zip"))
