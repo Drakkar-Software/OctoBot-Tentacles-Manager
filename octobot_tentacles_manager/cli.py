@@ -223,7 +223,9 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
                                                          "package): -e myTentaclesFolder OctoBot-Default-Tentacles "
                                                          "-d ./tentacles", nargs="+")
     tentacles_parser.add_argument("-a", "--all", help="Apply command to all available Tentacles.", action='store_true')
-    tentacles_parser.add_argument("--export-with-package-name", help="Export package with its artifact name",
+    tentacles_parser.add_argument("--export-with-package-name",
+                                  help="Export package using its artifact's name as package name. When used with "
+                                       "cythonize, the exported package name wont contain the os and the architecture",
                                   action='store_true')
     tentacles_parser.add_argument("-d", "--directory", help=f"Path to the root of the OctoBot installation folder "
                                                             f"to operate on. Default is '{constants.DEFAULT_BOT_PATH}'.",
