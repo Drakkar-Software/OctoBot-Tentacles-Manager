@@ -33,5 +33,5 @@ Binary:
 $ ./OctoBot tentacles install all
 ```
 
-- Use your [OctoBot web interface at **'Tentacles'**.](https://github.com/Drakkar-Software/OctoBot/wiki/Customize-your-OctoBot#octobot-is-customizable-)
+- Use your [OctoBot web interface at **'Tentacles'**.](https://docs.octobot.online/pages/Customize-your-OctoBot.html)
 
