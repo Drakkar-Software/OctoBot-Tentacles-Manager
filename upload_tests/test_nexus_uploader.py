@@ -36,7 +36,7 @@ TEST_NEXUS_PATH = "dev/tests/tentacle-manager/"
 TEST_NEXUS_FILE_NAME = "test"
 
 
-@pytest.yield_fixture()
+@pytest.fixture
 async def nexus_tests():
     if os.path.exists(TEST_NEXUS_DIRECTORY):
         shutil.rmtree(TEST_NEXUS_DIRECTORY)

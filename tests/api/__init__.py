@@ -26,7 +26,7 @@ TENTACLE_PACKAGE = "tentacle_package"
 TEST_EXPORT_DIR = "test_export_dir"
 
 
-@pytest.yield_fixture()
+@pytest.fixture
 async def install_tentacles():
     _cleanup()
     async with aiohttp.ClientSession() as session:
