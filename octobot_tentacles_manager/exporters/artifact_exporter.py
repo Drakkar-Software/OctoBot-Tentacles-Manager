@@ -198,6 +198,12 @@ class ArtifactExporter:
             return f"{util.get_os_str()}_{util.get_arch_str()}"
         return constants.ANY_PLATFORM_FILE_NAME
 
+    def get_metadata_file_path(self) -> str:
+        """
+        :return: the metadata destination file path
+        """
+        return self.working_folder
+
     async def create_metadata_file(self) -> None:
         """
         Creates metadata file from artifacts count
@@ -205,7 +211,7 @@ class ArtifactExporter:
         """
         try:
             artifact_metadata: models.ArtifactMetadata = await self.get_metadata_instance()
-            async with aiofiles.open(os.path.join(self.working_folder,
+            async with aiofiles.open(os.path.join(self.get_metadata_file_path(),
                                                   constants.ARTIFACT_METADATA_FILE), "w") as metadata_file:
                 await metadata_file.write(yaml.dump(artifact_metadata.to_dict()))
         except NotImplementedError:
