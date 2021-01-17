@@ -16,12 +16,11 @@
 
 import os
 import shutil
-import yaml
 
+import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.exporters.artifact_exporter as artifact_exporter
 import octobot_tentacles_manager.models as models
 import octobot_tentacles_manager.util as util
-import octobot_tentacles_manager.constants as constants
 
 
 class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
@@ -55,19 +54,6 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
                     self.copy_directory_content_to_temporary_dir(artifact.output_path)
                 else:
                     self.copy_directory_content_to_working_dir(artifact.output_path)
-        self.create_metadata_file()
-
-    def create_metadata_file(self) -> None:
-        """
-        Creates metadata file from artifacts count
-        :return: None
-        """
-        if len(self.artifact.artifacts) == 1:
-            artifact_metadata = models.MetadataFactory(self.artifact.artifacts[0]).create_metadata_instance()
-        else:
-            artifact_metadata = models.MetadataFactory(self.artifact).create_metadata_instance()
-        with open(os.path.join(self.working_folder, constants.ARTIFACT_METADATA_FILE), "w") as metadata_file:
-            metadata_file.write(yaml.dump(artifact_metadata.to_dict()))
 
     async def after_export(self) -> None:
         """
@@ -77,3 +63,8 @@ class TentacleBundleExporter(artifact_exporter.ArtifactExporter):
         if self.should_remove_artifacts_after_use:
             for artifact in self.artifact.artifacts:
                 util.remove_dir_or_file_from_path(artifact.output_path)
+
+    async def get_metadata_instance(self) -> models.ArtifactMetadata:
+        if len(self.artifact.artifacts) == 1:
+            return models.MetadataFactory(self.artifact.artifacts[0]).create_metadata_instance()
+        return models.MetadataFactory(self.artifact).create_metadata_instance()

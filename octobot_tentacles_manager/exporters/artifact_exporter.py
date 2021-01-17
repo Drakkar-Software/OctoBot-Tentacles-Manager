@@ -19,7 +19,10 @@ import os
 import os.path as path
 import shutil
 
+import aiofiles
 import octobot_commons.logging as logging
+import yaml
+
 import octobot_tentacles_manager.models as models
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.creators as creators
@@ -63,6 +66,14 @@ class ArtifactExporter:
         raise NotImplementedError("prepare_export is not implemented")
 
     @abc.abstractmethod
+    async def get_metadata_instance(self) -> models.ArtifactMetadata:
+        """
+        Called after prepare_export, should be implemented if a metadata file has to be created
+        :return: an ArtifactMetadata instance
+        """
+        raise NotImplementedError("get_metadata_instance is not implemented")
+
+    @abc.abstractmethod
     async def after_export(self) -> None:
         """
         Called after export process, should be implemented if necessary
@@ -74,12 +85,14 @@ class ArtifactExporter:
         """
         Run artifact export process by calling :
         - export preparation with abstract prepare_export()
+        - create metadata file if necessary
         - export cleanup, cythonization and compression with cleanup_cythonize_and_archive_if_necessary()
         - export finalization with abstract after_export()
         :return: an error code as integer (0 for success and 1 for fail)
         """
         try:
             await self.prepare_export()
+            await self.create_metadata_file()
             await self.cleanup_cythonize_and_archive_if_necessary()
             await self.after_export()
             return 0
@@ -157,10 +170,7 @@ class ArtifactExporter:
         Archive creator temporary dir to a zip file
         :return: the path of the archive
         """
-        # set package name using artifact name or platform data when cythonized and remove .zip extension if necessary
-        file_name = self.get_exported_file_name().split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0].\
-            replace(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR, "_")
-        zipped_file = shutil.make_archive(os.path.join(self.artifact.output_dir, file_name),
+        zipped_file = shutil.make_archive(os.path.join(self.artifact.output_dir, self.get_zip_file_name()),
                                           constants.TENTACLES_PACKAGE_FORMAT,
                                           constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
         try:
@@ -169,6 +179,14 @@ class ArtifactExporter:
         except Exception as e:
             self.logger.error(f"Error when cleaning up temporary folder: {e}")
         return zipped_file
+
+    def get_zip_file_name(self) -> str:
+        """
+        Set package name using artifact name or platform data when cythonized and remove .zip extension if necessary
+        :return: the zip file name
+        """
+        return self.get_exported_file_name().split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0]. \
+            replace(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR, "_")
 
     def get_exported_file_name(self) -> str:
         """
@@ -179,3 +197,16 @@ class ArtifactExporter:
         if self.should_cythonize:
             return f"{util.get_os_str()}_{util.get_arch_str()}"
         return constants.ANY_PLATFORM_FILE_NAME
+
+    async def create_metadata_file(self) -> None:
+        """
+        Creates metadata file from artifacts count
+        :return: None
+        """
+        try:
+            artifact_metadata: models.ArtifactMetadata = await self.get_metadata_instance()
+            async with aiofiles.open(os.path.join(self.working_folder,
+                                                  constants.ARTIFACT_METADATA_FILE), "w") as metadata_file:
+                await metadata_file.write(yaml.dump(artifact_metadata.to_dict()))
+        except NotImplementedError:
+            pass  # Metadata file creation is ignored
