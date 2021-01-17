@@ -23,10 +23,13 @@ class TentaclePackageMetadata(artifact_metadata.ArtifactMetadata):
     def __init__(self, artifact: tentacle_package_model.TentaclePackage):
         super().__init__(artifact)
         self.artifact_type: enums.ArtifactTypes = enums.ArtifactTypes.TENTACLE_PACKAGE
+        self.original_metadata_dict = None
 
     def to_dict(self) -> dict:
         origin_dict = super().to_dict()
         origin_dict[constants.ARTIFACT_METADATA_TENTACLES] = [
             artifact.get_name_with_version() for artifact in self.artifact.artifacts
         ]
+        if self.original_metadata_dict:
+            origin_dict.update(self.original_metadata_dict)
         return origin_dict

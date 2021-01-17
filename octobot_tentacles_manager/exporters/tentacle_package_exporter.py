@@ -15,6 +15,9 @@
 #  License along with this library.
 import os
 
+import aiofiles
+import yaml
+
 import octobot_tentacles_manager.exporters.artifact_exporter as artifact_exporter
 import octobot_tentacles_manager.models as models
 import octobot_tentacles_manager.constants as constants
@@ -30,6 +33,7 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
                  should_cythonize: bool = False,
                  should_zip: bool = False,
                  with_dev_mode: bool = False,
+                 metadata_file: str = None,
                  use_package_as_file_name: bool = False):
         output_dir = TentaclePackageExporter.include_output_dir_in_package_name_if_any(artifact, output_dir)
         super().__init__(artifact,
@@ -41,6 +45,7 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
                          use_package_as_file_name=use_package_as_file_name)
         self.exported_tentacles_package: str = exported_tentacles_package
         self.should_cleanup_working_folder: bool = True
+        self.imported_metadata_file: str = metadata_file
 
         self.tentacles_filter: util.TentacleFilter = None
         self.tentacles_white_list: list = []
@@ -93,4 +98,8 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
         return self.output_dir
 
     async def get_metadata_instance(self) -> models.ArtifactMetadata:
-        return models.MetadataFactory(self.artifact).create_metadata_instance()
+        metadata_instance = models.MetadataFactory(self.artifact).create_metadata_instance()
+        if self.imported_metadata_file:
+            async with aiofiles.open(os.path.join(self.imported_metadata_file), "r") as imported_metadata_file:
+                metadata_instance.original_metadata_dict = yaml.safe_load(await imported_metadata_file.read())
+        return metadata_instance

@@ -38,6 +38,7 @@ async def create_tentacles_package(package_name: str,
                                    with_dev_mode: bool = False,
                                    use_package_as_file_name: bool = False,
                                    upload_details: list = None,
+                                   metadata_file: str = None,
                                    cythonize: bool = False) -> int:
     tentacle_package: models.TentaclePackage = models.TentaclePackage(package_name)
     export_result: int = await exporters.TentaclePackageExporter(artifact=tentacle_package,
@@ -46,6 +47,7 @@ async def create_tentacles_package(package_name: str,
                                                                  output_dir=output_dir,
                                                                  should_zip=in_zip,
                                                                  with_dev_mode=with_dev_mode,
+                                                                 metadata_file=metadata_file,
                                                                  use_package_as_file_name=use_package_as_file_name,
                                                                  should_cythonize=cythonize).export()
     if upload_details is not None and len(upload_details) > 0:
