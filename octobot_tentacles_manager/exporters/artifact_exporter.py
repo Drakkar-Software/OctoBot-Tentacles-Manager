@@ -186,7 +186,7 @@ class ArtifactExporter:
         :return: the zip file name
         """
         return self.get_exported_file_name().split(f".{constants.TENTACLES_PACKAGE_FORMAT}")[0]. \
-            replace(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR, "_")
+            replace(constants.ARTIFACT_VERSION_SEPARATOR, "_")
 
     def get_exported_file_name(self) -> str:
         """

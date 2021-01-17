@@ -112,8 +112,8 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
 async def _upload_exported_tentacle_bundle(upload_url: str, exported_tentacle_bundle: exporters.TentacleBundleExporter):
     export_path = exported_tentacle_bundle.artifact.output_path
     alias_path = os.path.basename(export_path)
-    if models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR in export_path:
-        alias_name, alias_version = alias_path.split(models.TentaclePackage.ARTIFACT_VERSION_SEPARATOR)
+    if constants.ARTIFACT_VERSION_SEPARATOR in export_path:
+        alias_name, alias_version = alias_path.split(constants.ARTIFACT_VERSION_SEPARATOR)
         alias_path = f"{alias_name}/{alias_version}"
     await uploader_api.upload_file_or_folder_to_nexus(nexus_path=upload_url,
                                                       artifact_path=export_path,
