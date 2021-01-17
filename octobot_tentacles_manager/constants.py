@@ -83,6 +83,7 @@ ANY_PLATFORM_FILE_NAME = "any_platform"
 
 # Artifacts
 UNKNOWN_ARTIFACT_VERSION = "unknown_version"
+ARTIFACT_VERSION_SEPARATOR = "@"
 
 # Tentacles installation folders
 TENTACLES_INSTALL_TEMP_DIR = "temp_tentacles"
