@@ -34,9 +34,15 @@ class Artifact:
         """
         return self.version is not None and self.version != constants.UNKNOWN_ARTIFACT_VERSION
 
-    def __str__(self):
+    def __str__(self) -> str:
         str_rep = f"{self.name} {Artifact.ARTIFACT_NAME} ["
         if self.is_valid():
             return f"version: {self.version}]"
         else:
             return f"{str_rep}]"
+
+    def get_name_with_version(self) -> str:
+        """
+        :return: the artifact name formatted as 'name@version'
+        """
+        return f"{self.name}{constants.ARTIFACT_VERSION_SEPARATOR}{self.version}"
