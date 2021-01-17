@@ -27,6 +27,6 @@ class TentaclePackageMetadata(artifact_metadata.ArtifactMetadata):
     def to_dict(self) -> dict:
         origin_dict = super().to_dict()
         origin_dict[constants.ARTIFACT_METADATA_TENTACLES] = [
-            artifact.name for artifact in self.artifact.artifacts
+            artifact.get_name_with_version() for artifact in self.artifact.artifacts
         ]
         return origin_dict
