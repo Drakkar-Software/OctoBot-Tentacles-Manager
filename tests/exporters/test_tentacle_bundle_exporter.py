@@ -23,7 +23,8 @@ import octobot_tentacles_manager.models as models
 import octobot_tentacles_manager.exporters as exporters
 import octobot_tentacles_manager.util as util
 import octobot_tentacles_manager.constants as constants
-from tests.api import install_tentacles
+from octobot_tentacles_manager.api import create_tentacles_package
+from tests.api import install_tentacles, TENTACLE_PACKAGE
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -83,10 +84,10 @@ async def test_tentacle_bundle_exporter_for_an_unique_bundle_containing_all_tent
 
     # test multiple tentacle bundle metadata
     with open(os.path.join(exported_bundle_path, constants.ARTIFACT_METADATA_FILE)) as metadata_file:
-        metadata_content = yaml.load(metadata_file.read(), Loader=yaml.SafeLoader)
+        metadata_content = yaml.safe_load(metadata_file.read())
         assert metadata_content[constants.ARTIFACT_METADATA_ARTIFACT_TYPE] == "tentacle_package"
-        assert len(metadata_content[constants.ARTIFACT_METADATA_ARTIFACTS]) == 10
-        assert "forum_evaluator" in metadata_content[constants.ARTIFACT_METADATA_ARTIFACTS]
+        assert len(metadata_content[constants.ARTIFACT_METADATA_TENTACLES]) == 10
+        assert "forum_evaluator@1.2.0" in metadata_content[constants.ARTIFACT_METADATA_TENTACLES]
 
 
 async def test_tentacle_bundle_exporter_with_specified_output_dir(install_tentacles):
@@ -112,3 +113,21 @@ async def test_tentacle_bundle_exporter_with_specified_output_dir(install_tentac
     assert "daily_trading_mode.zip" in output_files
     assert "generic_exchange_importer@1.2.0" in output_files
     shutil.rmtree(specified_output_dir)
+
+
+async def test_tentacle_bundle_exporter_with_metadata_injection(install_tentacles):
+    assert await create_tentacles_package(package_name=TENTACLE_PACKAGE,
+                                          output_dir=constants.CURRENT_DIR_PATH,
+                                          metadata_file=os.path.join("tests", "static", "metadata.yml"),
+                                          in_zip=True,
+                                          use_package_as_file_name=True) == 0
+    assert os.path.exists(constants.ARTIFACT_METADATA_FILE)
+    with open(constants.ARTIFACT_METADATA_FILE) as metadata_file:
+        metadata_content = yaml.safe_load(metadata_file.read())
+        assert metadata_content[constants.ARTIFACT_METADATA_ARTIFACT_TYPE] == "tentacle_package"
+        assert len(metadata_content[constants.ARTIFACT_METADATA_TENTACLES]) == 10
+        assert "forum_evaluator@1.2.0" in metadata_content[constants.ARTIFACT_METADATA_TENTACLES]
+        assert metadata_content[constants.ARTIFACT_METADATA_NAME] == "test-full"
+        assert metadata_content[constants.ARTIFACT_METADATA_AUTHOR] == "DrakkarSoftware"
+        assert metadata_content[constants.ARTIFACT_METADATA_REPOSITORY] == "TEST-TM"
+        assert metadata_content[constants.ARTIFACT_METADATA_VERSION] == "1.5.57"

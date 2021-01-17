@@ -202,7 +202,7 @@ class ArtifactExporter:
         """
         :return: the metadata destination file path
         """
-        return self.working_folder
+        return os.path.abspath(self.working_folder)
 
     async def create_metadata_file(self) -> None:
         """
