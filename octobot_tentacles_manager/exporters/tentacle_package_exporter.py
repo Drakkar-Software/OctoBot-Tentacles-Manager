@@ -59,7 +59,12 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
                 package_filter=self.exported_tentacles_package
             )
 
+        # filter tentacles
         self.tentacles_filter = util.TentacleFilter(self.tentacles, self.tentacles_white_list)
+
+        # set white list tentacles as TentaclePackage.artifacts
+        self.artifact.artifacts = self.tentacles_white_list
+
         if self.should_zip:
             self.copy_directory_content_to_temporary_dir(self.tentacles_folder,
                                                          ignore=self.tentacles_filter.should_ignore)
@@ -80,3 +85,12 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
 
     async def after_export(self):
         pass
+
+    def get_metadata_file_path(self) -> str:
+        """
+        :return: the metadata destination file path
+        """
+        return self.output_dir
+
+    async def get_metadata_instance(self) -> models.ArtifactMetadata:
+        return models.MetadataFactory(self.artifact).create_metadata_instance()
