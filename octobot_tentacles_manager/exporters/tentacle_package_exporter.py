@@ -95,7 +95,7 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
         """
         :return: the metadata destination file path
         """
-        return self.output_dir
+        return os.path.abspath(self.output_dir)
 
     async def get_metadata_instance(self) -> models.ArtifactMetadata:
         metadata_instance = models.MetadataFactory(self.artifact).create_metadata_instance()
