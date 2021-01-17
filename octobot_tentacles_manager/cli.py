@@ -60,6 +60,7 @@ async def _handle_package_manager_command(starting_args,
                 with_dev_mode=include_dev_mode,
                 upload_details=starting_args.upload_package_export,
                 cythonize=cythonize,
+                metadata_file=starting_args.metadata_file,
                 use_package_as_file_name=should_use_package_name_when_exporting)
             if include_tentacles_export:
                 error_count += await api.create_all_tentacles_bundle(
@@ -81,6 +82,7 @@ async def _handle_package_manager_command(starting_args,
                 with_dev_mode=include_dev_mode,
                 upload_details=starting_args.upload_package_export,
                 cythonize=cythonize,
+                metadata_file=starting_args.metadata_file,
                 use_package_as_file_name=should_use_package_name_when_exporting)
             if include_tentacles_export:
                 error_count += await api.create_all_tentacles_bundle(
@@ -247,6 +249,7 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')
+    tentacles_parser.add_argument("-m", "--metadata-file", help="The metadata file to use when exporting the package.")
     tentacles_parser.add_argument("-cy", "--cythonize", help="Option for the --pack command: cythonize and "
                                                              "compile the packed tentacles.", action='store_true')
     tentacles_parser.add_argument("-nu", "--nexus-upload", help="Upload a file or files of folder to nexus at path."
