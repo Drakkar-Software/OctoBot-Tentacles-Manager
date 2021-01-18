@@ -243,9 +243,8 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
                                                                             "pack commands. Usage: <nexus_path>",
                                   nargs=1)
     tentacles_parser.add_argument("-upe", "--upload-package-export", help="Upload package during export and "
-                                                                          "pack commands. "
-                                                                          "Usage: <nexus_path> [package_alias]",
-                                  nargs='+')
+                                                                          "pack commands. Usage: <nexus_path>",
+                                  nargs=1)
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')

@@ -102,4 +102,5 @@ class TentaclePackageExporter(artifact_exporter.ArtifactExporter):
         if self.imported_metadata_file:
             async with aiofiles.open(os.path.join(self.imported_metadata_file), "r") as imported_metadata_file:
                 metadata_instance.original_metadata_dict = yaml.safe_load(await imported_metadata_file.read())
+            metadata_instance.load_from_dict()
         return metadata_instance
