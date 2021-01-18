@@ -25,6 +25,11 @@ class TentaclePackageMetadata(artifact_metadata.ArtifactMetadata):
         self.artifact_type: enums.ArtifactTypes = enums.ArtifactTypes.TENTACLE_PACKAGE
         self.original_metadata_dict = None
 
+    def load_from_dict(self) -> None:
+        if self.original_metadata_dict:
+            if self.original_metadata_dict.get(constants.ARTIFACT_METADATA_VERSION):
+                self.artifact.version = self.original_metadata_dict.get(constants.ARTIFACT_METADATA_VERSION)
+
     def to_dict(self) -> dict:
         origin_dict = super().to_dict()
         origin_dict[constants.ARTIFACT_METADATA_TENTACLES] = [

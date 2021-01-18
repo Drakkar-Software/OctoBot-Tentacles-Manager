@@ -52,10 +52,15 @@ async def create_tentacles_package(package_name: str,
                                                                  should_cythonize=cythonize).export()
     if upload_details is not None and len(upload_details) > 0:
         export_path: str = tentacle_package.output_path
-        alias_name: str = upload_details[1] if len(upload_details) > 1 else os.path.basename(export_path)
+        alias_name: str = os.path.join(tentacle_package.version, os.path.basename(export_path))
+        metadata_file: str = os.path.join(os.path.dirname(export_path), constants.ARTIFACT_METADATA_FILE)
         await uploader_api.upload_file_or_folder_to_nexus(nexus_path=upload_details[0],
                                                           artifact_path=export_path,
                                                           artifact_alias=alias_name)
+        await uploader_api.upload_file_or_folder_to_nexus(nexus_path=upload_details[0],
+                                                          artifact_path=metadata_file,
+                                                          artifact_alias=os.path.join(tentacle_package.version,
+                                                                                      constants.ARTIFACT_METADATA_FILE))
     return export_result
 
 
