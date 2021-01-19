@@ -198,7 +198,7 @@ async def test_create_all_tentacles_bundle_cleaned_not_zipped_but_cythonized(ins
     # test bundle metadata
     assert_directory_has_file_with_content(os.path.join(TEST_EXPORT_DIR, "generic_exchange_importer@1.2.0"),
                                            "metadata.yaml",
-                                           "author: DrakkarSoftware\nname: generic_exchange_importer\nrepository: Unknown repository location\ntype: tentacle\nversion: 1.2.0\n")
+                                           "author: DrakkarSoftware\ndescription: ''\nname: generic_exchange_importer\nrepository: Unknown repository location\nshort-name: generic_exchange_importer\ntags: []\ntype: tentacle\nversion: 1.2.0\n")
 
 
 async def test_create_all_tentacles_bundle_zipped_not_cleaned_and_zipped(install_tentacles):

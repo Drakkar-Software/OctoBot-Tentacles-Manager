@@ -29,8 +29,11 @@ class ArtifactMetadata:
     def to_dict(self) -> dict:
         return {
             constants.ARTIFACT_METADATA_NAME: self.artifact.name,
+            constants.ARTIFACT_METADATA_SHORT_NAME: self.artifact.name,
             constants.ARTIFACT_METADATA_VERSION: self.artifact.version,
             constants.ARTIFACT_METADATA_ARTIFACT_TYPE: self.artifact_type.value,
             constants.ARTIFACT_METADATA_REPOSITORY: self.artifact.origin_repository,
             constants.ARTIFACT_METADATA_AUTHOR: self.author,
+            constants.ARTIFACT_METADATA_DESCRIPTION: "",
+            constants.ARTIFACT_METADATA_TAGS: [],
         }
