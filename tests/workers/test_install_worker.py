@@ -106,7 +106,7 @@ async def test_install_one_tentacle_with_requirement(clean):
             }
         }
     assert os.path.exists(
-        os.path.join("tentacles", "Services", "Services_bases", "reddit_service", "reddit_service.py"))
+        os.path.join("tentacles", "Services", "Services_bases", "reddit_service", "reddit.py"))
 
 
 async def test_install_all_tentacles(clean):
@@ -257,7 +257,7 @@ async def test_install_all_tentacles_fetching_requirements(clean):
     # ensure fetched InstantFluctuationsEvaluator requirement
     assert "InstantFluctuationsEvaluator.json" in config_files[0][2]
     assert os.path.exists(os.path.join("tentacles", "Evaluator", "RealTime",
-                                       "instant_fluctuations_evaluator", "instant_fluctuations_evaluator.py"))
+                                       "instant_fluctuations_evaluator", "instant_fluctuations.py"))
     assert len(config_files[0][2]) == 4
 
 
