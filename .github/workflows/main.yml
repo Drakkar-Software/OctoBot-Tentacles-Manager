@@ -50,7 +50,7 @@ jobs:
         pytest upload_tests
       env:
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        NEXUS_URL: ${{ secrets.NEXUS_URL }}
+        NEXUS_URL: ${{ secrets.NEXUS_DEV_URL }}
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
 
     - name: Publish coverage
