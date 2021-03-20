@@ -23,11 +23,11 @@ jobs:
       run: pip install --prefer-binary -r dev_requirements.txt -r requirements.txt
 
 #    - name: Black lint
-#      run: black ${{ secrets.PACKAGE_FOLDER }} --diff --check
+#      run: black octobot_tentacles_manager --diff --check
 
     - name: Pylint
       run: |
-        pylint --rcfile=standard.rc ${{ secrets.PACKAGE_FOLDER }}
+        pylint --rcfile=standard.rc octobot_tentacles_manager
         if [ $? -ne 1 ]; then exit 0; fi
 
   tests:
@@ -53,6 +53,10 @@ jobs:
     - name: Pytests
       run: |
         pytest --cov=. --cov-config=.coveragerc --durations=0 -rw tests
+
+    - name: Pytests upload
+      if: github.event_name == 'push'
+      run: |
         pytest upload_tests
       env:
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -60,7 +64,7 @@ jobs:
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
 
     - name: Publish coverage
-      if: matrix.type == 'sources'
+      if: matrix.type == 'sources' && github.event_name == 'push'
       run: coveralls
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
