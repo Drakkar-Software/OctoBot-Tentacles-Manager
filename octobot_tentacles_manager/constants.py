@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
 import os.path as path
 import octobot_commons.constants as constants
 import octobot_commons.enums as enums
@@ -20,7 +21,8 @@ import octobot_commons.enums as enums
 CURRENT_DIR_PATH = "."
 
 # Default tests tentacles URL
-DEFAULT_TENTACLES_URL = "https://www.tentacles.octobot.online/repository/tentacles/officials/packages/full/base/0.4.0b4/any_platform.zip"
+OCTOBOT_ONLINE = os.getenv("TENTACLES_OCTOBOT_ONLINE_URL", "https://tentacles.octobot.online")
+DEFAULT_TENTACLES_URL = f"{OCTOBOT_ONLINE}/repository/tentacles/officials/packages/full/base/0.4.0b4/any_platform.zip"
 DEFAULT_BOT_INSTALL_DIR = CURRENT_DIR_PATH
 
 # Tentacles files
