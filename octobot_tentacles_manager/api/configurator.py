@@ -60,9 +60,9 @@ def get_class_from_name_with_activated_required_tentacles(name: str,
         # Filter sub classes to only use the one that is appropriate to the given name and that has its
         # tentacles requirements activated (identified by REQUIRED_ACTIVATED_TENTACLES iterable class attribute).
         if subclass.get_name() == name and \
-            tentacles_setup_config is not None and \
-            all(is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, required_tentacle.__name__)
-                for required_tentacle in subclass.REQUIRED_ACTIVATED_TENTACLES):
+                tentacles_setup_config is not None and \
+                all(is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config, required_tentacle.__name__)
+                    for required_tentacle in subclass.REQUIRED_ACTIVATED_TENTACLES):
             if with_class_method is None or getattr(subclass, with_class_method)():
                 return subclass
     return None
@@ -121,3 +121,9 @@ def get_tentacle_config_schema_path(klass) -> str:
 
 def get_compiled_tentacles_url(base_url, version) -> str:
     return f"{base_url}{util.get_local_arch_download_path()}/{version}.zip"
+
+
+def get_installation_octobot_version_from_tentacle_config(tentacles_setup_config: configuration.TentaclesSetupConfiguration) -> str:
+    return tentacles_setup_config.installation_context.get(
+        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION,
+        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)

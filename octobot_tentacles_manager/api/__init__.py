@@ -51,6 +51,7 @@ from octobot_tentacles_manager.api.configurator import (
     get_tentacle_config_schema_path,
     get_compiled_tentacles_url,
     ensure_setup_configuration,
+    get_installation_octobot_version_from_tentacle_config,
 )
 from octobot_tentacles_manager.api.updater import (
     update_all_tentacles,
@@ -103,6 +104,7 @@ __all__ = [
     "get_tentacle_config_schema_path",
     "get_compiled_tentacles_url",
     "ensure_setup_configuration",
+    "get_installation_octobot_version_from_tentacle_config",
     "update_all_tentacles",
     "update_tentacles",
     "load_tentacles",
