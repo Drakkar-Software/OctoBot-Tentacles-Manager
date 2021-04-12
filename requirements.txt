@@ -2,7 +2,7 @@
 setuptools
 
 # Drakkar-Software requirements
-OctoBot-Commons>=1.5.16, <1.6
+OctoBot-Commons>=1.5.19, <1.6
 
 # async files management
 aiofiles>=0.6.0, <0.7
@@ -16,3 +16,6 @@ jinja2>=2.11.3, <2.12
 
 # artifact metadata
 pyyaml>=5.4.1
+
+# version comparison
+packaging==20.9
