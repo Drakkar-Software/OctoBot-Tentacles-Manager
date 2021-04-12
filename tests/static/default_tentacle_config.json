@@ -1,4 +1,7 @@
 {
+  "installation_context": {
+    "octobot_version": "unknown"
+  },
   "tentacle_activation": {
     "Evaluator": {
       "ADXMomentumEvaluator": false,

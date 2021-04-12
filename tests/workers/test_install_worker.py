@@ -59,6 +59,9 @@ async def test_install_two_tentacles(clean):
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         ref_profile_config = json.load(config_f)
         assert ref_profile_config == {
+            'installation_context': {
+                'octobot_version': 'unknown'
+            },
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
             },
@@ -95,6 +98,9 @@ async def test_install_one_tentacle_with_requirement(clean):
     # test tentacles config
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'installation_context': {
+                'octobot_version': 'unknown'
+            },
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': UNKNOWN_TENTACLES_PACKAGE_LOCATION
             },
@@ -131,6 +137,9 @@ async def test_install_all_tentacles(clean):
     # test tentacles config
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'installation_context': {
+                'octobot_version': 'unknown'
+            },
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
             },

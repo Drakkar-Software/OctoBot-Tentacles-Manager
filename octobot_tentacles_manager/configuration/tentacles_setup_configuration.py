@@ -302,13 +302,17 @@ class TentaclesSetupConfiguration:
                 shutil.copy(tentacle_config, path.join(tentacles_specific_config_folder, tentacle_config.name))
 
     def _fill_installation_context(self):
+        if constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION not in self.installation_context:
+            self.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] = \
+                self._get_installation_context_bot_version()
+
+    @staticmethod
+    def _get_installation_context_bot_version() -> str:
         try:
             import octobot.constants as octobot_constants
-            self.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] = \
-                octobot_constants.LONG_VERSION
+            return octobot_constants.LONG_VERSION
         except ImportError:
-            self.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] = \
-                constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
+            return constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
 
     def _from_dict(self, input_dict):
         if self.TENTACLE_ACTIVATION_KEY in input_dict:
@@ -319,6 +323,8 @@ class TentaclesSetupConfiguration:
             self.installation_context = input_dict[self.INSTALLATION_CONTEXT_KEY]
 
     def _to_dict(self):
+        if not self.installation_context:
+            self._fill_installation_context()  # fill installation context if empty
         return {
             self.TENTACLE_ACTIVATION_KEY: self.tentacles_activation,
             self.REGISTERED_TENTACLES_KEY: self.registered_tentacles,
