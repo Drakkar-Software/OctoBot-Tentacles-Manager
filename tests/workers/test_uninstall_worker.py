@@ -53,6 +53,9 @@ async def test_uninstall_two_tentacles(clean):
     assert tentacles_files_count < 60
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'installation_context': {
+                'octobot_version': 'unknown'
+            },
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
             },
@@ -156,6 +159,9 @@ async def test_uninstall_all_tentacles(clean):
     assert tentacles_files_count == 24
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'installation_context': {
+                'octobot_version': 'unknown'
+            },
             'registered_tentacles': {},
             'tentacle_activation': {
                 'Backtesting': {},

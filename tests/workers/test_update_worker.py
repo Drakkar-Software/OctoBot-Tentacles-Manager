@@ -74,6 +74,9 @@ async def test_update_two_tentacles(clean):
     # test tentacles config
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
+            'installation_context': {
+                'octobot_version': 'unknown'
+            },
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': UNKNOWN_TENTACLES_PACKAGE_LOCATION
             },
