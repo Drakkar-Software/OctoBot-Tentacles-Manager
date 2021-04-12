@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
 from os.path import isfile
 from shutil import rmtree
 
@@ -24,7 +25,8 @@ import octobot_tentacles_manager.configuration as configuration
 from octobot_tentacles_manager.api.installer import install_all_tentacles
 from octobot_tentacles_manager.configuration.tentacle_configuration import get_config, update_config, \
     factory_reset_config, get_config_schema_path
-from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_CONFIG_PATH, TENTACLES_PATH
+import octobot_tentacles_manager.util as util
+import octobot_tentacles_manager.constants as constants
 from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_by_tentacle_class
 
 # All test coroutines will be treated as marked.
@@ -83,6 +85,20 @@ async def test_factory_reset_config():
     _cleanup()
 
 
+async def test_fill_tentacle_config():
+    async with aiohttp.ClientSession() as session:
+        await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+
+    setup_config = configuration.TentaclesSetupConfiguration()
+    available_tentacle = util.load_tentacle_with_metadata(constants.TENTACLES_PATH)
+    await setup_config.fill_tentacle_config(available_tentacle, constants.TENTACLE_CONFIG_FILE_NAME)
+    assert setup_config.installation_context == {
+        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION:
+            constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
+    }
+    print(setup_config)
+    _cleanup()
+
 async def test_get_config_schema_path():
     async with aiohttp.ClientSession() as session:
         await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
@@ -96,7 +112,9 @@ def _tentacles_local_path():
 
 
 def _cleanup():
-    if path.exists(TENTACLES_PATH):
-        rmtree(TENTACLES_PATH)
-    if path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH):
-        rmtree(USER_REFERENCE_TENTACLE_CONFIG_PATH)
+    if path.exists(constants.TENTACLES_PATH):
+        rmtree(constants.TENTACLES_PATH)
+    if path.exists(constants.TENTACLE_CONFIG_FILE_NAME):
+        os.remove(constants.TENTACLE_CONFIG_FILE_NAME)
+    if path.exists(constants.USER_REFERENCE_TENTACLE_CONFIG_PATH):
+        rmtree(constants.USER_REFERENCE_TENTACLE_CONFIG_PATH)
