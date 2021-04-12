@@ -28,7 +28,7 @@ def are_tentacles_up_to_date(tentacles_setup_config, bot_version):
     installation_version = tentacles_setup_config.installation_context.get(
         constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION,
         constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)
-    if installation_version is constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN:
+    if installation_version == constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN:
         return False
     return packaging_version.parse(bot_version) <= packaging_version.parse(installation_version)
 
