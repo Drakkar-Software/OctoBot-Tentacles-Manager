@@ -22,7 +22,7 @@ import pytest
 from os import path
 
 import octobot_tentacles_manager.configuration as configuration
-from octobot_tentacles_manager.api.installer import install_all_tentacles
+import octobot_tentacles_manager.api as api
 from octobot_tentacles_manager.configuration.tentacle_configuration import get_config, update_config, \
     factory_reset_config, get_config_schema_path
 import octobot_tentacles_manager.util as util
@@ -36,7 +36,7 @@ pytestmark = pytest.mark.asyncio
 async def test_get_config():
     _cleanup()
     async with aiohttp.ClientSession() as session:
-        await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+        await api.install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
     from tentacles.Evaluator.RealTime import InstantFluctuationsEvaluator
     setup_config = configuration.TentaclesSetupConfiguration()
     assert get_config(setup_config, InstantFluctuationsEvaluator) == {
@@ -50,7 +50,7 @@ async def test_get_config():
 
 async def test_update_config():
     async with aiohttp.ClientSession() as session:
-        await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+        await api.install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
     from tentacles.Evaluator.RealTime import InstantFluctuationsEvaluator
     setup_config = configuration.TentaclesSetupConfiguration()
     config_update = {
@@ -68,7 +68,7 @@ async def test_update_config():
 
 async def test_factory_reset_config():
     async with aiohttp.ClientSession() as session:
-        await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+        await api.install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
     from tentacles.Evaluator.RealTime import InstantFluctuationsEvaluator
     setup_config = configuration.TentaclesSetupConfiguration()
     config_update = {
@@ -87,7 +87,7 @@ async def test_factory_reset_config():
 
 async def test_fill_tentacle_config():
     async with aiohttp.ClientSession() as session:
-        await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+        await api.install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
 
     setup_config = configuration.TentaclesSetupConfiguration()
     available_tentacle = util.load_tentacle_with_metadata(constants.TENTACLES_PATH)
@@ -96,12 +96,14 @@ async def test_fill_tentacle_config():
         constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION:
             constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
     }
-    print(setup_config)
+    assert api.get_installation_octobot_version_from_tentacle_config(setup_config) is \
+           constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
     _cleanup()
+
 
 async def test_get_config_schema_path():
     async with aiohttp.ClientSession() as session:
-        await install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+        await api.install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
     from tentacles.Evaluator.RealTime import InstantFluctuationsEvaluator
     assert isfile(get_config_schema_path(InstantFluctuationsEvaluator))
     _cleanup()
