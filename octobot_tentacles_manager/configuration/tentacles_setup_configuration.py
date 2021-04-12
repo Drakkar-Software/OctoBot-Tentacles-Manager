@@ -28,6 +28,7 @@ import octobot_tentacles_manager.loaders as loaders
 class TentaclesSetupConfiguration:
     TENTACLE_ACTIVATION_KEY = "tentacle_activation"
     REGISTERED_TENTACLES_KEY = "registered_tentacles"
+    INSTALLATION_CONTEXT_KEY = "installation_context"
     DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES = {
         constants.TENTACLES_EVALUATOR_REALTIME_PATH,
         constants.TENTACLES_EVALUATOR_TA_PATH,
@@ -43,6 +44,7 @@ class TentaclesSetupConfiguration:
         self.config_path = path.join(bot_installation_path, config_path)
         self.tentacles_activation = {}
         self.registered_tentacles = {}
+        self.installation_context = {}
 
     def get_config_folder(self) -> str:
         return path.split(self.config_path)[0]
@@ -64,6 +66,7 @@ class TentaclesSetupConfiguration:
                                             uninstalled_tentacles=uninstalled_tentacles)
         if update_location or force_update_registered_tentacles:
             self._update_registered_tentacles(tentacles, update_location)
+        self._fill_installation_context()
 
     def refresh_profile_tentacles_config(self,
                                          tentacles,
@@ -298,14 +301,26 @@ class TentaclesSetupConfiguration:
             if tentacle_config.name not in profile_tentacles_configs:
                 shutil.copy(tentacle_config, path.join(tentacles_specific_config_folder, tentacle_config.name))
 
+    def _fill_installation_context(self):
+        try:
+            import octobot.constants as octobot_constants
+            self.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] = \
+                octobot_constants.LONG_VERSION
+        except ImportError:
+            self.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] = \
+                constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
+
     def _from_dict(self, input_dict):
         if self.TENTACLE_ACTIVATION_KEY in input_dict:
             self.tentacles_activation = input_dict[self.TENTACLE_ACTIVATION_KEY]
         if self.REGISTERED_TENTACLES_KEY in input_dict:
             self.registered_tentacles = input_dict[self.REGISTERED_TENTACLES_KEY]
+        if self.INSTALLATION_CONTEXT_KEY in input_dict:
+            self.installation_context = input_dict[self.INSTALLATION_CONTEXT_KEY]
 
     def _to_dict(self):
         return {
             self.TENTACLE_ACTIVATION_KEY: self.tentacles_activation,
-            self.REGISTERED_TENTACLES_KEY: self.registered_tentacles
+            self.REGISTERED_TENTACLES_KEY: self.registered_tentacles,
+            self.INSTALLATION_CONTEXT_KEY: self.installation_context,
         }

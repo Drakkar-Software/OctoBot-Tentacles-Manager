@@ -34,7 +34,8 @@ CONFIG_EXT = ".json"
 DOCUMENTATION_EXT = ".md"
 CONFIG_SCHEMA_EXT = "_schema.json"
 TENTACLE_METADATA = "metadata.json"
-DEFAULT_TENTACLE_CONFIG = path.join(constants.CONFIG_FOLDER, "default_tentacles_config.json")
+TENTACLE_CONFIG_FILE_NAME = "default_tentacles_config.json"
+DEFAULT_TENTACLE_CONFIG = path.join(constants.CONFIG_FOLDER, TENTACLE_CONFIG_FILE_NAME)
 
 # tentacles setup folders back list
 FOLDERS_BLACK_LIST = ["__pycache__"]
@@ -123,6 +124,10 @@ TENTACLES_EVALUATOR_UTIL_PATH = "Util"
 TENTACLES_TRADING_MODE_PATH = "Mode"
 TENTACLES_TRADING_EXCHANGE_PATH = "Exchange"
 TENTACLES_WEBSOCKETS_FEEDS_PATH = "feeds"
+
+# Tentacle installation context
+TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION = "octobot_version"
+TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN = "unknown"
 
 # Tentacle local module folders
 TENTACLE_CONFIG = "config"
