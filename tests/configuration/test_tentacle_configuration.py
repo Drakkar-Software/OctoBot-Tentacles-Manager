@@ -16,6 +16,7 @@
 import os
 from os.path import isfile
 from shutil import rmtree
+from unittest import mock
 
 import aiohttp
 import pytest
@@ -91,13 +92,27 @@ async def test_fill_tentacle_config():
 
     setup_config = configuration.TentaclesSetupConfiguration()
     available_tentacle = util.load_tentacle_with_metadata(constants.TENTACLES_PATH)
+    with mock.patch.object(setup_config, "_get_installation_context_bot_version", mock.Mock()) as bot_version_mock:
+        bot_version_mock.return_value = "1.0.5"
+        await setup_config.fill_tentacle_config(available_tentacle, constants.TENTACLE_CONFIG_FILE_NAME)
+        assert setup_config.installation_context == {
+            constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION: "1.0.5"
+        }
+
+    setup_config = configuration.TentaclesSetupConfiguration()
     await setup_config.fill_tentacle_config(available_tentacle, constants.TENTACLE_CONFIG_FILE_NAME)
     assert setup_config.installation_context == {
         constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION:
             constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
     }
-    assert api.get_installation_octobot_version_from_tentacle_config(setup_config) is \
-           constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
+
+    assert not api.are_tentacles_up_to_date(setup_config,
+                                            constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)
+    assert not api.are_tentacles_up_to_date(setup_config, '1.0.0')
+    setup_config.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] = '2.0.0'
+    assert not api.are_tentacles_up_to_date(setup_config, '2.1.0')
+    assert api.are_tentacles_up_to_date(setup_config, '2.0.0')
+    assert api.are_tentacles_up_to_date(setup_config, '2.0.0b1')
     _cleanup()
 
 

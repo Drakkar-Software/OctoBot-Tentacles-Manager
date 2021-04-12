@@ -121,9 +121,3 @@ def get_tentacle_config_schema_path(klass) -> str:
 
 def get_compiled_tentacles_url(base_url, version) -> str:
     return f"{base_url}{util.get_local_arch_download_path()}/{version}.zip"
-
-
-def get_installation_octobot_version_from_tentacle_config(tentacles_setup_config: configuration.TentaclesSetupConfiguration) -> str:
-    return tentacles_setup_config.installation_context.get(
-        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION,
-        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)

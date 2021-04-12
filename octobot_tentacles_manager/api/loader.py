@@ -13,12 +13,24 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import packaging.version as packaging_version
+
+import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.loaders as loaders
 import octobot_tentacles_manager.managers as managers
 
 
 def load_tentacles(verbose=True) -> bool:
     return managers.TentaclesSetupManager.is_tentacles_arch_valid(verbose=verbose)
+
+
+def are_tentacles_up_to_date(tentacles_setup_config, bot_version):
+    installation_version = tentacles_setup_config.installation_context.get(
+        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION,
+        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)
+    if installation_version is constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN:
+        return False
+    return packaging_version.parse(bot_version) <= packaging_version.parse(installation_version)
 
 
 def reload_tentacle_info() -> None:

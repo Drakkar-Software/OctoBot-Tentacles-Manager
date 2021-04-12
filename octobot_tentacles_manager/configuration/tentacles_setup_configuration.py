@@ -265,6 +265,7 @@ class TentaclesSetupConfiguration:
         # use self.registered_tentacles as a reference
         profile_setup_config.registered_tentacles = self.registered_tentacles
         self._refresh_other_tentacles_activation_from_self(profile_setup_config)
+        profile_setup_config._fill_installation_context()
         profile_setup_config._update_tentacles_groups_activation(tentacles,
                                                                  newly_installed_tentacles,
                                                                  uninstalled_tentacles)
@@ -301,9 +302,12 @@ class TentaclesSetupConfiguration:
             if tentacle_config.name not in profile_tentacles_configs:
                 shutil.copy(tentacle_config, path.join(tentacles_specific_config_folder, tentacle_config.name))
 
+    def _ensure_installation_context(self):
+        if not self.installation_context:
+            self._fill_installation_context()
+
     def _fill_installation_context(self):
-        if constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION not in self.installation_context:
-            self.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] = \
+        self.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] = \
                 self._get_installation_context_bot_version()
 
     @staticmethod
@@ -321,10 +325,10 @@ class TentaclesSetupConfiguration:
             self.registered_tentacles = input_dict[self.REGISTERED_TENTACLES_KEY]
         if self.INSTALLATION_CONTEXT_KEY in input_dict:
             self.installation_context = input_dict[self.INSTALLATION_CONTEXT_KEY]
+            self._ensure_installation_context()
 
     def _to_dict(self):
-        if not self.installation_context:
-            self._fill_installation_context()  # fill installation context if empty
+        self._ensure_installation_context()
         return {
             self.TENTACLE_ACTIVATION_KEY: self.tentacles_activation,
             self.REGISTERED_TENTACLES_KEY: self.registered_tentacles,
