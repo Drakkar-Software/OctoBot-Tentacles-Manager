@@ -32,7 +32,7 @@ async def test_create_missing_tentacles_arch():
     tentacles_setup_manager = TentaclesSetupManager(TENTACLES_PATH)
     await tentacles_setup_manager.create_missing_tentacles_arch()
     trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
-    assert trading_mode_files_count == 24
+    assert trading_mode_files_count == 25
     assert path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH)
     _cleanup()
 
