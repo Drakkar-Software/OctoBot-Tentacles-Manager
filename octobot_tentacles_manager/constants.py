@@ -18,7 +18,7 @@ import os.path as path
 import octobot_commons.constants as constants
 import octobot_commons.enums as enums
 
-CURRENT_DIR_PATH = "."
+CURRENT_DIR_PATH = os.getcwd()
 
 # Default tests tentacles URL
 OCTOBOT_ONLINE = os.getenv("TENTACLES_OCTOBOT_ONLINE_URL", "https://tentacles.octobot.online")
