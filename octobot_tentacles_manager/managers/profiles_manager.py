@@ -30,4 +30,7 @@ def get_profile_folders(package_root) -> list:
 
 def import_profile(profile_path, bot_install_root_folder) -> None:
     profile_name = os.path.split(profile_path)[-1]
-    profiles.import_profile(profile_path, name=profile_name, bot_install_path=bot_install_root_folder)
+    profiles.import_profile(profile_path,
+                            name=profile_name,
+                            bot_install_path=bot_install_root_folder,
+                            replace_if_exists=True)
