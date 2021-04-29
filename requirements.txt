@@ -2,7 +2,7 @@
 setuptools
 
 # Drakkar-Software requirements
-OctoBot-Commons>=1.5.19, <1.6
+OctoBot-Commons>=1.6.1, <1.7
 
 # async files management
 aiofiles>=0.6.0, <0.7
