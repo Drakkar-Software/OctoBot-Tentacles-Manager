@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import os
 import os.path as path
 import shutil
 
@@ -34,15 +35,14 @@ def update_config(tentacles_setup_config, klass, config_update) -> None:
 
 
 def factory_reset_config(tentacles_setup_config, klass) -> None:
-    reference_config_path = path.join(_get_reference_config_path(klass), _get_config_file_name(klass))
-    shutil.copy(reference_config_path, _get_config_file_path(tentacles_setup_config, klass))
+    shutil.copy(_get_reference_config_file_path(klass), _get_config_file_path(tentacles_setup_config, klass))
 
 
 def get_config_schema_path(klass) -> str:
     return path.join(_get_reference_config_path(klass), f"{klass.get_name()}{constants.CONFIG_SCHEMA_EXT}")
 
 
-def _get_config_file_path(tentacles_setup_config, klass) -> str:
+def _get_config_specific_file_path(tentacles_setup_config, klass) -> str:
     return path.join(tentacles_setup_config.get_config_folder(),
                      constants.TENTACLES_SPECIFIC_CONFIG_FOLDER,
                      _get_config_file_name(klass))
@@ -50,6 +50,17 @@ def _get_config_file_path(tentacles_setup_config, klass) -> str:
 
 def _get_reference_config_path(klass) -> str:
     return path.join(loaders.get_tentacle_module_path(klass), constants.TENTACLE_CONFIG)
+
+
+def _get_reference_config_file_path(klass):
+    return path.join(_get_reference_config_path(klass), _get_config_file_name(klass))
+
+
+def _get_config_file_path(tentacles_setup_config, klass) -> str:
+    specific_config_path = _get_config_specific_file_path(tentacles_setup_config, klass)
+    if os.path.exists(specific_config_path):
+        return specific_config_path
+    return _get_reference_config_file_path(klass)
 
 
 def _get_config_file_name(klass) -> str:
