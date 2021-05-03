@@ -51,9 +51,6 @@ async def test_install_two_tentacles(clean):
     config_files = [f for f in os.walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
     assert config_files_count == 1
-    assert "InstantFluctuationsEvaluator.json" in config_files[0][2]
-    assert "DailyTradingMode.json" not in config_files[0][2]
-    assert len(config_files[0][2]) == 1
 
     # test tentacles config
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
@@ -131,8 +128,6 @@ async def test_install_all_tentacles(clean):
     config_files = [f for f in os.walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
     config_files_count = len(config_files)
     assert config_files_count == 1
-    assert "DailyTradingMode.json" in config_files[0][2]
-    assert len(config_files[0][2]) == 5
 
     # test tentacles config
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
@@ -182,11 +177,11 @@ async def test_install_all_tentacles_with_profile(clean):
     # test installed files to ensure tentacles installation got well
     trading_mode_files_count = sum(1 for _ in os.walk(os.path.join(TENTACLES_PATH, "Trading", "Mode")))
     assert trading_mode_files_count == 5
-    config_files = [f for f in os.walk(USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH)]
+    config_files = [f for f in os.walk(os.path.join(profile_path, TENTACLES_SPECIFIC_CONFIG_FOLDER))]
     config_files_count = len(config_files)
     assert config_files_count == 1
     assert "DailyTradingMode.json" in config_files[0][2]
-    assert len(config_files[0][2]) == 5
+    assert len(config_files[0][2]) == 18
 
     # test installed profile
     assert os.path.isfile(os.path.join(profile_path, commons_constants.PROFILE_CONFIG_FILE))
@@ -264,10 +259,8 @@ async def test_install_all_tentacles_fetching_requirements(clean):
     config_files_count = len(config_files)
     assert config_files_count == 1
     # ensure fetched InstantFluctuationsEvaluator requirement
-    assert "InstantFluctuationsEvaluator.json" in config_files[0][2]
     assert os.path.exists(os.path.join("tentacles", "Evaluator", "RealTime",
                                        "instant_fluctuations_evaluator", "instant_fluctuations.py"))
-    assert len(config_files[0][2]) == 4
 
 
 def _enable_loggers():

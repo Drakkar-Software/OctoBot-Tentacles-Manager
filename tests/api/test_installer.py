@@ -107,9 +107,6 @@ async def test_repair_installation():
         # this context
         assert activations[TENTACLES_EVALUATOR_PATH]["SecondOtherInstantFluctuationsEvaluator"] is True
 
-    # restore DailyTradingMode config file
-    assert path.isfile(path.join(broken_install, USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, "DailyTradingMode.json"))
-
     rmtree(broken_install)
 
 

@@ -31,6 +31,7 @@ def update_config(tentacles_setup_config, klass, config_update) -> None:
     current_config = configuration.read_config(config_file)
     # only update values in config update not to erase values in root config (might not be editable)
     current_config.update(config_update)
+    config_file = _get_config_file_path(tentacles_setup_config, klass, updated_config=True)
     configuration.write_config(config_file, current_config)
 
 
@@ -56,9 +57,9 @@ def _get_reference_config_file_path(klass):
     return path.join(_get_reference_config_path(klass), _get_config_file_name(klass))
 
 
-def _get_config_file_path(tentacles_setup_config, klass) -> str:
+def _get_config_file_path(tentacles_setup_config, klass, updated_config=False) -> str:
     specific_config_path = _get_config_specific_file_path(tentacles_setup_config, klass)
-    if os.path.exists(specific_config_path):
+    if os.path.exists(specific_config_path) or updated_config:
         return specific_config_path
     return _get_reference_config_file_path(klass)
 

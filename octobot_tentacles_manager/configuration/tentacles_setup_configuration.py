@@ -255,8 +255,6 @@ class TentaclesSetupConfiguration:
                                                               commons_constants.CONFIG_TENTACLES_FILE),
                                                     newly_installed_tentacles,
                                                     uninstalled_tentacles)
-        self._refresh_profile_tentacles_specific_config(path.join(profile_folder,
-                                                                  constants.TENTACLES_SPECIFIC_CONFIG_FOLDER))
 
     def _refresh_profile_tentacles_config_file(self, tentacles, tentacles_config_file,
                                                newly_installed_tentacles, uninstalled_tentacles):
@@ -290,17 +288,6 @@ class TentaclesSetupConfiguration:
                     to_remove.append(element_name)
             for element in to_remove:
                 element_names.pop(element, None)
-
-    def _refresh_profile_tentacles_specific_config(self, tentacles_specific_config_folder):
-        tentacles_config_path = path.join(path.split(self.config_path)[0],
-                                          constants.TENTACLES_SPECIFIC_CONFIG_FOLDER)
-        if not path.isdir(tentacles_specific_config_folder):
-            os.mkdir(tentacles_specific_config_folder)
-        profile_tentacles_configs = os.listdir(tentacles_specific_config_folder)
-        for tentacle_config in os.scandir(tentacles_config_path):
-            # add missing specific tentacles config
-            if tentacle_config.name not in profile_tentacles_configs:
-                shutil.copy(tentacle_config, path.join(tentacles_specific_config_folder, tentacle_config.name))
 
     def _ensure_installation_context(self):
         if not self.installation_context:
