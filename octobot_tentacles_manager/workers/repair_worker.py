@@ -57,9 +57,7 @@ class RepairWorker(workers.TentaclesWorker):
     async def _repair_tentacle(self, tentacle):
         try:
             tentacle_module_path = path.join(tentacle.tentacle_path, tentacle.name)
-            tentacle_manager = managers.TentacleManager(tentacle, self.bot_installation_path)
             await managers.create_tentacle_init_file_if_necessary(tentacle_module_path, tentacle)
-            tentacle_manager.import_tentacle_config_if_any(tentacle_module_path)
             managers.update_tentacle_type_init_file(tentacle, tentacle.tentacle_path)
             if self.verbose:
                 self.logger.info(f"[{self.progress}/{self.total_steps}] {tentacle} ready to use")

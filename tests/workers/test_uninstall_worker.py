@@ -20,8 +20,9 @@ import os
 
 import octobot_commons.constants as commons_constants
 from octobot_commons.logging.logging_util import set_logging_level
-from octobot_tentacles_manager.constants import TENTACLES_PATH, TENTACLES_SPECIFIC_CONFIG_FOLDER, \
-    USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH
+from octobot_tentacles_manager.constants import TENTACLES_PATH, \
+    USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH, TENTACLE_CONFIG, TENTACLES_EVALUATOR_PATH, \
+    TENTACLES_EVALUATOR_REALTIME_PATH
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
 
 from octobot_tentacles_manager.models.tentacle import Tentacle
@@ -92,8 +93,11 @@ async def test_profiles_update(clean, fake_profiles):
     tentacles_files_count = sum(1 for _ in os.walk(TENTACLES_PATH))
     assert tentacles_files_count > 60
 
-    ref_specific_tentacles_config = os.path.join(os.path.split(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH)[0],
-                                                 TENTACLES_SPECIFIC_CONFIG_FOLDER)
+    ref_specific_tentacles_config = os.path.join(TENTACLES_PATH,
+                                                 TENTACLES_EVALUATOR_PATH,
+                                                 TENTACLES_EVALUATOR_REALTIME_PATH,
+                                                 "instant_fluctuations_evaluator",
+                                                 TENTACLE_CONFIG)
     with open(os.path.join(ref_specific_tentacles_config, "InstantFluctuationsEvaluator.json")) as ref_conf:
         instant_fluct_config = json.load(ref_conf)
 
@@ -116,27 +120,6 @@ async def test_profiles_update(clean, fake_profiles):
                                OTHER_PROFILE,
                                commons_constants.CONFIG_TENTACLES_FILE)) as other_c:
             assert ref_profile_config == json.load(other_c)
-
-    # test specific tentacles config
-    default_profile_tentacles_config = os.path.join(commons_constants.USER_PROFILES_FOLDER,
-                                                    commons_constants.DEFAULT_PROFILE,
-                                                    TENTACLES_SPECIFIC_CONFIG_FOLDER)
-    other_profile_tentacles_config = os.path.join(commons_constants.USER_PROFILES_FOLDER,
-                                                  OTHER_PROFILE,
-                                                  TENTACLES_SPECIFIC_CONFIG_FOLDER)
-    for tentacle_config in os.scandir(ref_specific_tentacles_config):
-        with open(tentacle_config) as ref_config_file:
-            ref_config = json.load(ref_config_file)
-        with open(os.path.join(default_profile_tentacles_config, tentacle_config.name)) as default_profile_config_file:
-            assert ref_config == json.load(default_profile_config_file)
-        with open(os.path.join(other_profile_tentacles_config, tentacle_config.name)) as other_profile_config_file:
-            assert ref_config == json.load(other_profile_config_file)
-
-    # however did not remove tentacles specific config files to be able to reuse them later
-    with open(os.path.join(default_profile_tentacles_config, "InstantFluctuationsEvaluator.json")) as def_conf:
-        assert instant_fluct_config == json.load(def_conf)
-    with open(os.path.join(other_profile_tentacles_config, "InstantFluctuationsEvaluator.json")) as other_conf:
-        assert instant_fluct_config == json.load(other_conf)
 
 
 async def test_uninstall_all_tentacles(clean):

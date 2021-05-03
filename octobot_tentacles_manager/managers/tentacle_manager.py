@@ -36,7 +36,6 @@ class TentacleManager:
         tentacle_module_path = path.join(self.target_tentacle_path, self.tentacle.name)
         await self._update_tentacle_folder(tentacle_module_path)
         await managers.create_tentacle_init_file_if_necessary(tentacle_module_path, self.tentacle)
-        self.import_tentacle_config_if_any(tentacle_module_path)
 
     async def uninstall_tentacle(self):
         shutil.rmtree(path.join(self.bot_installation_path, self.tentacle.tentacle_path, self.tentacle.name))
@@ -86,17 +85,3 @@ class TentacleManager:
         for tentacle_file_entry in os.scandir(reference_tentacle_path):
             await util.replace_with_remove_or_rename(tentacle_file_entry,
                                                      path.join(target_tentacle_path, tentacle_file_entry.name))
-
-    def import_tentacle_config_if_any(self, tentacle_module_path, replace=False):
-        target_tentacle_config_path = path.join(tentacle_module_path, constants.TENTACLE_CONFIG)
-        if path.isdir(target_tentacle_config_path):
-            for config_file_entry in os.scandir(target_tentacle_config_path):
-                if config_file_entry.name.endswith(constants.CONFIG_EXT) \
-                        and not config_file_entry.name.endswith(constants.CONFIG_SCHEMA_EXT):
-                    target_user_path = \
-                        path.join(self.bot_installation_path,
-                                  constants.USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH,
-                                  config_file_entry.name)
-                    if replace or not path.exists(target_user_path):
-                        shutil.copyfile(path.join(target_tentacle_config_path, config_file_entry.name),
-                                        target_user_path)
