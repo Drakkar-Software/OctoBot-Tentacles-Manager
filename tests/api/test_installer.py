@@ -103,9 +103,8 @@ async def test_repair_installation():
     user_config_path = path.join(broken_install, USER_REFERENCE_TENTACLE_CONFIG_PATH)
     with open(path.join(user_config_path, commons_constants.CONFIG_TENTACLES_FILE)) as f:
         activations = json.load(f)[TentaclesSetupConfiguration.TENTACLE_ACTIVATION_KEY]
-        # SecondOtherInstantFluctuationsEvaluator is activated because there is no available default config in
-        # this context
-        assert activations[TENTACLES_EVALUATOR_PATH]["SecondOtherInstantFluctuationsEvaluator"] is True
+        # Evaluators are disabled by default by DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES
+        assert activations[TENTACLES_EVALUATOR_PATH]["SecondOtherInstantFluctuationsEvaluator"] is False
 
     rmtree(broken_install)
 
