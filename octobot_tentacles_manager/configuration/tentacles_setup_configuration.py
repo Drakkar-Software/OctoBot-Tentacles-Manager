@@ -15,7 +15,6 @@
 #  License along with this library.
 import os
 import os.path as path
-import shutil
 
 import octobot_commons.logging as logging
 import octobot_commons.constants as commons_constants
@@ -197,14 +196,12 @@ class TentaclesSetupConfiguration:
             if tentacle_class_name in default_config[tentacle.tentacle_root_type]:
                 self.tentacles_activation[tentacle.tentacle_root_type][tentacle_class_name] = \
                     default_config[tentacle.tentacle_root_type][tentacle_class_name]
-            else:
-                # activate by default unless the sub type of this tentacle in among the sub types to be deactivated by
-                # default
-                self.tentacles_activation[tentacle.tentacle_root_type][tentacle_class_name] = \
-                    tentacle.get_simple_tentacle_type() not in self.DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES
-        else:
-            # if tentacle_type not in default config: activate by default
-            self.tentacles_activation[tentacle.tentacle_root_type][tentacle_class_name] = True
+                return
+
+        # activate by default unless the sub type of this tentacle in among the sub types to be deactivated by default
+        # or if tentacle_type not in default config: activate by default
+        self.tentacles_activation[tentacle.tentacle_root_type][tentacle_class_name] = \
+            tentacle.get_simple_tentacle_type() not in self.DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES
 
     def _filter_tentacle_activation(self, tentacles):
         tentacle_names = [tentacle_class_name
