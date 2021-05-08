@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import os.path as path
+import typing
 
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.models as models
@@ -46,9 +47,9 @@ def get_resources_path(klass) -> str:
     return path.join(get_tentacle_module_path(klass), constants.TENTACLE_RESOURCES)
 
 
-def get_tentacle_module_path(klass) -> str:
+def get_tentacle_module_path(klass) -> typing.Optional[str]:
     tentacle = get_tentacle(klass)
-    return path.join(tentacle.tentacle_path, tentacle.name)
+    return path.join(tentacle.tentacle_path, tentacle.name) if tentacle else None
 
 
 def get_documentation_file_path(klass) -> str:
@@ -57,9 +58,9 @@ def get_documentation_file_path(klass) -> str:
                                              f"{constants.DOCUMENTATION_EXT}")
 
 
-def get_tentacle(klass) -> models.Tentacle:
+def get_tentacle(klass) -> typing.Optional[models.Tentacle]:
     try:
-        return _tentacle_by_tentacle_class[klass if isinstance(klass, str) else klass.get_name()]
-    except TypeError:
+        return _tentacle_by_tentacle_class.get(klass if isinstance(klass, str) else klass.get_name(), None)
+    except (TypeError, AttributeError):
         raise RuntimeError(f"tentacle have not been initialized, call reload_tentacle_data_by_tentacle_class "
                            f"fix this issue")

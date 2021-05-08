@@ -58,10 +58,20 @@ def _get_reference_config_file_path(klass):
 
 
 def _get_config_file_path(tentacles_setup_config, klass, updated_config=False) -> str:
+    """
+    Get tentacle config file path : specific if exists else reference
+    :param tentacles_setup_config: the tentacles_setup_config instance
+    :param klass: the tentacle class
+    :param updated_config: True when called during tentacle config update
+    :return: the path to the specific or reference tentacle config file
+    """
     specific_config_path = _get_config_specific_file_path(tentacles_setup_config, klass)
     if os.path.exists(specific_config_path) or updated_config:
         return specific_config_path
-    return _get_reference_config_file_path(klass)
+    try:
+        return _get_reference_config_file_path(klass)
+    except TypeError:
+        return ""
 
 
 def _get_config_file_name(klass) -> str:
