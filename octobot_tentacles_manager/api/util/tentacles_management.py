@@ -19,14 +19,17 @@ import octobot_tentacles_manager.loaders as loaders
 import octobot_tentacles_manager.util as util
 
 
-async def manage_tentacles(worker, tentacle_names, tentacles_path_or_url=None, aiohttp_session=None) -> int:
+async def manage_tentacles(worker, tentacle_names, tentacles_path_or_url=None, aiohttp_session=None,
+                           authenticator=None) -> int:
     errors_count = 0
     logger = logging.get_logger(__name__)
     try:
         if tentacles_path_or_url is not None:
+            session = authenticator.get_aiohttp_session() if authenticator and authenticator.is_logged_in() \
+                else aiohttp_session
             await util.fetch_and_extract_tentacles(constants.TENTACLES_INSTALL_TEMP_DIR,
                                                    tentacles_path_or_url,
-                                                   aiohttp_session)
+                                                   session)
         errors_count = await worker.process(tentacle_names)
     except Exception as e:
         logger.exception(e, True, f"Exception during {worker.__class__.__name__} processing: {e}")
