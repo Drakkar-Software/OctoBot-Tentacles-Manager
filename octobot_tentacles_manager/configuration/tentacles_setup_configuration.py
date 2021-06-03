@@ -147,9 +147,9 @@ class TentaclesSetupConfiguration:
             pass
         return False
 
-    def read_config(self, tentacles_path=constants.TENTACLES_PATH):
+    def read_config(self, tentacles_path=constants.TENTACLES_PATH, read_activation_config=True):
         try:
-            self._from_dict(configuration.read_config(self.config_path))
+            self._from_dict(configuration.read_config(self.config_path), read_activation_config)
         except Exception as e:
             self.logger.error(f"Error when reading tentacles global configuration file ({e}), "
                               "resetting this file with default values. This will not change "
@@ -256,7 +256,7 @@ class TentaclesSetupConfiguration:
     def _refresh_profile_tentacles_config_file(self, tentacles, tentacles_config_file,
                                                newly_installed_tentacles, uninstalled_tentacles):
         profile_setup_config = TentaclesSetupConfiguration(config_path=tentacles_config_file)
-        profile_setup_config._from_dict(configuration.read_config(profile_setup_config.config_path))
+        profile_setup_config._from_dict(configuration.read_config(profile_setup_config.config_path), True)
         # use self.registered_tentacles as a reference
         profile_setup_config.registered_tentacles = self.registered_tentacles
         self._refresh_other_tentacles_activation_from_self(profile_setup_config)
@@ -302,9 +302,14 @@ class TentaclesSetupConfiguration:
         except ImportError:
             return constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
 
-    def _from_dict(self, input_dict):
+    def _from_dict(self, input_dict, read_activation_config):
         if self.TENTACLE_ACTIVATION_KEY in input_dict:
-            self.tentacles_activation = input_dict[self.TENTACLE_ACTIVATION_KEY]
+            if read_activation_config:
+                self.tentacles_activation = input_dict[self.TENTACLE_ACTIVATION_KEY]
+            else:
+                # only fill tentacle types to keep basic structure but do not include values
+                for tentacle_type in input_dict[self.TENTACLE_ACTIVATION_KEY]:
+                    self.tentacles_activation[tentacle_type] = {}
         if self.REGISTERED_TENTACLES_KEY in input_dict:
             self.registered_tentacles = input_dict[self.REGISTERED_TENTACLES_KEY]
         if self.INSTALLATION_CONTEXT_KEY in input_dict:
