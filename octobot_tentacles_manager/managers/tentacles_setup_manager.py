@@ -43,12 +43,14 @@ class TentaclesSetupManager:
                                                        uninstalled_tentacles=None):
         available_tentacle = util.load_tentacle_with_metadata(self.tentacle_setup_root_path)
         if not tentacles_setup_config_to_update:
-            tentacle_setup_config = configuration.TentaclesSetupConfiguration(
+            reference_tentacle_setup_config = configuration.TentaclesSetupConfiguration(
                 bot_installation_path=self.bot_installation_path)
-            tentacle_setup_config.read_config(self.tentacle_setup_root_path)
+            # Do not read activation config to force default values generation and avoid side effects on
+            # profiles activations
+            reference_tentacle_setup_config.read_config(self.tentacle_setup_root_path, False)
         else:
-            tentacle_setup_config = tentacles_setup_config_to_update
-        await tentacle_setup_config.fill_tentacle_config(
+            reference_tentacle_setup_config = tentacles_setup_config_to_update
+        await reference_tentacle_setup_config.fill_tentacle_config(
             available_tentacle,
             self.default_tentacle_config,
             update_location=update_location,
@@ -56,8 +58,8 @@ class TentaclesSetupManager:
             newly_installed_tentacles=newly_installed_tentacles,
             uninstalled_tentacles=uninstalled_tentacles
         )
-        tentacle_setup_config.save_config()
-        tentacle_setup_config.refresh_profile_tentacles_config(
+        reference_tentacle_setup_config.save_config()
+        reference_tentacle_setup_config.refresh_profile_tentacles_config(
             available_tentacle,
             newly_installed_tentacles=newly_installed_tentacles,
             uninstalled_tentacles=uninstalled_tentacles
