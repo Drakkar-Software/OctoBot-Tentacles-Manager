@@ -24,7 +24,14 @@ from octobot_tentacles_manager.uploaders.nexus_uploader import (
     NexusUploader,
 )
 
+from octobot_tentacles_manager.uploaders import s3_uploader
+from octobot_tentacles_manager.uploaders.s3_uploader import (
+    S3Uploader,
+)
+
+
 __all__ = [
     "Uploader",
     "NexusUploader",
+    "S3Uploader",
 ]
