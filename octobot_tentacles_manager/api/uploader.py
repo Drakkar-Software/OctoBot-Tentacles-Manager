@@ -16,6 +16,7 @@
 import os
 
 import octobot_tentacles_manager.uploaders.nexus_uploader as nexus_uploader
+import octobot_tentacles_manager.uploaders.s3_uploader as s3_uploader
 
 
 async def upload_file_or_folder_to_nexus(nexus_path: str, artifact_path: str, artifact_alias: str = None) -> int:
@@ -44,4 +45,31 @@ async def upload_folder_to_nexus(nexus_path: str, folder_path: str, alias_folder
                                                       folder_path=folder_path,
                                                       destination_folder_name=alias_folder_name)
     await uploader.close_session()
+    return upload_result
+
+
+async def upload_file_or_folder_to_s3(s3_path: str, artifact_path: str, artifact_alias: str = None) -> int:
+    if os.path.isfile(artifact_path):
+        return await upload_file_to_s3(s3_path=s3_path,
+                                       file_path=artifact_path,
+                                       alias_file_name=artifact_alias)
+    elif os.path.isdir(artifact_path):
+        return await upload_folder_to_s3(s3_path=s3_path,
+                                         folder_path=artifact_path,
+                                         alias_folder_name=artifact_alias)
+
+
+async def upload_file_to_s3(s3_path: str, file_path: str, alias_file_name: str = None) -> int:
+    uploader: s3_uploader.S3Uploader = s3_uploader.S3Uploader()
+    upload_result: int = await uploader.upload_file(upload_path=s3_path,
+                                                    file_path=file_path,
+                                                    destination_file_name=alias_file_name)
+    return upload_result
+
+
+async def upload_folder_to_s3(s3_path: str, folder_path: str, alias_folder_name: str = None) -> int:
+    uploader: s3_uploader.S3Uploader = s3_uploader.S3Uploader()
+    upload_result: int = await uploader.upload_folder(upload_path=s3_path,
+                                                      folder_path=folder_path,
+                                                      destination_folder_name=alias_folder_name)
     return upload_result

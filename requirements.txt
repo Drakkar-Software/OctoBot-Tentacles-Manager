@@ -19,3 +19,6 @@ pyyaml>=5.4.1
 
 # version comparison
 packaging==20.9
+
+# s3
+aioboto3==9.2.0

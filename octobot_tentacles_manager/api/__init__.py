@@ -32,6 +32,9 @@ from octobot_tentacles_manager.api.uploader import (
     upload_file_to_nexus,
     upload_folder_to_nexus,
     upload_file_or_folder_to_nexus,
+    upload_file_to_s3,
+    upload_folder_to_s3,
+    upload_file_or_folder_to_s3,
 )
 
 from octobot_tentacles_manager.api.configurator import (
@@ -130,4 +133,7 @@ __all__ = [
     "upload_file_to_nexus",
     "upload_folder_to_nexus",
     "upload_file_or_folder_to_nexus",
+    "upload_file_to_s3",
+    "upload_folder_to_s3",
+    "upload_file_or_folder_to_s3",
 ]
