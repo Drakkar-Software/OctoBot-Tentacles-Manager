@@ -54,13 +54,13 @@ async def create_tentacles_package(package_name: str,
         export_path: str = tentacle_package.output_path
         alias_name: str = os.path.join(tentacle_package.version, os.path.basename(export_path))
         metadata_file: str = os.path.join(os.path.dirname(export_path), constants.ARTIFACT_METADATA_FILE)
-        await uploader_api.upload_file_or_folder_to_nexus(nexus_path=upload_details[0],
-                                                          artifact_path=export_path,
-                                                          artifact_alias=alias_name)
-        await uploader_api.upload_file_or_folder_to_nexus(nexus_path=upload_details[0],
-                                                          artifact_path=metadata_file,
-                                                          artifact_alias=os.path.join(tentacle_package.version,
-                                                                                      constants.ARTIFACT_METADATA_FILE))
+        await uploader_api.upload_file_or_folder_to_s3(s3_path=upload_details[0],
+                                                       artifact_path=export_path,
+                                                       artifact_alias=alias_name)
+        await uploader_api.upload_file_or_folder_to_s3(s3_path=upload_details[0],
+                                                       artifact_path=metadata_file,
+                                                       artifact_alias=os.path.join(tentacle_package.version,
+                                                                                   constants.ARTIFACT_METADATA_FILE))
     return export_result
 
 
@@ -122,6 +122,6 @@ async def _upload_exported_tentacle_bundle(upload_url: str, exported_tentacle_bu
     if constants.ARTIFACT_VERSION_SEPARATOR in export_path:
         alias_name, alias_version = alias_path.split(constants.ARTIFACT_VERSION_SEPARATOR)
         alias_path = f"{alias_name}/{alias_version}"
-    await uploader_api.upload_file_or_folder_to_nexus(nexus_path=upload_url,
-                                                      artifact_path=export_path,
-                                                      artifact_alias=alias_path)
+    await uploader_api.upload_file_or_folder_to_s3(s3_path=upload_url,
+                                                   artifact_path=export_path,
+                                                   artifact_alias=alias_path)
