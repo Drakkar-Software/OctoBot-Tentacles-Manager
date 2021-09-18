@@ -15,6 +15,7 @@
 #  License along with this library.
 import os
 import aioboto3
+import logging
 
 import octobot_tentacles_manager.uploaders.uploader as uploader
 
@@ -30,6 +31,7 @@ class S3Uploader(uploader.Uploader):
 
     def __init__(self):
         super().__init__()
+        self._fix_loggers_level()
         self.s3_session: aioboto3.Session = aioboto3.Session()
         self.s3_api_key: str = os.getenv(S3Uploader.ENV_S3_API_KEY, None)
         self.s3_api_secret_key: str = os.getenv(S3Uploader.ENV_S3_API_SECRET_KEY, None)
@@ -41,6 +43,16 @@ class S3Uploader(uploader.Uploader):
             raise TypeError("Some s3 environment variables are missing, please ensure that "
                             "S3_API_KEY, S3_API_SECRET_KEY, S3_BUCKET_NAME, S3_REGION_NAME "
                             "and S3_ENDPOINT_URL are defined.")
+
+    @staticmethod
+    def _fix_loggers_level():
+        """
+        Set aioboto3 and its components loggers level to Warning
+        """
+        logging.getLogger('aioboto3').setLevel(logging.WARNING)
+        logging.getLogger('boto3').setLevel(logging.WARNING)
+        logging.getLogger('botocore').setLevel(logging.WARNING)
+        logging.getLogger('nose').setLevel(logging.WARNING)
 
     async def upload_file(self, upload_path: str, file_path: str, destination_file_name: str = None) -> int:
         """
