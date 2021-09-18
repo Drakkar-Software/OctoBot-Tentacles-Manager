@@ -17,6 +17,7 @@ import asyncio
 import os
 
 import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.enums as enums
 import octobot_tentacles_manager.creators as tentacle_creator
 import octobot_tentacles_manager.exporters as exporters
 import octobot_tentacles_manager.models as models
@@ -34,6 +35,7 @@ async def create_tentacles_package(package_name: str,
                                    tentacles_folder: str = constants.TENTACLES_PATH,
                                    output_dir: str = constants.DEFAULT_EXPORT_DIR,
                                    exported_tentacles_package: str = None,
+                                   uploader_type: str = enums.UploaderTypes.S3.value,
                                    in_zip: bool = True,
                                    with_dev_mode: bool = False,
                                    use_package_as_file_name: bool = False,
@@ -54,19 +56,22 @@ async def create_tentacles_package(package_name: str,
         export_path: str = tentacle_package.output_path
         alias_name: str = os.path.join(tentacle_package.version, os.path.basename(export_path))
         metadata_file: str = os.path.join(os.path.dirname(export_path), constants.ARTIFACT_METADATA_FILE)
-        await uploader_api.upload_file_or_folder_to_s3(s3_path=upload_details[0],
-                                                       artifact_path=export_path,
-                                                       artifact_alias=alias_name)
-        await uploader_api.upload_file_or_folder_to_s3(s3_path=upload_details[0],
-                                                       artifact_path=metadata_file,
-                                                       artifact_alias=os.path.join(tentacle_package.version,
-                                                                                   constants.ARTIFACT_METADATA_FILE))
+        await uploader_api.upload_file_or_folder(uploader_type=uploader_type,
+                                                 path=upload_details[0],
+                                                 artifact_path=export_path,
+                                                 artifact_alias=alias_name)
+        await uploader_api.upload_file_or_folder(uploader_type=uploader_type,
+                                                 path=upload_details[0],
+                                                 artifact_path=metadata_file,
+                                                 artifact_alias=os.path.join(tentacle_package.version,
+                                                                             constants.ARTIFACT_METADATA_FILE))
     return export_result
 
 
 async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT_DIR,
                                       tentacles_folder: str = constants.TENTACLES_PATH,
                                       exported_tentacles_package: str = None,
+                                      uploader_type: str = enums.UploaderTypes.S3.value,
                                       in_zip: bool = True,
                                       with_dev_mode: bool = False,
                                       cythonize: bool = False,
@@ -110,18 +115,21 @@ async def create_all_tentacles_bundle(output_dir: str = constants.DEFAULT_EXPORT
 
     if upload_url is not None:
         await asyncio.gather(
-            *[_upload_exported_tentacle_bundle(upload_url, exported_tentacle_bundle)
+            *[_upload_exported_tentacle_bundle(upload_url, exported_tentacle_bundle, uploader_type)
               for exported_tentacle_bundle in tentacle_bundle_exported_list])
 
     return error_count
 
 
-async def _upload_exported_tentacle_bundle(upload_url: str, exported_tentacle_bundle: exporters.TentacleBundleExporter):
+async def _upload_exported_tentacle_bundle(upload_url: str,
+                                           exported_tentacle_bundle: exporters.TentacleBundleExporter,
+                                           uploader_type: str):
     export_path = exported_tentacle_bundle.artifact.output_path
     alias_path = os.path.basename(export_path)
     if constants.ARTIFACT_VERSION_SEPARATOR in export_path:
         alias_name, alias_version = alias_path.split(constants.ARTIFACT_VERSION_SEPARATOR)
         alias_path = f"{alias_name}/{alias_version}"
-    await uploader_api.upload_file_or_folder_to_s3(s3_path=upload_url,
-                                                   artifact_path=export_path,
-                                                   artifact_alias=alias_path)
+    await uploader_api.upload_file_or_folder(uploader_type=uploader_type,
+                                             path=upload_url,
+                                             artifact_path=export_path,
+                                             artifact_alias=alias_path)

@@ -21,3 +21,8 @@ class ArtifactTypes(enum.Enum):
     TENTACLE = "tentacle"
     PROFILE = "profile"
     TENTACLE_PACKAGE = "tentacle_package"
+
+
+class UploaderTypes(enum.Enum):
+    S3 = "s3"
+    NEXUS = "nexus"
