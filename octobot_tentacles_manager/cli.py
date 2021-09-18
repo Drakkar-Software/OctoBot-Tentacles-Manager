@@ -59,6 +59,7 @@ async def _handle_package_manager_command(starting_args,
                 in_zip=False,
                 with_dev_mode=include_dev_mode,
                 upload_details=starting_args.upload_package_export,
+                uploader_type=starting_args.upload_type,
                 cythonize=cythonize,
                 metadata_file=starting_args.metadata_file,
                 use_package_as_file_name=should_use_package_name_when_exporting)
@@ -67,6 +68,7 @@ async def _handle_package_manager_command(starting_args,
                     output_dir=export_tentacles_output,
                     tentacles_folder=target_dir,
                     exported_tentacles_package=exported_tentacles_package,
+                    uploader_type=starting_args.upload_type,
                     in_zip=False,
                     should_remove_artifacts_after_use=True,
                     upload_url=upload_tentacles_export_list[0]
@@ -81,6 +83,7 @@ async def _handle_package_manager_command(starting_args,
                 in_zip=True,
                 with_dev_mode=include_dev_mode,
                 upload_details=starting_args.upload_package_export,
+                uploader_type=starting_args.upload_type,
                 cythonize=cythonize,
                 metadata_file=starting_args.metadata_file,
                 use_package_as_file_name=should_use_package_name_when_exporting)
@@ -89,6 +92,7 @@ async def _handle_package_manager_command(starting_args,
                     output_dir=export_tentacles_output,
                     tentacles_folder=target_dir,
                     exported_tentacles_package=exported_tentacles_package,
+                    uploader_type=starting_args.upload_type,
                     in_zip=True,
                     with_dev_mode=include_dev_mode,
                     should_remove_artifacts_after_use=True,
@@ -240,22 +244,18 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-ite", "--include-tentacles-export", help="Include tentacles during export and "
                                                                              "pack commands.", action='store_true')
     tentacles_parser.add_argument("-ute", "--upload-tentacles-export", help="Upload tentacles during export and "
-                                                                            "pack commands. Usage: <nexus_path>",
+                                                                            "pack commands. Usage: <upload_path>",
                                   nargs=1)
     tentacles_parser.add_argument("-upe", "--upload-package-export", help="Upload package during export and "
-                                                                          "pack commands. Usage: <nexus_path>",
+                                                                          "pack commands. Usage: <upload_path>",
                                   nargs=1)
+    tentacles_parser.add_argument("-ut", "--upload-type", help="Uploader type, can be s3 or nexus", nargs=1)
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')
     tentacles_parser.add_argument("-m", "--metadata-file", help="The metadata file to use when exporting the package.")
     tentacles_parser.add_argument("-cy", "--cythonize", help="Option for the --pack command: cythonize and "
                                                              "compile the packed tentacles.", action='store_true')
-    tentacles_parser.add_argument("-nu", "--nexus-upload", help="Upload a file or files of folder to nexus at path."
-                                                                "Usage : <nexus_path> <file_or_folder_path> "
-                                                                "[file_or_folder_alias]"
-                                                                "Example : officials/base/ 0.4.0.zip",
-                                  nargs='+')
     tentacles_parser.add_argument("-q", "--quite", help="Only display errors in logs.", action='store_true')
     tentacles_parser.add_argument("tentacle_names", nargs="*")
 

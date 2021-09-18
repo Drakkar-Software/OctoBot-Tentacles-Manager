@@ -17,6 +17,18 @@ import os
 
 import octobot_tentacles_manager.uploaders.nexus_uploader as nexus_uploader
 import octobot_tentacles_manager.uploaders.s3_uploader as s3_uploader
+import octobot_tentacles_manager.enums as enums
+
+
+async def upload_file_or_folder(uploader_type: str, path: str, artifact_path: str, artifact_alias: str = None) -> int:
+    if uploader_type == enums.UploaderTypes.S3.value:
+        return await upload_file_or_folder_to_s3(s3_path=path,
+                                                 artifact_path=artifact_path,
+                                                 artifact_alias=artifact_alias)
+    elif uploader_type == enums.UploaderTypes.NEXUS.value:
+        return await upload_file_or_folder_to_nexus(nexus_path=path,
+                                                    artifact_path=artifact_path,
+                                                    artifact_alias=artifact_alias)
 
 
 async def upload_file_or_folder_to_nexus(nexus_path: str, artifact_path: str, artifact_alias: str = None) -> int:
