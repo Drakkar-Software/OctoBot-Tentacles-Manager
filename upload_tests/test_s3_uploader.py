@@ -47,7 +47,7 @@ async def s3_tests():
 
 
 async def test_upload_file(s3_tests):
-    nexus_test_file_name: str = f"{time.time_ns()}.json"
+    s3_test_file_name: str = f"{time.time_ns()}.json"
     local_file_name: str = os.path.join(TEST_S3_DIRECTORY, f"{TEST_S3_FILE_NAME}.json")
 
     # test upload file
@@ -55,9 +55,9 @@ async def test_upload_file(s3_tests):
         test_file.write(json.dumps({'test-key': 1}))
     assert await uploader_api.upload_file_or_folder_to_s3(s3_path=TEST_S3_PATH,
                                                           artifact_path=local_file_name,
-                                                          artifact_alias=nexus_test_file_name) == 0
+                                                          artifact_alias=s3_test_file_name) == 0
     # test download file
-    downloaded_file_path: str = await download_file_from_s3(f"{TEST_S3_PREFIX}{TEST_S3_PATH}{nexus_test_file_name}",
+    downloaded_file_path: str = await download_file_from_s3(f"{TEST_S3_PREFIX}{TEST_S3_PATH}{s3_test_file_name}",
                                                             "downloaded_file")
 
     with open(downloaded_file_path, "r") as downloaded_file:
@@ -67,10 +67,10 @@ async def test_upload_file(s3_tests):
 
 
 async def test_upload_folder(s3_tests):
-    test_dir_path = os.path.join(TEST_S3_DIRECTORY, "test-dir")
-    os.mkdir(test_dir_path)
+    test_dir_path = os.path.join(TEST_S3_DIRECTORY, "test-dir", "test-sub-dir")
+    os.makedirs(test_dir_path)
 
-    nexus_test_file_name: str = f"{time.time_ns()}"
+    s3_test_file_name: str = f"{time.time_ns()}/sub_{time.time_ns()}"
     local_file_name: str = os.path.join(test_dir_path, f"{TEST_S3_FILE_NAME}.json")
     local_zip_path: str = os.path.join(test_dir_path, f"{TEST_S3_FILE_NAME}")
 
@@ -80,17 +80,18 @@ async def test_upload_folder(s3_tests):
     shutil.make_archive(local_zip_path, constants.TENTACLES_PACKAGE_FORMAT, test_dir_path)
     assert await uploader_api.upload_file_or_folder_to_s3(s3_path=TEST_S3_PATH,
                                                           artifact_path=test_dir_path,
-                                                          artifact_alias=nexus_test_file_name) == 0
+                                                          artifact_alias=s3_test_file_name) == 0
     # test download folder files
-    downloaded_file_path: str = await download_file_from_s3(f"{TEST_S3_PREFIX}{TEST_S3_PATH}{nexus_test_file_name}/test.json",
+    downloaded_file_path: str = await download_file_from_s3(f"{TEST_S3_PREFIX}{TEST_S3_PATH}{s3_test_file_name}/test.json",
                                                             "downloaded_test.json")
-    downloaded_zip_path: str = await download_file_from_s3(f"{TEST_S3_PREFIX}{TEST_S3_PATH}{nexus_test_file_name}/test.zip",
+    downloaded_zip_path: str = await download_file_from_s3(f"{TEST_S3_PREFIX}{TEST_S3_PATH}{s3_test_file_name}/test.zip",
                                                            "downloaded_test.zip")
     with open(downloaded_file_path, "r") as downloaded_file:
         assert json.loads(downloaded_file.read()) == {
             'test-key': 1
         }
-    zipfile.is_zipfile(downloaded_zip_path)
+    downloaded_zipfile = zipfile.ZipFile(downloaded_zip_path)
+    downloaded_zipfile.testzip()
 
 
 async def download_file_from_s3(file_url: str, local_file_name: str) -> str:

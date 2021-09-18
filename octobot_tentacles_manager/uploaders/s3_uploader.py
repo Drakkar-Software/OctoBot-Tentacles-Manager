@@ -36,8 +36,8 @@ class S3Uploader(uploader.Uploader):
         self.s3_endpoint_url: str = os.getenv(S3Uploader.ENV_S3_ENDPOINT_URL, None)
         self.s3_bucket_name: str = os.getenv(S3Uploader.ENV_S3_BUCKET_NAME, None)
         self.s3_region_name: str = os.getenv(S3Uploader.ENV_S3_REGION_NAME, None)
-        if None in [self.s3_api_key, self.s3_api_secret_key, self.s3_endpoint_url,
-                    self.s3_bucket_name, self.s3_region_name]:
+        if None in (self.s3_api_key, self.s3_api_secret_key, self.s3_endpoint_url,
+                    self.s3_bucket_name, self.s3_region_name):
             raise TypeError("Some s3 environment variables are missing, please ensure that "
                             "S3_API_KEY, S3_API_SECRET_KEY, S3_BUCKET_NAME, S3_REGION_NAME "
                             "and S3_ENDPOINT_URL are defined.")
@@ -53,26 +53,38 @@ class S3Uploader(uploader.Uploader):
         dest_file_name: str = destination_file_name \
             if destination_file_name is not None else os.path.basename(file_path)
         upload_file_url: str = f"{upload_path}{dest_file_name}"
-        self.logger.info(f"Uploading {file_path} to nexus at {upload_file_url}...")
+        self.logger.info(f"Uploading {file_path} to s3 at {upload_file_url}...")
         return await self._upload(object_name=upload_file_url, local_file_path=file_path)
 
     async def upload_folder(self, upload_path: str, folder_path: str, destination_folder_name: str = None) -> int:
         """
-        Upload folder content in s3
+        Upload recursive folder content in s3
         :param upload_path: the upload path
         :param folder_path: the folder local path
         :param destination_folder_name: the folder name in s3 bucket (optional : default folder_path basename)
         :return: the sum of all of _upload returns
         """
-        error_count: int = 0
         dest_folder_name: str = destination_folder_name \
             if destination_folder_name is not None else os.path.basename(folder_path)
         upload_folder_url: str = f"{upload_path}{dest_folder_name}"
+        return await self._upload_folder_content(upload_folder_url, folder_path)
+
+    async def _upload_folder_content(self, upload_folder_url: str, folder_path: str) -> int:
+        """
+        Upload folder content in s3
+        :param upload_folder_url: the folder upload path
+        :param folder_path: the current folder path
+        :return: the sum of all of _upload returns
+        """
+        error_count: int = 0
         for file_path in os.listdir(folder_path):
-            upload_file_url = f"{upload_folder_url}/{file_path}"
-            self.logger.debug(f"Uploading {file_path} to s3 at {upload_file_url}...")
-            error_count += await self._upload(object_name=upload_file_url,
-                                              local_file_path=os.path.join(folder_path, file_path))
+            if os.path.isdir(file_path):
+                error_count += await self._upload_folder_content(upload_folder_url, folder_path)
+            else:
+                upload_file_url = f"{upload_folder_url}/{file_path}"
+                self.logger.debug(f"Uploading {file_path} to s3 at {upload_file_url}...")
+                error_count += await self._upload(object_name=upload_file_url,
+                                                  local_file_path=os.path.join(folder_path, file_path))
         return error_count
 
     async def _upload(self, object_name: str, local_file_path: str) -> int:
