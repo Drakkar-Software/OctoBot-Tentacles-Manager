@@ -29,6 +29,8 @@ async def upload_file_or_folder(uploader_type: str, path: str, artifact_path: st
         return await upload_file_or_folder_to_nexus(nexus_path=path,
                                                     artifact_path=artifact_path,
                                                     artifact_alias=artifact_alias)
+    else:
+        raise ValueError("Unknown uploader type")
 
 
 async def upload_file_or_folder_to_nexus(nexus_path: str, artifact_path: str, artifact_alias: str = None) -> int:
