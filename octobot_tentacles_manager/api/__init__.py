@@ -29,6 +29,7 @@ from octobot_tentacles_manager.api.util import (
 )
 
 from octobot_tentacles_manager.api.uploader import (
+    upload_file_or_folder,
     upload_file_to_nexus,
     upload_folder_to_nexus,
     upload_file_or_folder_to_nexus,
@@ -130,6 +131,7 @@ __all__ = [
     "repair_installation",
     "manage_tentacles",
     "create_all_tentacles_bundle",
+    "upload_file_or_folder",
     "upload_file_to_nexus",
     "upload_folder_to_nexus",
     "upload_file_or_folder_to_nexus",
