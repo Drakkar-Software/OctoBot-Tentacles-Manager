@@ -26,6 +26,7 @@ import octobot_tentacles_manager.api.installer as installer_api
 import octobot_tentacles_manager.api.uninstaller as uninstaller_api
 import octobot_tentacles_manager.api.updater as updater_api
 import octobot_tentacles_manager.constants as constants
+import octobot_tentacles_manager.enums as enums
 
 
 async def _handle_package_manager_command(starting_args,
@@ -249,7 +250,8 @@ def register_tentacles_manager_arguments(tentacles_parser) -> None:
     tentacles_parser.add_argument("-upe", "--upload-package-export", help="Upload package during export and "
                                                                           "pack commands. Usage: <upload_path>",
                                   nargs=1)
-    tentacles_parser.add_argument("-ut", "--upload-type", help="Uploader type, can be s3 or nexus", nargs=1)
+    tentacles_parser.add_argument("-ut", "--upload-type", help="Uploader type, can be s3 or nexus", nargs=1,
+                                  default=enums.UploaderTypes.S3.value)
     tentacles_parser.add_argument("-c", "--creator", help="Start OctoBot Tentacles Creator.\n Examples: -c Evaluator "
                                                           "to create a new evaluator tentacles. Use: -c help to get the"
                                                           " Tentacle Creator help.", nargs='+')
