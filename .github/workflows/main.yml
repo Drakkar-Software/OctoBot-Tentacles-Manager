@@ -62,6 +62,11 @@ jobs:
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         NEXUS_URL: ${{ secrets.NEXUS_DEV_URL }}
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+        S3_API_KEY: ${{ secrets.S3_API_KEY }}
+        S3_API_SECRET_KEY: ${{ secrets.S3_API_SECRET_KEY }}
+        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+        S3_REGION_NAME: ${{ secrets.S3_REGION_NAME }}
+        S3_ENDPOINT_URL: ${{ secrets.S3_ENDPOINT_URL }}
 
     - name: Publish coverage
       if: matrix.type == 'sources' && github.event_name == 'push'
