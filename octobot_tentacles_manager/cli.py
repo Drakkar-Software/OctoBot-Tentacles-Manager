@@ -106,15 +106,6 @@ async def _handle_package_manager_command(starting_args,
                                                             bot_path=target_dir,
                                                             aiohttp_session=aiohttp_session,
                                                             bot_install_dir=bot_install_dir)
-        elif starting_args.nexus_upload:
-            if 2 <= len(starting_args.nexus_upload) <= 3:
-                file_or_folder_path = starting_args.nexus_upload[1]
-                file_or_folder_alias = starting_args.nexus_upload[2] if len(starting_args.nexus_upload) == 3 else None
-                error_count += await api.upload_file_or_folder_to_nexus(nexus_path=starting_args.nexus_upload[0],
-                                                                        artifact_path=file_or_folder_path,
-                                                                        artifact_alias=file_or_folder_alias)
-            else:
-                raise Exception("Missing arguments. Usage : <nexus_path> <file_or_folder_path> [file_or_folder_alias].")
 
         elif not (starting_args.all or starting_args.tentacle_names):
             LOGGER.error("Please provide at least one tentacle name or add the '--all' parameter")
