@@ -33,7 +33,8 @@ class TentaclesSetupConfiguration:
         constants.TENTACLES_EVALUATOR_TA_PATH,
         constants.TENTACLES_EVALUATOR_SOCIAL_PATH,
         constants.TENTACLES_EVALUATOR_STRATEGIES_PATH,
-        constants.TENTACLES_TRADING_MODE_PATH
+        constants.TENTACLES_TRADING_MODE_PATH,
+        constants.TENTACLES_TRADING_SUPERVISOR_PATH,
     }
 
     def __init__(self, bot_installation_path=constants.DEFAULT_BOT_PATH,
