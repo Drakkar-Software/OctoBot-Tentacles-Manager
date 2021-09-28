@@ -139,7 +139,7 @@ async def test_uninstall_all_tentacles(clean):
         os.path.join("tests", "static", "default_tentacle_config.json")
     assert await uninstall_worker.process() == 0
     tentacles_files_count = sum(1 for _ in os.walk(TENTACLES_PATH))
-    assert tentacles_files_count == 25
+    assert tentacles_files_count == 26
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'installation_context': {
