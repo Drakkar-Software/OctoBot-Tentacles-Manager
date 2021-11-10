@@ -121,3 +121,7 @@ def get_tentacle_config_schema_path(klass) -> str:
 
 def get_compiled_tentacles_url(base_url, version) -> str:
     return f"{base_url}{util.get_local_arch_download_path()}/{version}.zip"
+
+
+def set_tentacles_setup_configuration_path(tentacles_setup_config: configuration.TentaclesSetupConfiguration, new_path):
+    tentacles_setup_config.config_path = new_path
