@@ -2,23 +2,22 @@
 setuptools
 
 # Drakkar-Software requirements
-OctoBot-Commons>=1.6.12, <1.7
+OctoBot-Commons>=1.6.18, <1.7
 
 # async files management
 aiofiles>=0.6.0, <0.7
 
 # async http requests
-chardet<4.0 # required to by compatible with aiohttp
-aiohttp>=3.7.4, <3.8
+aiohttp>=3.8
 
 # Templating requirements
 jinja2>=2.11.3, <2.12
 
 # artifact metadata
-pyyaml>=5.4.1
+pyyaml>=6.0
 
 # version comparison
-packaging==20.9
+packaging==21.3
 
 # s3
-aioboto3==9.2.0
+aioboto3==9.2.2
