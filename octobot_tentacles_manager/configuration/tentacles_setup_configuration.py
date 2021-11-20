@@ -31,6 +31,7 @@ class TentaclesSetupConfiguration:
     DEFAULT_DEACTIVATABLE_TENTACLE_SUB_TYPES = {
         constants.TENTACLES_EVALUATOR_REALTIME_PATH,
         constants.TENTACLES_EVALUATOR_TA_PATH,
+        constants.TENTACLES_EVALUATOR_SCRIPTED_PATH,
         constants.TENTACLES_EVALUATOR_SOCIAL_PATH,
         constants.TENTACLES_EVALUATOR_STRATEGIES_PATH,
         constants.TENTACLES_TRADING_MODE_PATH,
@@ -138,7 +139,8 @@ class TentaclesSetupConfiguration:
             if loaders.get_tentacle_classes()[element_name].get_simple_tentacle_type() in {
                 constants.TENTACLES_EVALUATOR_TA_PATH,
                 constants.TENTACLES_EVALUATOR_SOCIAL_PATH,
-                constants.TENTACLES_EVALUATOR_REALTIME_PATH
+                constants.TENTACLES_EVALUATOR_REALTIME_PATH,
+                constants.TENTACLES_EVALUATOR_SCRIPTED_PATH
             }:
                 self.logger.info(f"Tentacles configuration updated: {element_name} {'deactivated'}")
                 self.tentacles_activation[element_type][element_name] = False
