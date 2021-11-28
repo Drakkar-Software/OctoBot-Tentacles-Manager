@@ -16,6 +16,7 @@
 import distutils.version as loose_version
 
 import octobot_commons.logging as logging
+import octobot_commons.tentacles_management as tentacles_management
 
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.loaders as loaders
@@ -65,3 +66,36 @@ def check_tentacle_version(version, name, origin_package, verbose=True) -> bool:
         if verbose:
             logger.error(f"Error when reading tentacle metadata: {e}")
     return True
+
+
+def get_tentacle_class_from_string(tentacle_name):
+    # Lazy import of tentacles to let tentacles manager handle imports
+    try:
+        import octobot_evaluators.evaluators as evaluators
+        import tentacles.Evaluator as tentacles_Evaluator
+        tentacle_class = tentacles_management.get_class_from_string(
+            tentacle_name, evaluators.StrategyEvaluator,
+            tentacles_Evaluator.Strategies, tentacles_management.evaluator_parent_inspection)
+        if tentacle_class:
+            return tentacle_class
+        tentacle_class = tentacles_management.get_class_from_string(
+            tentacle_name, evaluators.TAEvaluator,
+            tentacles_Evaluator.TA, tentacles_management.evaluator_parent_inspection)
+        if tentacle_class:
+            return tentacle_class
+        tentacle_class = tentacles_management.get_class_from_string(
+            tentacle_name, evaluators.ScriptedEvaluator,
+            tentacles_Evaluator.Scripted, tentacles_management.evaluator_parent_inspection)
+        if tentacle_class:
+            return tentacle_class
+        import octobot_trading.modes as trading_modes
+        import tentacles.Trading as tentacles_trading
+        tentacle_class = tentacles_management.get_class_from_string(
+            tentacle_name, trading_modes.AbstractTradingMode,
+            tentacles_trading.Mode, tentacles_management.trading_mode_parent_inspection)
+        if tentacle_class:
+            return tentacle_class
+        raise RuntimeError(f"Can't find tentacle: {tentacle_name}")
+    except ImportError as e:
+        raise ImportError(f"Can't import {e} module which is required to get associated "
+                          f"tentacles classes") from e
