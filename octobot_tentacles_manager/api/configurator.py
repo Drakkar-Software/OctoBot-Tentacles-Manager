@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import os.path as path
+import sys
 
 import octobot_commons.tentacles_management as tentacles_management
 
@@ -105,6 +106,12 @@ def get_activated_tentacles(tentacles_setup_config: configuration.TentaclesSetup
 def update_tentacle_config(tentacles_setup_config: configuration.TentaclesSetupConfiguration,
                            tentacle_class: object, config_data: dict) -> None:
     configuration.update_config(tentacles_setup_config, tentacle_class, config_data)
+
+
+def import_user_tentacles_config_folder(tentacles_setup_config: configuration.TentaclesSetupConfiguration):
+    user_tentacles_config_folder = configuration.get_user_tentacles_config_folder(tentacles_setup_config)
+    if path.isdir(user_tentacles_config_folder) and user_tentacles_config_folder not in sys.path:
+        sys.path.append(user_tentacles_config_folder)
 
 
 def get_tentacle_config(tentacles_setup_config: configuration.TentaclesSetupConfiguration, klass) -> dict:

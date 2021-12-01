@@ -43,10 +43,12 @@ def get_config_schema_path(klass) -> str:
     return path.join(_get_reference_config_path(klass), f"{klass.get_name()}{constants.CONFIG_SCHEMA_EXT}")
 
 
+def get_user_tentacles_config_folder(tentacles_setup_config) -> str:
+    return path.join(tentacles_setup_config.get_config_folder(), constants.TENTACLES_SPECIFIC_CONFIG_FOLDER)
+
+
 def _get_config_specific_file_path(tentacles_setup_config, klass) -> str:
-    return path.join(tentacles_setup_config.get_config_folder(),
-                     constants.TENTACLES_SPECIFIC_CONFIG_FOLDER,
-                     _get_config_file_name(klass))
+    return path.join(get_user_tentacles_config_folder(tentacles_setup_config), _get_config_file_name(klass))
 
 
 def _get_reference_config_path(klass) -> str:
