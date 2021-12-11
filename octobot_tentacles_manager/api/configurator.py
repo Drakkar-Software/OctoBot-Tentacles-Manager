@@ -96,6 +96,10 @@ def save_tentacles_setup_configuration(tentacles_setup_config: configuration.Ten
     tentacles_setup_config.save_config()
 
 
+def has_profile_local_configuration(tentacles_setup_config: configuration.TentaclesSetupConfiguration, tentacle_class):
+    return path.exists(configuration.get_profile_config_specific_file_path(tentacles_setup_config, tentacle_class))
+
+
 def get_activated_tentacles(tentacles_setup_config: configuration.TentaclesSetupConfiguration) -> list:
     return [tentacle_class
             for tentacle_classes in tentacles_setup_config.tentacles_activation.values()
