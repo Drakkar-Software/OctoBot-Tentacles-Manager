@@ -47,7 +47,7 @@ def get_user_tentacles_config_folder(tentacles_setup_config) -> str:
     return path.join(tentacles_setup_config.get_config_folder(), constants.TENTACLES_SPECIFIC_CONFIG_FOLDER)
 
 
-def _get_config_specific_file_path(tentacles_setup_config, klass) -> str:
+def get_profile_config_specific_file_path(tentacles_setup_config, klass) -> str:
     return path.join(get_user_tentacles_config_folder(tentacles_setup_config), _get_config_file_name(klass))
 
 
@@ -67,7 +67,7 @@ def _get_config_file_path(tentacles_setup_config, klass, updated_config=False) -
     :param updated_config: True when called during tentacle config update
     :return: the path to the specific or reference tentacle config file
     """
-    specific_config_path = _get_config_specific_file_path(tentacles_setup_config, klass)
+    specific_config_path = get_profile_config_specific_file_path(tentacles_setup_config, klass)
     if os.path.exists(specific_config_path) or updated_config:
         return specific_config_path
     try:
@@ -77,4 +77,7 @@ def _get_config_file_path(tentacles_setup_config, klass, updated_config=False) -
 
 
 def _get_config_file_name(klass) -> str:
-    return f"{klass.get_name()}{constants.CONFIG_EXT}"
+    try:
+        return f"{klass.get_name()}{constants.CONFIG_EXT}"
+    except AttributeError:
+        return f"{klass}{constants.CONFIG_EXT}"

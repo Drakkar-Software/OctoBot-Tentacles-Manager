@@ -27,6 +27,7 @@ from octobot_tentacles_manager.configuration.tentacle_configuration import (
     factory_reset_config,
     get_config_schema_path,
     get_user_tentacles_config_folder,
+    get_profile_config_specific_file_path,
 )
 from octobot_tentacles_manager.configuration.config_file import (
     read_config,
@@ -40,6 +41,7 @@ __all__ = [
     "factory_reset_config",
     "get_config_schema_path",
     "get_user_tentacles_config_folder",
+    "get_profile_config_specific_file_path",
     "read_config",
     "write_config",
 ]
