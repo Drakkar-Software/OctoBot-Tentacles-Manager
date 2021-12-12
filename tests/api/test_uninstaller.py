@@ -22,6 +22,7 @@ from octobot_tentacles_manager.api.installer import install_all_tentacles, insta
 from octobot_tentacles_manager.api.uninstaller import uninstall_all_tentacles, uninstall_tentacles
 from octobot_tentacles_manager.loaders.tentacle_loading import get_tentacle_classes
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
+import tests
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -34,7 +35,7 @@ async def test_uninstall_all_tentacles():
         assert trading_mode_files_count > 50
     assert await uninstall_all_tentacles() == 0
     trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
-    assert trading_mode_files_count == 26
+    assert trading_mode_files_count == tests.CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT
     _cleanup()
 
 
@@ -46,7 +47,7 @@ async def test_uninstall_one_tentacle():
     assert "RedditService" in get_tentacle_classes()
     assert await uninstall_tentacles(["reddit_service"]) == 0
     trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
-    assert trading_mode_files_count == 26
+    assert trading_mode_files_count == tests.CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT
     assert "RedditService" not in get_tentacle_classes()
     _cleanup()
 

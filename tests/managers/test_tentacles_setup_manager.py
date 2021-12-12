@@ -20,6 +20,7 @@ from os import walk, path
 from octobot_tentacles_manager.constants import USER_REFERENCE_TENTACLE_CONFIG_PATH, \
     TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR, TENTACLES_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
+import tests
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -32,7 +33,7 @@ async def test_create_missing_tentacles_arch():
     tentacles_setup_manager = TentaclesSetupManager(TENTACLES_PATH)
     await tentacles_setup_manager.create_missing_tentacles_arch()
     trading_mode_files_count = sum(1 for _ in walk(TENTACLES_PATH))
-    assert trading_mode_files_count == 26
+    assert trading_mode_files_count == tests.CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT
     assert path.exists(USER_REFERENCE_TENTACLE_CONFIG_PATH)
     _cleanup()
 

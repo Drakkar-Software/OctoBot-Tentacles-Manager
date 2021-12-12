@@ -30,7 +30,7 @@ from octobot_tentacles_manager.constants import TENTACLES_PATH, TENTACLES_REQUIR
     PYTHON_INIT_FILE, TENTACLES_NOTIFIERS_PATH, USER_REFERENCE_TENTACLE_CONFIG_PATH, \
     USER_REFERENCE_TENTACLE_SPECIFIC_CONFIG_PATH, TENTACLES_SERVICES_PATH, TENTACLES_BACKTESTING_PATH, TENTACLES_EVALUATOR_PATH
 from octobot_tentacles_manager.managers.tentacles_setup_manager import TentaclesSetupManager
-from tests import event_loop
+from tests import event_loop, CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT
 
 
 # All test coroutines will be treated as marked.
@@ -59,7 +59,7 @@ async def test_install_single_tentacle():
     assert path.exists(path.join(TENTACLES_PATH, "Evaluator", "TA", "momentum_evaluator", "momentum_evaluator.py"))
     assert not path.exists(TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
     # check availability of tentacle arch, installed momentum_evaluator and its reddit_service fake requirement
-    assert len(list(walk(TENTACLES_PATH))) == 31
+    assert len(list(walk(TENTACLES_PATH))) == CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT + 5
     _cleanup()
 
 
