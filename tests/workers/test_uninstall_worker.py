@@ -28,7 +28,8 @@ from octobot_tentacles_manager.workers.install_worker import InstallWorker
 from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.workers.uninstall_worker import UninstallWorker
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
-from tests import event_loop, clean, fake_profiles, TEMP_DIR, OTHER_PROFILE
+from tests import event_loop, clean, fake_profiles, TEMP_DIR, OTHER_PROFILE, \
+    CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -139,7 +140,7 @@ async def test_uninstall_all_tentacles(clean):
         os.path.join("tests", "static", "default_tentacle_config.json")
     assert await uninstall_worker.process() == 0
     tentacles_files_count = sum(1 for _ in os.walk(TENTACLES_PATH))
-    assert tentacles_files_count == 26
+    assert tentacles_files_count == CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'installation_context': {

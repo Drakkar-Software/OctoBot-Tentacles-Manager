@@ -29,6 +29,9 @@ TEMP_DIR = "temp_tests"
 OTHER_PROFILE = "other_profile"
 
 
+CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT = 27
+
+
 @pytest.fixture
 def event_loop():
     # re-configure async loop each time this fixture is called
