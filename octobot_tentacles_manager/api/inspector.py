@@ -42,6 +42,19 @@ def get_tentacle_module_name(klass) -> str:
     return loaders.get_tentacle(klass).name
 
 
+def get_tentacle_classes_requirements(klass) -> list:
+    requirements = loaders.get_tentacle(klass).extract_tentacle_requirements()
+    classes = []
+    for requirement in requirements:
+        for tentacle_name in loaders.get_tentacles_classes_names_from_tentacle_module(requirement[0]):
+            try:
+                classes += [get_tentacle_class_from_string(tentacle_name)]
+            except RuntimeError:
+                # some tentacles can't be found this way (ex: util tentacles), ignore them
+                pass
+    return classes
+
+
 def get_tentacle_resources_path(klass) -> str:
     return loaders.get_resources_path(klass)
 
