@@ -22,6 +22,7 @@ from octobot_tentacles_manager.loaders.tentacle_loading import (
     ensure_tentacles_metadata,
     get_resources_path,
     get_tentacle_module_path,
+    get_tentacles_classes_names_from_tentacle_module,
     get_documentation_file_path,
     get_tentacle,
 )
@@ -32,6 +33,7 @@ __all__ = [
     "ensure_tentacles_metadata",
     "get_resources_path",
     "get_tentacle_module_path",
+    "get_tentacles_classes_names_from_tentacle_module",
     "get_documentation_file_path",
     "get_tentacle",
 ]

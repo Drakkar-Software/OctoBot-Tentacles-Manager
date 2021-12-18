@@ -52,6 +52,14 @@ def get_tentacle_module_path(klass) -> typing.Optional[str]:
     return path.join(tentacle.tentacle_path, tentacle.name) if tentacle else None
 
 
+def get_tentacles_classes_names_from_tentacle_module(tentacle_module_name) -> list:
+    return [
+        tentacle_name
+        for tentacle_name, tentacle_details in _tentacle_by_tentacle_class.items()
+        if tentacle_details.name == tentacle_module_name
+    ]
+
+
 def get_documentation_file_path(klass) -> str:
     return \
         path.join(get_resources_path(klass), f"{klass if isinstance(klass, str) else klass.get_name()}"
