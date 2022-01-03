@@ -45,14 +45,14 @@ async def test_uninstall_two_tentacles(clean):
         = os.path.join("tests", "static", "default_tentacle_config.json")
     assert await install_worker.process() == 0
     tentacles_files_count = sum(1 for _ in os.walk(TENTACLES_PATH))
-    assert tentacles_files_count > 60
+    assert tentacles_files_count > 62
 
     uninstall_worker = UninstallWorker(None, TENTACLES_PATH, DEFAULT_BOT_PATH, False, None)
     uninstall_worker.tentacles_setup_manager.default_tentacle_config = \
         os.path.join("tests", "static", "default_tentacle_config.json")
     assert await uninstall_worker.process(["instant_fluctuations_evaluator", "generic_exchange_importer"]) == 0
     tentacles_files_count = sum(1 for _ in os.walk(TENTACLES_PATH))
-    assert tentacles_files_count < 60
+    assert tentacles_files_count < 63
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
             'installation_context': {
@@ -71,6 +71,7 @@ async def test_uninstall_two_tentacles(clean):
                     'SimpleMixedStrategyEvaluator': True,
                     'TextAnalysis': True
                 },
+                'Meta': {},
                 'Services': {
                     'RedditService': True,
                     'RedditServiceFeed': True
@@ -150,6 +151,7 @@ async def test_uninstall_all_tentacles(clean):
             'tentacle_activation': {
                 'Backtesting': {},
                 'Evaluator': {},
+                'Meta': {},
                 'Services': {},
                 'Trading': {}
             }
