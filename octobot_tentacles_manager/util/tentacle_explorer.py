@@ -40,7 +40,7 @@ def _load_all_metadata(tentacles):
         try:
             tentacle.sync_initialize()
         except Exception as e:
-            logging.get_logger(__name__).error(f"Error when loading {tentacle} metadata: {e}")
+            logging.get_logger(__name__).error(f"Error when loading {tentacle} ({tentacle.tentacle_path}) metadata: {e}")
             raise e
 
 

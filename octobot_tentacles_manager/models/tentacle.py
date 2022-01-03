@@ -80,8 +80,7 @@ class Tentacle(artifact.Artifact):
         return self.tentacle_type.get_last_element()
 
     def __str__(self) -> str:
-        str_rep: str = f"{self.name} {Tentacle.ARTIFACT_NAME} [type: {self.tentacle_type}" \
-                       f" path: {self.tentacle_path}"
+        str_rep: str = f"{self.name} {Tentacle.ARTIFACT_NAME} [type: {self.tentacle_type}"
         if self.is_valid():
             return f"{str_rep}, version: {self.version}]"
         else:
