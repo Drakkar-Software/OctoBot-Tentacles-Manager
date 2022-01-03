@@ -16,6 +16,7 @@
 import os
 import os.path as path
 
+import octobot_commons.logging as logging
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.models as models
 
@@ -36,7 +37,11 @@ def get_tentacles_from_package(tentacles, package_name: str):
 
 def _load_all_metadata(tentacles):
     for tentacle in tentacles:
-        tentacle.sync_initialize()
+        try:
+            tentacle.sync_initialize()
+        except Exception as e:
+            logging.get_logger(__name__).error(f"Error when loading {tentacle} metadata: {e}")
+            raise e
 
 
 def _parse_all_tentacles(root: str):
