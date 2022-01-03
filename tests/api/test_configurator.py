@@ -53,6 +53,7 @@ async def test_update_activation_configuration():
             'SimpleMixedStrategyEvaluator': True,
             'TextAnalysis': True
         },
+        'Meta': {},
         'Services': {
             'RedditService': True,
             'RedditServiceFeed': True
@@ -84,6 +85,7 @@ async def test_update_activation_configuration():
             'SimpleMixedStrategyEvaluator': True,
             'TextAnalysis': True
         },
+        'Meta': {},
         'Services': {
             'RedditService': True,
             'RedditServiceFeed': True
@@ -113,6 +115,7 @@ async def test_update_activation_configuration():
             'SimpleMixedStrategyEvaluator': True,
             'TextAnalysis': True
         },
+        'Meta': {},
         'Services': {
             'RedditService': True,
             'RedditServiceFeed': True
@@ -142,6 +145,7 @@ async def test_update_activation_configuration():
             'SimpleMixedStrategyEvaluator': True,
             'TextAnalysis': True
         },
+        'Meta': {},
         'Services': {
             'RedditService': True,
             'RedditServiceFeed': True

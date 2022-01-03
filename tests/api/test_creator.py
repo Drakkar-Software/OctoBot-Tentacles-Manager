@@ -110,7 +110,7 @@ async def test_create_folder_tentacles_package(install_tentacles):
 
     # add every not in dev tentacles
     python_files = tuple(e[2] for e in walk(TENTACLE_PACKAGE) if any(i for i in e[2] if i.endswith(".py")))
-    assert len(python_files) == 10
+    assert len(python_files) == 11
 
 
 async def test_create_folder_tentacles_package_with_package_selector(install_tentacles):

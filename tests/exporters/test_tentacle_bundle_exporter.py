@@ -46,7 +46,7 @@ async def test_tentacle_bundle_exporter_for_each_tentacle(install_tentacles):
     # Check if each tentacle bundle has been generated
     # check files count
     output_files = os.listdir(constants.DEFAULT_EXPORT_DIR)
-    assert len(output_files) == 20
+    assert len(output_files) == 22
     assert "daily_trading_mode.zip" in output_files
     assert "generic_exchange_importer@1.2.0" in output_files
     assert "other_instant_fluctuations_evaluator@1.2.0" in output_files
@@ -74,7 +74,7 @@ async def test_tentacle_bundle_exporter_for_an_unique_bundle_containing_all_tent
     assert len(output_files) == 1
     exported_bundle_path = os.path.join(constants.DEFAULT_EXPORT_DIR, output_files[0])
     output_files = os.listdir(exported_bundle_path)
-    assert len(output_files) == 11
+    assert len(output_files) == 12
     assert "daily_trading_mode.zip" in output_files
     assert "generic_exchange_importer@1.2.0_package" not in output_files
     assert "other_instant_fluctuations_evaluator@1.2.0_package" not in output_files
@@ -86,7 +86,7 @@ async def test_tentacle_bundle_exporter_for_an_unique_bundle_containing_all_tent
     with open(os.path.join(exported_bundle_path, constants.ARTIFACT_METADATA_FILE)) as metadata_file:
         metadata_content = yaml.safe_load(metadata_file.read())
         assert metadata_content[constants.ARTIFACT_METADATA_ARTIFACT_TYPE] == "tentacle_package"
-        assert len(metadata_content[constants.ARTIFACT_METADATA_TENTACLES]) == 10
+        assert len(metadata_content[constants.ARTIFACT_METADATA_TENTACLES]) == 11
         assert "forum_evaluator@1.2.0" in metadata_content[constants.ARTIFACT_METADATA_TENTACLES]
 
 
@@ -109,7 +109,7 @@ async def test_tentacle_bundle_exporter_with_specified_output_dir(install_tentac
 
     # Check if each tentacle bundle has been generated in the specified directory
     output_files = os.listdir(specified_output_dir)
-    assert len(output_files) == 20
+    assert len(output_files) == 22
     assert "daily_trading_mode.zip" in output_files
     assert "generic_exchange_importer@1.2.0" in output_files
     shutil.rmtree(specified_output_dir)
@@ -125,7 +125,7 @@ async def test_tentacle_bundle_exporter_with_metadata_injection(install_tentacle
     with open(constants.ARTIFACT_METADATA_FILE) as metadata_file:
         metadata_content = yaml.safe_load(metadata_file.read())
         assert metadata_content[constants.ARTIFACT_METADATA_ARTIFACT_TYPE] == "tentacle_package"
-        assert len(metadata_content[constants.ARTIFACT_METADATA_TENTACLES]) == 10
+        assert len(metadata_content[constants.ARTIFACT_METADATA_TENTACLES]) == 11
         assert "forum_evaluator@1.2.0" in metadata_content[constants.ARTIFACT_METADATA_TENTACLES]
         assert metadata_content[constants.ARTIFACT_METADATA_NAME] == "test-full"
         assert metadata_content[constants.ARTIFACT_METADATA_AUTHOR] == "DrakkarSoftware"

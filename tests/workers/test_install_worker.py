@@ -151,6 +151,7 @@ async def test_install_all_tentacles(clean):
                     'SimpleMixedStrategyEvaluator': True,
                     'TextAnalysis': True
                 },
+                'Meta': {},
                 'Services': {
                     'RedditService': True,
                     'RedditServiceFeed': True

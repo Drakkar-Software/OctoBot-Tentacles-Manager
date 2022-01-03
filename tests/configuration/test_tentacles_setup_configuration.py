@@ -75,7 +75,7 @@ async def test__set_activation_using_default_config():
     testExchange.tentacle_class_names = ["testExchange"]
     new_tentacles.append(testExchange)
     # Mode
-    testMode = models.Tentacle(tentacles[0].tentacle_root_path, "testMode", tentacle_types[7])
+    testMode = models.Tentacle(tentacles[0].tentacle_root_path, "testMode", tentacle_types[8])
     testMode.tentacle_class_names = ["testMode"]
     new_tentacles.append(testMode)
 
@@ -84,10 +84,15 @@ async def test__set_activation_using_default_config():
     testBacktesting.tentacle_class_names = ["testBacktesting"]
     new_tentacles.append(testBacktesting)
 
+    # Add Meta
+    testMetaKeyword = models.Tentacle(tentacles[0].tentacle_root_path, "testMetaKeyword", tentacle_types[5])
+    testMetaKeyword.tentacle_class_names = ["testMetaKeyword"]
+    new_tentacles.append(testMetaKeyword)
+
     # Add Service
-    testServiceBase = models.Tentacle(tentacles[0].tentacle_root_path, "testServiceBase", tentacle_types[5])
+    testServiceBase = models.Tentacle(tentacles[0].tentacle_root_path, "testServiceBase", tentacle_types[6])
     testServiceBase.tentacle_class_names = ["testServiceBase"]
-    testServiceFeed = models.Tentacle(tentacles[0].tentacle_root_path, "testServiceFeed", tentacle_types[6])
+    testServiceFeed = models.Tentacle(tentacles[0].tentacle_root_path, "testServiceFeed", tentacle_types[7])
     testServiceFeed.tentacle_class_names = ["testServiceFeed"]
     new_tentacles.append(testServiceFeed)
     new_tentacles.append(testServiceBase)
@@ -107,6 +112,9 @@ async def test__set_activation_using_default_config():
 
     # Backtesting
     assert tentacle_setup_config.tentacles_activation[constants.TENTACLES_BACKTESTING_PATH]["testBacktesting"]
+
+    # Meta
+    assert tentacle_setup_config.tentacles_activation[constants.TENTACLES_META_PATH]["testMetaKeyword"]
 
     # Services
     assert tentacle_setup_config.tentacles_activation[constants.TENTACLES_SERVICES_PATH]["testServiceBase"]
