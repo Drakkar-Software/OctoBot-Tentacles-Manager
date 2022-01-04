@@ -78,8 +78,9 @@ class TentaclesSetupConfiguration:
         bot_profiles_path = os.path.join(self.bot_installation_path, profiles_path)
         if path.isdir(bot_profiles_path):
             for profile_folder in os.scandir(bot_profiles_path):
-                self._refresh_profile_tentacles_config(tentacles, profile_folder,
-                                                       newly_installed_tentacles, uninstalled_tentacles)
+                if profile_folder.is_dir():
+                    self._refresh_profile_tentacles_config(tentacles, profile_folder,
+                                                           newly_installed_tentacles, uninstalled_tentacles)
 
     def update_activation_configuration(self, new_config, deactivate_other_evaluators,
                                         add_missing_elements, tentacles_path=constants.TENTACLES_PATH):
