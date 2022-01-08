@@ -2,13 +2,13 @@
 setuptools
 
 # Drakkar-Software requirements
-OctoBot-Commons>=1.6.18, <1.7
+OctoBot-Commons>=1.6.20, <1.7
 
 # async files management
 aiofiles>=0.6.0, <0.7
 
 # async http requests
-aiohttp>=3.8
+aiohttp>=3.8.1
 
 # Templating requirements
 jinja2>=2.11.3, <2.12
@@ -20,4 +20,4 @@ pyyaml>=6.0
 packaging==21.3
 
 # s3
-aioboto3==9.2.2
+aioboto3==9.3.0
