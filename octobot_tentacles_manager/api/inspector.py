@@ -108,6 +108,12 @@ def _load_tentacle_class(tentacle_name):
             tentacles_trading.Mode, tentacles_management.trading_mode_parent_inspection)
         if tentacle_class:
             return tentacle_class
+        import octobot_trading.exchanges as trading_exchanges
+        tentacle_class = tentacles_management.get_class_from_string(
+            tentacle_name, trading_exchanges.AbstractExchange,
+            tentacles_trading.Exchange, tentacles_management.default_parents_inspection)
+        if tentacle_class:
+            return tentacle_class
         raise RuntimeError(f"Can't find tentacle: {tentacle_name}")
     except ImportError as e:
         raise ImportError(f"Can't import {e} module which is required to get associated "
