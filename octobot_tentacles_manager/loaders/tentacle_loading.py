@@ -22,6 +22,7 @@ import octobot_tentacles_manager.util as util
 
 # tentacle_data_by_tentacle_class is used to cache tentacles metadata
 _tentacle_by_tentacle_class = None
+_tentacle_class_by_class_name = {}
 
 
 def reload_tentacle_by_tentacle_class(tentacles_path=constants.TENTACLES_PATH):
@@ -72,3 +73,11 @@ def get_tentacle(klass) -> typing.Optional[models.Tentacle]:
     except (TypeError, AttributeError):
         raise RuntimeError(f"tentacle have not been initialized, call reload_tentacle_data_by_tentacle_class "
                            f"fix this issue")
+
+
+def get_tentacle_class_from_name(tentacle_class_name):
+    return _tentacle_class_by_class_name[tentacle_class_name]
+
+
+def set_tentacle_class_by_name(tentacle_class_name, tentacle_class):
+    _tentacle_class_by_class_name[tentacle_class_name] = tentacle_class

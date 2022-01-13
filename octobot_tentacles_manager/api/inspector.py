@@ -81,7 +81,7 @@ def check_tentacle_version(version, name, origin_package, verbose=True) -> bool:
     return True
 
 
-def get_tentacle_class_from_string(tentacle_name):
+def _load_tentacle_class(tentacle_name):
     # Lazy import of tentacles to let tentacles manager handle imports
     try:
         import octobot_evaluators.evaluators as evaluators
@@ -112,3 +112,14 @@ def get_tentacle_class_from_string(tentacle_name):
     except ImportError as e:
         raise ImportError(f"Can't import {e} module which is required to get associated "
                           f"tentacles classes") from e
+
+
+def get_tentacle_class_from_string(tentacle_name, allow_cache=True):
+    if allow_cache:
+        try:
+            return loaders.get_tentacle_class_from_name(tentacle_name)
+        except KeyError:
+            tentacle_class = _load_tentacle_class(tentacle_name)
+            loaders.set_tentacle_class_by_name(tentacle_name, tentacle_class)
+            return tentacle_class
+    return _load_tentacle_class(tentacle_name)
