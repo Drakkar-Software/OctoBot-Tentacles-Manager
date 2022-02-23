@@ -136,3 +136,12 @@ def get_compiled_tentacles_url(base_url, version) -> str:
 
 def set_tentacles_setup_configuration_path(tentacles_setup_config: configuration.TentaclesSetupConfiguration, new_path):
     tentacles_setup_config.config_path = new_path
+
+
+def get_code_hash(tentacles: list) -> str:
+    return util.get_tentacles_code_hash(tentacles)
+
+
+def get_config_hash(tentacles: list,
+                    tentacles_setup_config: configuration.TentaclesSetupConfiguration) -> str:
+    return util.get_tentacles_config_hash(tentacles, tentacles_setup_config)

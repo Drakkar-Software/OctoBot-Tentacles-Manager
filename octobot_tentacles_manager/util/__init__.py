@@ -19,6 +19,7 @@ from octobot_tentacles_manager.util import tentacle_explorer
 from octobot_tentacles_manager.util import tentacle_filter
 from octobot_tentacles_manager.util import tentacle_cleaner
 from octobot_tentacles_manager.util import file_util
+from octobot_tentacles_manager.util import hashing
 
 from octobot_tentacles_manager.util.os_util import (
     get_os_str,
@@ -48,10 +49,16 @@ from octobot_tentacles_manager.util.tentacle_cleaner import (
     remove_dir_or_file_from_path,
     remove_dir_or_file,
 )
+from octobot_tentacles_manager.util.hashing import (
+    get_tentacles_code_hash,
+    get_tentacles_config_hash,
+)
 
 __all__ = [
     "cleanup_temp_dirs",
     "remove_dir_or_file",
+    "get_tentacles_code_hash",
+    "get_tentacles_config_hash",
     "remove_dir_or_file_from_path",
     "fetch_and_extract_tentacles",
     "get_local_arch_download_path",
