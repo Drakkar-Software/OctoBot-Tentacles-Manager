@@ -51,6 +51,11 @@ from octobot_tentacles_manager.models.metadata import (
     MetadataFactory,
 )
 
+from octobot_tentacles_manager.models import tentacle_requirements_tree
+from octobot_tentacles_manager.models.tentacle_requirements_tree import (
+    TentacleRequirementsTree,
+)
+
 __all__ = [
     "Artifact",
     "TentacleType",
@@ -63,4 +68,5 @@ __all__ = [
     "TentaclePackageMetadata",
     "ProfileMetadata",
     "MetadataFactory",
+    "TentacleRequirementsTree",
 ]
