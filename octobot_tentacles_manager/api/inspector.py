@@ -86,41 +86,43 @@ def _load_tentacle_class(tentacle_name):
     try:
         import octobot_evaluators.evaluators as evaluators
         import tentacles.Evaluator as tentacles_Evaluator
-        tentacle_class = tentacles_management.get_class_from_string(
+        if tentacle_class := tentacles_management.get_class_from_string(
             tentacle_name, evaluators.StrategyEvaluator,
-            tentacles_Evaluator.Strategies, tentacles_management.evaluator_parent_inspection)
-        if tentacle_class:
+            tentacles_Evaluator.Strategies, tentacles_management.evaluator_parent_inspection):
             return tentacle_class
-        tentacle_class = tentacles_management.get_class_from_string(
+        if tentacle_class := tentacles_management.get_class_from_string(
             tentacle_name, evaluators.TAEvaluator,
-            tentacles_Evaluator.TA, tentacles_management.evaluator_parent_inspection)
-        if tentacle_class:
+            tentacles_Evaluator.TA, tentacles_management.evaluator_parent_inspection):
             return tentacle_class
-        tentacle_class = tentacles_management.get_class_from_string(
+        if tentacle_class := tentacles_management.get_class_from_string(
+            tentacle_name, evaluators.SocialEvaluator,
+            tentacles_Evaluator.Social, tentacles_management.evaluator_parent_inspection):
+            return tentacle_class
+        if tentacle_class := tentacles_management.get_class_from_string(
+            tentacle_name, evaluators.RealTimeEvaluator,
+            tentacles_Evaluator.RealTime, tentacles_management.evaluator_parent_inspection):
+            return tentacle_class
+        if tentacle_class := tentacles_management.get_class_from_string(
             tentacle_name, evaluators.ScriptedEvaluator,
-            tentacles_Evaluator.Scripted, tentacles_management.evaluator_parent_inspection)
-        if tentacle_class:
+            tentacles_Evaluator.Scripted, tentacles_management.evaluator_parent_inspection):
             return tentacle_class
         import octobot_trading.modes as trading_modes
         import tentacles.Trading as tentacles_trading
-        tentacle_class = tentacles_management.get_class_from_string(
+        if tentacle_class := tentacles_management.get_class_from_string(
             tentacle_name, trading_modes.AbstractTradingMode,
-            tentacles_trading.Mode, tentacles_management.trading_mode_parent_inspection)
-        if tentacle_class:
+            tentacles_trading.Mode, tentacles_management.trading_mode_parent_inspection):
             return tentacle_class
         import octobot_trading.exchanges as trading_exchanges
-        tentacle_class = tentacles_management.get_class_from_string(
+        if tentacle_class := tentacles_management.get_class_from_string(
             tentacle_name, trading_exchanges.AbstractExchange,
-            tentacles_trading.Exchange, tentacles_management.default_parents_inspection)
-        if tentacle_class:
+            tentacles_trading.Exchange, tentacles_management.default_parents_inspection):
             return tentacle_class
         try:
             import tentacles.Services.Interfaces.web_interface.plugins as web_plugins
             import tentacles.Services as tentacles_services
-            tentacle_class = tentacles_management.get_class_from_string(
+            if tentacle_class := tentacles_management.get_class_from_string(
                 tentacle_name, web_plugins.AbstractWebInterfacePlugin,
-                tentacles_services.Interfaces, tentacles_management.default_parents_inspection)
-            if tentacle_class:
+                tentacles_services.Interfaces, tentacles_management.default_parents_inspection):
                 return tentacle_class
         except ImportError:
             pass

@@ -25,8 +25,7 @@ def get_tentacles_code_hash(tentacles: list) -> str:
     for linked_tentacle in tentacles:
         code_location = linked_tentacle.get_script() if hasattr(linked_tentacle, "get_script") \
             else linked_tentacle.__class__
-        tentacle_code = inspect.getsource(code_location).replace(" ", "").replace("\n", "")
-        full_code = f"{full_code}{tentacle_code}"
+        full_code = f"{full_code}{inspect.getsource(code_location)}"
     return hashlib.sha256(full_code.encode()).hexdigest()
 
 
