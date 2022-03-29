@@ -82,10 +82,7 @@ class TentacleRequirementsTree:
            self.config_name != other.config_name:
             return False
         # ensure every requirement in self is contained in other's
-        for requirement in self.nested_requirements:
-            if requirement not in other.nested_requirements:
-                return False
-        return True
+        return other.includes_nested_requirements(self)
 
     def __str__(self):
         return f"{self.__class__.__name__} with tentacle: {self.tentacle_class.__name__}, " \
