@@ -113,6 +113,8 @@ def update_tentacle_config(tentacles_setup_config: configuration.TentaclesSetupC
 
 
 def import_user_tentacles_config_folder(tentacles_setup_config: configuration.TentaclesSetupConfiguration):
+    # WARNING: this code should only be called on profiles that are safe to import (might be a security break otherwise)
+    # => careful with downloaded profiles
     user_tentacles_config_folder = configuration.get_user_tentacles_config_folder(tentacles_setup_config)
     if path.isdir(user_tentacles_config_folder) and user_tentacles_config_folder not in sys.path:
         sys.path.append(user_tentacles_config_folder)
