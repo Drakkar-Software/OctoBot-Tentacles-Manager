@@ -17,6 +17,7 @@ import os
 import shutil
 import aiohttp
 import pytest
+import pytest_asyncio
 
 import octobot_tentacles_manager.api as api
 import octobot_tentacles_manager.constants as constants
@@ -26,7 +27,7 @@ TENTACLE_PACKAGE = "tentacle_package"
 TEST_EXPORT_DIR = "test_export_dir"
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def install_tentacles():
     _cleanup()
     async with aiohttp.ClientSession() as session:
