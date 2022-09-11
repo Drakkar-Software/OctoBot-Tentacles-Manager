@@ -25,12 +25,16 @@ def load_tentacles(verbose=True) -> bool:
 
 
 def are_tentacles_up_to_date(tentacles_setup_config, bot_version):
-    installation_version = tentacles_setup_config.installation_context.get(
-        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION,
-        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)
+    installation_version = get_tentacles_installation_version(tentacles_setup_config)
     if installation_version == constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN:
         return False
     return packaging_version.parse(bot_version) <= packaging_version.parse(installation_version)
+
+
+def get_tentacles_installation_version(tentacles_setup_config):
+    return tentacles_setup_config.installation_context.get(
+        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION,
+        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)
 
 
 def reload_tentacle_info() -> None:
