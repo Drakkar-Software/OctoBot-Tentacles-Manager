@@ -18,6 +18,7 @@ import os.path as path
 
 import octobot_commons.logging as logging
 import octobot_commons.constants as commons_constants
+import octobot_commons.profiles as commons_profiles
 
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.configuration as configuration
@@ -67,7 +68,18 @@ class TentaclesSetupConfiguration:
                                             uninstalled_tentacles=uninstalled_tentacles)
         if update_location or force_update_registered_tentacles:
             self._update_registered_tentacles(tentacles, update_location)
-        self._fill_installation_context()
+        if not self._is_imported_profile(self.get_associated_profile_path()):
+            self._fill_installation_context()
+
+    def get_associated_profile_path(self):
+        return os.path.split(self.config_path)[0]
+
+    @staticmethod
+    def _is_imported_profile(profile_folder):
+        try:
+            return commons_profiles.Profile(profile_folder).read_config().imported
+        except OSError:
+            return False
 
     def refresh_profile_tentacles_config(self,
                                          tentacles,
@@ -76,11 +88,16 @@ class TentaclesSetupConfiguration:
                                          uninstalled_tentacles=None
                                          ):
         bot_profiles_path = os.path.join(self.bot_installation_path, profiles_path)
-        if path.isdir(bot_profiles_path):
-            for profile_folder in os.scandir(bot_profiles_path):
+        if not path.isdir(bot_profiles_path):
+            return
+        for profile_folder in os.scandir(bot_profiles_path):
+            try:
                 if profile_folder.is_dir():
                     self._refresh_profile_tentacles_config(tentacles, profile_folder,
-                                                           newly_installed_tentacles, uninstalled_tentacles)
+                                                           newly_installed_tentacles, uninstalled_tentacles,
+                                                           not self._is_imported_profile(profile_folder))
+            except Exception as e:
+                self.logger.exception(e, True, f"Unexpected error when patching profile tentacles version: {e}")
 
     def update_activation_configuration(self, new_config, deactivate_other_evaluators,
                                         add_missing_elements, tentacles_path=constants.TENTACLES_PATH):
@@ -250,21 +267,25 @@ class TentaclesSetupConfiguration:
 
     # Profiles management
     def _refresh_profile_tentacles_config(self, tentacles, profile_folder,
-                                          newly_installed_tentacles, uninstalled_tentacles):
+                                          newly_installed_tentacles, uninstalled_tentacles,
+                                          update_installation_context):
         self._refresh_profile_tentacles_config_file(tentacles,
                                                     path.join(profile_folder,
                                                               commons_constants.CONFIG_TENTACLES_FILE),
                                                     newly_installed_tentacles,
-                                                    uninstalled_tentacles)
+                                                    uninstalled_tentacles,
+                                                    update_installation_context)
 
     def _refresh_profile_tentacles_config_file(self, tentacles, tentacles_config_file,
-                                               newly_installed_tentacles, uninstalled_tentacles):
+                                               newly_installed_tentacles, uninstalled_tentacles,
+                                               update_installation_context):
         profile_setup_config = TentaclesSetupConfiguration(config_path=tentacles_config_file)
         profile_setup_config._from_dict(configuration.read_config(profile_setup_config.config_path), True)
         # use self.registered_tentacles as a reference
         profile_setup_config.registered_tentacles = self.registered_tentacles
         self._refresh_other_tentacles_activation_from_self(profile_setup_config)
-        profile_setup_config._fill_installation_context()
+        if update_installation_context:
+            profile_setup_config._fill_installation_context()
         profile_setup_config._update_tentacles_groups_activation(tentacles,
                                                                  newly_installed_tentacles,
                                                                  uninstalled_tentacles)

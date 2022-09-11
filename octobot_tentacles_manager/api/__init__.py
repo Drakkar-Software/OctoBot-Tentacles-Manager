@@ -69,6 +69,7 @@ from octobot_tentacles_manager.api.loader import (
     load_tentacles,
     reload_tentacle_info,
     are_tentacles_up_to_date,
+    get_tentacles_installation_version,
 )
 from octobot_tentacles_manager.api.inspector import (
     get_installed_tentacles_modules,
@@ -125,6 +126,7 @@ __all__ = [
     "load_tentacles",
     "reload_tentacle_info",
     "are_tentacles_up_to_date",
+    "get_tentacles_installation_version",
     "get_installed_tentacles_modules",
     "get_tentacle_group",
     "get_tentacle_version",
