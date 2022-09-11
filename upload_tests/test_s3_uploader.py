@@ -23,6 +23,7 @@ import aiohttp
 import time
 
 import pytest
+import pytest_asyncio
 
 import octobot_tentacles_manager.api.uploader as uploader_api
 import octobot_tentacles_manager.constants as constants
@@ -36,7 +37,7 @@ TEST_S3_PATH = "tentacle-manager/"
 TEST_S3_FILE_NAME = "test"
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def s3_tests():
     if os.path.exists(TEST_S3_DIRECTORY):
         shutil.rmtree(TEST_S3_DIRECTORY)

@@ -23,6 +23,7 @@ import aiohttp
 import time
 
 import pytest
+import pytest_asyncio
 
 import octobot_tentacles_manager.api.uploader as uploader_api
 import octobot_tentacles_manager.uploaders as uploaders
@@ -36,7 +37,7 @@ TEST_NEXUS_PATH = "officials/tests/tentacle-manager/"
 TEST_NEXUS_FILE_NAME = "test"
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def nexus_tests():
     if os.path.exists(TEST_NEXUS_DIRECTORY):
         shutil.rmtree(TEST_NEXUS_DIRECTORY)
