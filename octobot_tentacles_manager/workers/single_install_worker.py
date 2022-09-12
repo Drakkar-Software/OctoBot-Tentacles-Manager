@@ -47,7 +47,7 @@ class SingleInstallWorker(workers.InstallWorker):
             await tentacle.initialize()
             self.register_to_process_tentacles_modules([tentacle])
             await self._install_tentacle(tentacle)
-            await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file()
+            self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file()
             self.tentacles_setup_manager.cleanup_temp_dirs()
             if not self.quite_mode:
                 self.logger.info(f"{tentacle_name} installed")

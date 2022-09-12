@@ -40,7 +40,7 @@ class InstallWorker(workers.TentaclesWorker):
         self._import_profiles_if_any()
         # now that profiles are imported, update tentacles setup config
         # and include missing tentacles in profile tentacles config
-        await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
+        self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
             self.tentacles_setup_config_to_update,
             self.tentacles_path_or_url,
             force_update_registered_tentacles=True,

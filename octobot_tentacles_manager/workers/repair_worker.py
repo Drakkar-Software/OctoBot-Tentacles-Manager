@@ -48,7 +48,7 @@ class RepairWorker(workers.TentaclesWorker):
         self.available_tentacles = util.load_tentacle_with_metadata(self.tentacle_path)
         self.total_steps = len(self.available_tentacles)
         await asyncio.gather(*[self._repair_tentacle(tentacle) for tentacle in self.available_tentacles])
-        await self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
+        self.tentacles_setup_manager.refresh_user_tentacles_setup_config_file(
             force_update_registered_tentacles=True
         )
         self.log_summary()

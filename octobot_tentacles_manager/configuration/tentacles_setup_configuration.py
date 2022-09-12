@@ -57,7 +57,7 @@ class TentaclesSetupConfiguration:
     def unregister_tentacles_package(self, package_name):
         self.registered_tentacles.pop(package_name)
 
-    async def fill_tentacle_config(self, tentacles, default_tentacle_config=constants.DEFAULT_TENTACLE_CONFIG,
+    def fill_tentacle_config(self, tentacles, default_tentacle_config=constants.DEFAULT_TENTACLE_CONFIG,
                                    remove_missing_tentacles=True, update_location=None,
                                    force_update_registered_tentacles=False, newly_installed_tentacles=None,
                                    uninstalled_tentacles=None):
@@ -68,34 +68,34 @@ class TentaclesSetupConfiguration:
                                             uninstalled_tentacles=uninstalled_tentacles)
         if update_location or force_update_registered_tentacles:
             self._update_registered_tentacles(tentacles, update_location)
-        if not self._is_imported_profile(self.get_associated_profile_path()):
+        if not self.is_imported_profile(self.get_associated_profile_path()):
             self._fill_installation_context()
 
     def get_associated_profile_path(self):
         return os.path.split(self.config_path)[0]
 
     @staticmethod
-    def _is_imported_profile(profile_folder):
+    def is_imported_profile(profile_folder):
         try:
             return commons_profiles.Profile(profile_folder).read_config().imported
         except OSError:
             return False
 
-    def refresh_profile_tentacles_config(self,
-                                         tentacles,
-                                         profiles_path=commons_constants.USER_PROFILES_FOLDER,
-                                         newly_installed_tentacles=None,
-                                         uninstalled_tentacles=None
-                                         ):
+    def refresh_profiles_tentacles_config(self,
+                                          tentacles,
+                                          profiles_path=commons_constants.USER_PROFILES_FOLDER,
+                                          newly_installed_tentacles=None,
+                                          uninstalled_tentacles=None
+                                          ):
         bot_profiles_path = os.path.join(self.bot_installation_path, profiles_path)
         if not path.isdir(bot_profiles_path):
             return
         for profile_folder in os.scandir(bot_profiles_path):
             try:
                 if profile_folder.is_dir():
-                    self._refresh_profile_tentacles_config(tentacles, profile_folder,
-                                                           newly_installed_tentacles, uninstalled_tentacles,
-                                                           not self._is_imported_profile(profile_folder))
+                    self.refresh_profile_tentacles_config(tentacles, profile_folder,
+                                                          newly_installed_tentacles, uninstalled_tentacles,
+                                                          not self.is_imported_profile(profile_folder))
             except Exception as e:
                 self.logger.exception(e, True, f"Unexpected error when patching profile tentacles version: {e}")
 
@@ -266,9 +266,9 @@ class TentaclesSetupConfiguration:
                 self.unregister_tentacles_package(registered_package)
 
     # Profiles management
-    def _refresh_profile_tentacles_config(self, tentacles, profile_folder,
-                                          newly_installed_tentacles, uninstalled_tentacles,
-                                          update_installation_context):
+    def refresh_profile_tentacles_config(self, tentacles, profile_folder,
+                                         newly_installed_tentacles=None, uninstalled_tentacles=None,
+                                         update_installation_context=True):
         self._refresh_profile_tentacles_config_file(tentacles,
                                                     path.join(profile_folder,
                                                               commons_constants.CONFIG_TENTACLES_FILE),

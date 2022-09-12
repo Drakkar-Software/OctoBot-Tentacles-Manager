@@ -58,6 +58,7 @@ from octobot_tentacles_manager.api.configurator import (
     get_compiled_tentacles_url,
     set_tentacles_setup_configuration_path,
     ensure_setup_configuration,
+    refresh_profile_tentacles_setup_config,
     get_code_hash,
     get_config_hash,
 )
@@ -121,6 +122,7 @@ __all__ = [
     "get_code_hash",
     "get_config_hash",
     "ensure_setup_configuration",
+    "refresh_profile_tentacles_setup_config",
     "update_all_tentacles",
     "update_tentacles",
     "load_tentacles",
