@@ -35,7 +35,7 @@ class TentaclesSetupManager:
         self.default_tentacle_config = default_tentacle_config
         self.bot_installation_path = bot_installation_path
 
-    async def refresh_user_tentacles_setup_config_file(self,
+    def refresh_user_tentacles_setup_config_file(self,
                                                        tentacles_setup_config_to_update=None,
                                                        update_location=None,
                                                        force_update_registered_tentacles=False,
@@ -50,7 +50,8 @@ class TentaclesSetupManager:
             reference_tentacle_setup_config.read_config(self.tentacle_setup_root_path, False)
         else:
             reference_tentacle_setup_config = tentacles_setup_config_to_update
-        await reference_tentacle_setup_config.fill_tentacle_config(
+        # fill overall tentacles setup config data
+        reference_tentacle_setup_config.fill_tentacle_config(
             available_tentacle,
             self.default_tentacle_config,
             update_location=update_location,
@@ -59,10 +60,30 @@ class TentaclesSetupManager:
             uninstalled_tentacles=uninstalled_tentacles
         )
         reference_tentacle_setup_config.save_config()
-        reference_tentacle_setup_config.refresh_profile_tentacles_config(
+        # apply tentacles setup config data to each profile
+        reference_tentacle_setup_config.refresh_profiles_tentacles_config(
             available_tentacle,
             newly_installed_tentacles=newly_installed_tentacles,
             uninstalled_tentacles=uninstalled_tentacles
+        )
+
+    def refresh_profile_tentacles_config(self, profile_folder):
+        available_tentacle = util.load_tentacle_with_metadata(self.tentacle_setup_root_path)
+        reference_tentacle_setup_config = configuration.TentaclesSetupConfiguration(
+            bot_installation_path=self.bot_installation_path)
+        # Do not read activation config to force default values generation and avoid side effects on
+        # profiles activations
+        reference_tentacle_setup_config.read_config(self.tentacle_setup_root_path, False)
+        reference_tentacle_setup_config.fill_tentacle_config(
+            available_tentacle,
+            self.default_tentacle_config,
+            remove_missing_tentacles=False,
+            force_update_registered_tentacles=True
+        )
+        # apply tentacles setup config data to input profile
+        reference_tentacle_setup_config.refresh_profile_tentacles_config(
+            available_tentacle, profile_folder,
+            update_installation_context=not reference_tentacle_setup_config.is_imported_profile(profile_folder)
         )
 
     async def create_missing_tentacles_arch(self):

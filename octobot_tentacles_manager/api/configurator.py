@@ -22,12 +22,26 @@ import octobot_tentacles_manager.api as api
 import octobot_tentacles_manager.configuration as configuration
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.util as util
+import octobot_tentacles_manager.managers as managers
 
 
 async def ensure_setup_configuration(tentacle_path=constants.TENTACLES_PATH, bot_path=constants.DEFAULT_BOT_PATH,
                                      bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR) -> None:
     if not path.exists(path.join(bot_path, constants.USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH)):
         await api.repair_installation(tentacle_path, bot_path, bot_install_dir, verbose=False)
+
+
+def refresh_profile_tentacles_setup_config(
+        profile_folder,
+        tentacle_path=constants.TENTACLES_PATH,
+        bot_installation_path=constants.DEFAULT_BOT_PATH,
+        bot_install_dir=constants.DEFAULT_BOT_INSTALL_DIR
+):
+    tentacles_setup_manager = managers.TentaclesSetupManager(path.join(bot_installation_path, tentacle_path),
+                                                             bot_installation_path,
+                                                             path.join(bot_install_dir,
+                                                                       constants.DEFAULT_TENTACLE_CONFIG))
+    tentacles_setup_manager.refresh_profile_tentacles_config(profile_folder)
 
 
 def get_tentacles_setup_config(
