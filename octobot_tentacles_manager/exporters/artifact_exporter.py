@@ -211,8 +211,10 @@ class ArtifactExporter:
         """
         try:
             artifact_metadata: models.ArtifactMetadata = await self.get_metadata_instance()
-            async with aiofiles.open(os.path.join(self.get_metadata_file_path(),
-                                                  constants.ARTIFACT_METADATA_FILE), "w") as metadata_file:
+            metadata_path = path.join(self.get_metadata_file_path(),
+                                      constants.ARTIFACT_METADATA_FILE)
+            os.makedirs(path.dirname(metadata_path), exist_ok=True)
+            async with aiofiles.open(metadata_path, "w") as metadata_file:
                 await metadata_file.write(yaml.dump(artifact_metadata.to_dict()))
         except NotImplementedError:
             pass  # Metadata file creation is ignored
