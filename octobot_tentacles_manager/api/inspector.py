@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import distutils.version as loose_version
+import packaging.version as packaging_version
 
 import octobot_commons.logging as logging
 import octobot_commons.tentacles_management as tentacles_management
@@ -67,7 +67,7 @@ def check_tentacle_version(version, name, origin_package, verbose=True) -> bool:
     logger = logging.get_logger("TentacleChecker")
     try:
         if origin_package == constants.DEFAULT_TENTACLES_PACKAGE:
-            if loose_version.LooseVersion(version) < loose_version.LooseVersion(
+            if packaging_version.Version(version) < packaging_version.Version(
                     constants.TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION) and verbose:
                 logger.error(f"Incompatible tentacle {name}: version {version}, "
                              f"minimum expected: {constants.TENTACLE_CURRENT_MINIMUM_DEFAULT_TENTACLES_VERSION} "
