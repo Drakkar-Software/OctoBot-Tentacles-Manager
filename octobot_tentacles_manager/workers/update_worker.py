@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import distutils.version as loose_version
+import packaging.version as packaging_version
 
 import octobot_tentacles_manager.workers as workers
 import octobot_tentacles_manager.models as models
@@ -38,5 +39,5 @@ class UpdateWorker(workers.InstallWorker):
             installed_tentacle = models.Tentacle.find(self.available_tentacles, name)
             if installed_tentacle is not None:
                 installed_version = installed_tentacle.version
-                return loose_version.LooseVersion(installed_version) < loose_version.LooseVersion(tentacle.version)
+                return packaging_version.Version(installed_version) < packaging_version.Version(tentacle.version)
         return False
