@@ -82,4 +82,4 @@ class InstallWorker(workers.TentaclesWorker):
 
     def _import_profiles_if_any(self):
         for profile_folder in managers.get_profile_folders(self.reference_tentacles_root):
-            managers.import_profile(profile_folder, self.bot_install_dir)
+            managers.import_profile(profile_folder, self.bot_install_dir, quite=self.quite_mode)
