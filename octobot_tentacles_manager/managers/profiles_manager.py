@@ -28,11 +28,12 @@ def get_profile_folders(package_root) -> list:
     return []
 
 
-def import_profile(profile_path, bot_install_root_folder) -> None:
+def import_profile(profile_path, bot_install_root_folder, quite=False) -> None:
     profile_name = os.path.split(profile_path)[-1]
     profiles.install_profile(profile_path,
                              profile_name,
                              bot_install_root_folder,
                              True,
-                             False
+                             False,
+                             quite=quite
                              )

@@ -71,7 +71,7 @@ def get_tentacle(klass) -> typing.Optional[models.Tentacle]:
     try:
         return _tentacle_by_tentacle_class.get(klass if isinstance(klass, str) else klass.get_name(), None)
     except (TypeError, AttributeError):
-        raise RuntimeError(f"tentacle have not been initialized, call reload_tentacle_data_by_tentacle_class "
+        raise RuntimeError(f"tentacle have not been initialized, call reload_tentacle_by_tentacle_class "
                            f"fix this issue")
 
 
