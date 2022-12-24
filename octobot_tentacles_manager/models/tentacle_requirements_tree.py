@@ -47,8 +47,7 @@ class TentacleRequirementsTree:
         return [req.tentacle for req in self.get_all_nested_requirements(include_self)]
 
     def synchronize_tentacles_config(self):
-        self.tentacle_config = self.tentacle.specific_config if hasattr(self.tentacle, "specific_config") \
-            else self.tentacle.trading_config
+        self.tentacle_config = self.tentacle.get_local_config()
         for nested_requirement in self.nested_requirements:
             nested_requirement.synchronize_tentacles_config()
 
