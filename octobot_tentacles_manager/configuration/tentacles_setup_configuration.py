@@ -168,15 +168,40 @@ class TentaclesSetupConfiguration:
             pass
         return False
 
+    def _apply_default_profile_activation(self):
+        default_profile = commons_profiles.Profile.load_profile(
+            commons_constants.USER_PROFILES_FOLDER,
+            commons_constants.DEFAULT_PROFILE
+        )
+        profile_setup_config = configuration.TentaclesSetupConfiguration(
+            config_path=default_profile.get_tentacles_config_path()
+        )
+        # copy setup config from default profile
+        self._from_dict(configuration.read_config(profile_setup_config.config_path), True)
+
+    def _apply_reference_tentacles_config(self, read_activation_config):
+        try:
+            if read_activation_config:
+                self._apply_default_profile_activation()
+            else:
+                self._from_dict(
+                    configuration.read_config(constants.USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH),
+                    read_activation_config
+                )
+        except Exception as err:
+            self.logger.exception(err, True, f"Error when applying reference config: {err}")
+            # something really wrong happened
+            raise
+
     def read_config(self, tentacles_path=constants.TENTACLES_PATH, read_activation_config=True):
         try:
             self._from_dict(configuration.read_config(self.config_path), read_activation_config)
         except Exception as e:
             self.logger.error(f"Error when reading tentacles global configuration file ({e}), "
                               "resetting this file with default values. This will not change "
-                              "any specific tentacle configuration.")
-            loaders.ensure_tentacles_metadata(tentacles_path)
-            self._update_tentacles_setup_config(loaders.get_tentacle_classes().values())
+                              "any tentacle configuration but will reset activated "
+                              "trading modes and evaluators.")
+            self._apply_reference_tentacles_config(read_activation_config)
             self.save_config()
 
     def save_config(self):
