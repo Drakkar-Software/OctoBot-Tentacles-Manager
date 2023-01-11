@@ -75,6 +75,7 @@ from octobot_tentacles_manager.api.loader import (
 )
 from octobot_tentacles_manager.api.inspector import (
     get_installed_tentacles_modules,
+    get_installed_tentacles_modules_dict,
     get_tentacle_group,
     get_tentacle_version,
     get_tentacle_origin_package,
