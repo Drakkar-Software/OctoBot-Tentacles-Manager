@@ -24,7 +24,7 @@ from octobot_tentacles_manager.constants import TENTACLES_PATH, \
     USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, DEFAULT_BOT_PATH, TENTACLE_CONFIG, TENTACLES_EVALUATOR_PATH, \
     TENTACLES_EVALUATOR_REALTIME_PATH
 from octobot_tentacles_manager.workers.install_worker import InstallWorker
-
+from tests.workers.octobot_version import get_installation_context_octobot_version
 from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.workers.uninstall_worker import UninstallWorker
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
@@ -55,9 +55,7 @@ async def test_uninstall_two_tentacles(clean):
     assert tentacles_files_count < 67
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
-            'installation_context': {
-                'octobot_version': 'unknown'
-            },
+            'installation_context': get_installation_context_octobot_version(),
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
             },
@@ -144,9 +142,7 @@ async def test_uninstall_all_tentacles(clean):
     assert tentacles_files_count == CLEAN_TENTACLES_ARCHITECTURE_FILES_FOLDERS_COUNT
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
-            'installation_context': {
-                'octobot_version': 'unknown'
-            },
+            'installation_context': get_installation_context_octobot_version(),
             'registered_tentacles': {},
             'tentacle_activation': {
                 'Backtesting': {},

@@ -29,6 +29,7 @@ from octobot_tentacles_manager.configuration.tentacle_configuration import get_c
 import octobot_tentacles_manager.util as util
 import octobot_tentacles_manager.constants as constants
 from octobot_tentacles_manager.loaders.tentacle_loading import reload_tentacle_by_tentacle_class
+from tests.workers.octobot_version import get_installation_context_octobot_version
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -101,11 +102,10 @@ async def test_fill_tentacle_config():
 
     setup_config = configuration.TentaclesSetupConfiguration()
     setup_config.fill_tentacle_config(available_tentacle, constants.TENTACLE_CONFIG_FILE_NAME)
-    assert setup_config.installation_context == {
-        constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION:
-            constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
-    }
+    assert setup_config.installation_context == get_installation_context_octobot_version() 
 
+    setup_config.installation_context[constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION] \
+        = constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN
     assert not api.are_tentacles_up_to_date(setup_config,
                                             constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)
     assert not api.are_tentacles_up_to_date(setup_config, '1.0.0')
