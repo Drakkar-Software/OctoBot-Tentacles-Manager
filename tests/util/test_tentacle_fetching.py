@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import copy
 import aiohttp
 import pytest
 from os import path, walk
@@ -63,12 +64,14 @@ async def test_fetch_and_extract_tentacles_using_local_file():
 
 def _test_temp_tentacles(missing_tentacles=None):
     missing_tentacles = missing_tentacles or []
+    expected_tentacles_types = copy.copy(constants.TENTACLE_TYPES)
+    expected_tentacles_types.remove(constants.TENTACLES_AUTOMATION_PATH)    # no automation tentacles in test file
     assert all(path.isdir(_tentacle_path(tentacle_type))
-               for tentacle_type in constants.TENTACLE_TYPES
+               for tentacle_type in expected_tentacles_types
                if tentacle_type not in missing_tentacles)
     # assert sub directories also got extracted
     total_files_count = sum(1 for _ in walk(temp_dir))
-    assert total_files_count > len(constants.TENTACLE_TYPES)
+    assert total_files_count > len(expected_tentacles_types)
 
 
 def _tentacle_path(tentacle_type):
