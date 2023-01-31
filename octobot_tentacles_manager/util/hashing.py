@@ -23,8 +23,14 @@ import octobot_tentacles_manager.configuration.tentacle_configuration as tentacl
 def get_tentacles_code_hash(tentacles: list) -> str:
     full_code = ""
     for linked_tentacle in tentacles:
-        code_location = linked_tentacle.get_script() if hasattr(linked_tentacle, "get_script") \
+        code_location = (
+            linked_tentacle.get_script()
+            if (
+                hasattr(linked_tentacle, "get_script")
+                and linked_tentacle.TRADING_SCRIPT_MODULE
+            )
             else linked_tentacle.__class__
+        )
         full_code = f"{full_code}{inspect.getsource(code_location)}"
     return hashlib.sha256(full_code.encode()).hexdigest()
 
