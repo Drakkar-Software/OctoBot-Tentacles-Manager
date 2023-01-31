@@ -16,6 +16,7 @@
 import os
 import os.path as path
 import shutil
+import naapc as naapc
 
 import octobot_tentacles_manager.configuration as configuration
 import octobot_tentacles_manager.constants as constants
@@ -33,7 +34,11 @@ def update_config(tentacles_setup_config, klass, config_update) -> None:
     config_file = _get_config_file_path(tentacles_setup_config, klass)
     current_config = configuration.read_config(config_file)
     # only update values in config update not to erase values in root config (might not be editable)
+    
+    # use NDict to keep inactive settings in objects
+    current_config = naapc.NDict(current_config)
     current_config.update(config_update)
+    current_config = dict(current_config)
     config_file = _get_config_file_path(tentacles_setup_config, klass, updated_config=True)
     configuration.write_config(config_file, current_config)
 

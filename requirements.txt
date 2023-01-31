@@ -21,3 +21,6 @@ packaging==21.3
 
 # s3
 aioboto3==9.3.1
+
+# use NDict to keep inactive settings in objects
+naapc==1.5.0
