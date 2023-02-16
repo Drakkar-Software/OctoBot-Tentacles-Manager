@@ -23,6 +23,7 @@ import octobot_tentacles_manager.util as util
 # tentacle_data_by_tentacle_class is used to cache tentacles metadata
 _tentacle_by_tentacle_class = None
 _tentacle_class_by_class_name = {}
+_tentacle_documentation_by_class_name = {}
 
 
 def reload_tentacle_by_tentacle_class(tentacles_path=constants.TENTACLES_PATH):
@@ -65,6 +66,21 @@ def get_documentation_file_path(klass) -> str:
     return \
         path.join(get_resources_path(klass), f"{klass if isinstance(klass, str) else klass.get_name()}"
                                              f"{constants.DOCUMENTATION_EXT}")
+
+
+def get_documentation(klass) -> str:
+    doc_key = klass if isinstance(klass, str) else klass.get_name()
+    try:
+        # use documentation content cache as documentation is not supposed to change
+        return _tentacle_documentation_by_class_name[doc_key]
+    except KeyError:
+        doc_file = get_documentation_file_path(klass)
+        doc_content = ""
+        if path.isfile(doc_file):
+            with open(doc_file, "r") as doc_file:
+                doc_content = doc_file.read()
+        _tentacle_documentation_by_class_name[doc_key] = doc_content
+    return doc_content
 
 
 def get_tentacle(klass) -> typing.Optional[models.Tentacle]:

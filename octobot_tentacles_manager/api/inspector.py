@@ -63,6 +63,10 @@ def get_tentacle_documentation_path(klass) -> str:
     return loaders.get_documentation_file_path(klass)
 
 
+def get_tentacle_documentation(klass) -> str:
+    return loaders.get_documentation(klass)
+
+
 def check_tentacle_version(version, name, origin_package, verbose=True) -> bool:
     logger = logging.get_logger("TentacleChecker")
     try:
