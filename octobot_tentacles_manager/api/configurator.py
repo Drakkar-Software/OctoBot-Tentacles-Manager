@@ -116,7 +116,7 @@ def has_profile_local_configuration(tentacles_setup_config: configuration.Tentac
 
 def get_activated_tentacles(tentacles_setup_config: configuration.TentaclesSetupConfiguration) -> list:
     return [tentacle_class
-            for tentacle_classes in tentacles_setup_config.tentacles_activation.values()
+            for tentacle_classes in get_tentacles_activation(tentacles_setup_config).values()
             for tentacle_class, activated in tentacle_classes.items()
             if activated]
 

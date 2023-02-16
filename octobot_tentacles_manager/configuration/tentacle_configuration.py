@@ -23,7 +23,10 @@ import octobot_tentacles_manager.loaders as loaders
 
 
 def get_config(tentacles_setup_config, klass) -> dict:
-    return configuration.read_config(_get_config_file_path(tentacles_setup_config, klass))
+    config_path = _get_config_file_path(tentacles_setup_config, klass)
+    if not config_path:
+        return {}
+    return configuration.read_config(config_path)
 
 
 def update_config(tentacles_setup_config, klass, config_update) -> None:
