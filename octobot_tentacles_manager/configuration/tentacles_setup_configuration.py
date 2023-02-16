@@ -47,6 +47,7 @@ class TentaclesSetupConfiguration:
         self.tentacles_activation = {}
         self.registered_tentacles = {}
         self.installation_context = {}
+        self.is_successfully_loaded = False
 
     def get_config_folder(self) -> str:
         return path.split(self.config_path)[0]
@@ -365,6 +366,7 @@ class TentaclesSetupConfiguration:
         if self.INSTALLATION_CONTEXT_KEY in input_dict:
             self.installation_context = input_dict[self.INSTALLATION_CONTEXT_KEY]
             self._ensure_installation_context()
+        self.is_successfully_loaded = bool(input_dict)
 
     def _to_dict(self):
         self._ensure_installation_context()

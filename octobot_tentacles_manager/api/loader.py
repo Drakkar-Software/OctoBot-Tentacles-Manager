@@ -37,5 +37,9 @@ def get_tentacles_installation_version(tentacles_setup_config):
         constants.TENTACLE_INSTALLATION_CONTEXT_OCTOBOT_VERSION_UNKNOWN)
 
 
+def is_tentacles_setup_config_successfully_loaded(tentacles_setup_config):
+    return tentacles_setup_config.is_successfully_loaded
+
+
 def reload_tentacle_info() -> None:
     loaders.reload_tentacle_by_tentacle_class()
