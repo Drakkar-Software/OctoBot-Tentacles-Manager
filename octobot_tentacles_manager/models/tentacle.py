@@ -20,6 +20,7 @@ import aiofiles
 
 import octobot_tentacles_manager.models.artifact as artifact
 import octobot_tentacles_manager.constants as constants
+import octobot_commons.json_util as json_util
 
 
 class Tentacle(artifact.Artifact):
@@ -55,8 +56,8 @@ class Tentacle(artifact.Artifact):
         """
         try:
             self.tentacle_module_path = path.join(self.tentacle_path, self.name)
-            with open(path.join(self.tentacle_path, self.name, constants.TENTACLE_METADATA), "r") as metadata_file:
-                self._read_metadata_dict(json.loads(metadata_file.read()))
+            file_path = path.join(self.tentacle_path, self.name, constants.TENTACLE_METADATA)
+            self._read_metadata_dict(json_util.read_file(file_path))
         except FileNotFoundError:
             pass
 

@@ -13,16 +13,15 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import json
 import os.path as path
 
 import octobot_commons.configuration as configuration
+import octobot_commons.json_util as json_util
 
 
-def read_config(config_file: str) -> dict:
+def read_config(config_file: str, raise_errors: bool = True) -> dict:
     if path.exists(config_file):
-        with open(config_file, "r") as config_file_r:
-            return json.loads(config_file_r.read())
+        return json_util.read_file(config_file, raise_errors=raise_errors, on_error_value={})
     return {}
 
 
