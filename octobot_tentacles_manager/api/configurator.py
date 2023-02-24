@@ -122,8 +122,8 @@ def get_activated_tentacles(tentacles_setup_config: configuration.TentaclesSetup
 
 
 def update_tentacle_config(tentacles_setup_config: configuration.TentaclesSetupConfiguration,
-                           tentacle_class: object, config_data: dict) -> None:
-    configuration.update_config(tentacles_setup_config, tentacle_class, config_data)
+                           tentacle_class: object, config_data: dict, keep_existing: bool=True) -> None:
+    configuration.update_config(tentacles_setup_config, tentacle_class, config_data, keep_existing)
 
 
 def import_user_tentacles_config_folder(tentacles_setup_config: configuration.TentaclesSetupConfiguration):

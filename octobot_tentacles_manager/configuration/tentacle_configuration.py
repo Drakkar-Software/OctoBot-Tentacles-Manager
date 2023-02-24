@@ -30,15 +30,17 @@ def get_config(tentacles_setup_config, klass) -> dict:
     return configuration.read_config(config_path)
 
 
-def update_config(tentacles_setup_config, klass, config_update) -> None:
+def update_config(tentacles_setup_config, klass, config_update, keep_existing = True) -> None:
     config_file = _get_config_file_path(tentacles_setup_config, klass)
     current_config = configuration.read_config(config_file)
     # only update values in config update not to erase values in root config (might not be editable)
-    
-    # use NDict to keep inactive settings in objects
-    current_config = naapc.NDict(current_config)
-    current_config.update(config_update)
-    current_config = dict(current_config)
+    if keep_existing:
+        # use NDict to keep inactive settings in objects
+        current_config = naapc.NDict(current_config)
+        current_config.update(config_update)
+        current_config = dict(current_config)
+    else:
+        current_config.update(config_update)
     config_file = _get_config_file_path(tentacles_setup_config, klass, updated_config=True)
     configuration.write_config(config_file, current_config)
 
