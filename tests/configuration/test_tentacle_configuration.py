@@ -67,6 +67,159 @@ async def test_update_config():
     _cleanup()
 
 
+async def test_keep_existing_update_config():
+    async with aiohttp.ClientSession() as session:
+        await api.install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
+    from tentacles.Evaluator.RealTime import InstantFluctuationsEvaluator
+    setup_config = configuration.TentaclesSetupConfiguration()
+    # init nested config
+    config_update = {
+        "price_difference_threshold_percent": 2,
+        "plop": 42,
+        "nested_thing": {
+            "price_difference_threshold_percent": 2,
+            "plop": 42,
+            "another_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42
+            }
+        }
+    }
+    update_config(setup_config, InstantFluctuationsEvaluator, config_update)
+    assert get_config(setup_config, InstantFluctuationsEvaluator) == {
+        "price_difference_threshold_percent": 2,
+        "volume_difference_threshold_percent": 400,
+        "plop": 42,
+        "nested_thing": {
+            "price_difference_threshold_percent": 2,
+            "plop": 42,
+            "another_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42
+            }
+        }
+    }
+    
+    # test keep existing option
+    config_update = {
+        "nested_thing": {
+            "new_other_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42
+            }
+        }
+    }
+    update_config(setup_config, InstantFluctuationsEvaluator, config_update, keep_existing=True)
+    assert get_config(setup_config, InstantFluctuationsEvaluator) == {
+        "price_difference_threshold_percent": 2,
+        "volume_difference_threshold_percent": 400,
+        "plop": 42,
+        "nested_thing": {
+            "price_difference_threshold_percent": 2,
+            "plop": 42,
+            "another_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42
+            },
+            "new_other_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42
+            }
+        }
+    }
+    # test deep nested with keep existing option
+    config_update = {
+        "nested_thing": {
+            "new_other_nested_thing": {
+                "i am very deep": {
+                    "price_difference_threshold_percent": 2,
+                    "plop": 42
+                }
+            }
+        }
+    }
+    update_config(setup_config, InstantFluctuationsEvaluator, config_update, keep_existing=True)
+    assert get_config(setup_config, InstantFluctuationsEvaluator) == {
+        "price_difference_threshold_percent": 2,
+        "volume_difference_threshold_percent": 400,
+        "plop": 42,
+        "nested_thing": {
+            "price_difference_threshold_percent": 2,
+            "plop": 42,
+            "another_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42
+            },
+            "new_other_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42,
+                "i am very deep": {
+                    "price_difference_threshold_percent": 2,
+                    "plop": 42
+                }
+            }
+        }
+    }
+    # try adding to deep config
+    config_update = {
+        "nested_thing": {
+            "new_other_nested_thing": {
+                "i am also deep": {
+                    "price_difference_threshold_percent": 2,
+                    "plop": 42
+                }
+            }
+        }
+    }
+    update_config(setup_config, InstantFluctuationsEvaluator, config_update, keep_existing=True)
+    assert get_config(setup_config, InstantFluctuationsEvaluator) == {
+        "price_difference_threshold_percent": 2,
+        "volume_difference_threshold_percent": 400,
+        "plop": 42,
+        "nested_thing": {
+            "price_difference_threshold_percent": 2,
+            "plop": 42,
+            "another_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42
+            },
+            "new_other_nested_thing": {
+                "price_difference_threshold_percent": 2,
+                "plop": 42,
+                "i am very deep": {
+                    "price_difference_threshold_percent": 2,
+                    "plop": 42
+                },
+                "i am also deep": {
+                    "price_difference_threshold_percent": 2,
+                    "plop": 42
+                }
+            }
+        }
+    }
+    
+    # test keep existing false
+    config_update = {
+        "nested_thing": {
+            "i am alone here": {
+                "price_difference_threshold_percent": 42,
+            }
+        }
+    }
+    update_config(setup_config, InstantFluctuationsEvaluator, config_update, keep_existing=False)
+    assert get_config(setup_config, InstantFluctuationsEvaluator) == {
+        "price_difference_threshold_percent": 2,
+        "volume_difference_threshold_percent": 400,
+        "plop": 42,
+        "nested_thing": {
+            "i am alone here": {
+                "price_difference_threshold_percent": 42,
+            }
+        }
+    }
+    _cleanup()
+
+
 async def test_factory_reset_config():
     async with aiohttp.ClientSession() as session:
         await api.install_all_tentacles(_tentacles_local_path(), aiohttp_session=session)
