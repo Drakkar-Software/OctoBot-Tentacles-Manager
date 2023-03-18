@@ -29,14 +29,25 @@ def get_config(tentacles_setup_config, klass) -> dict:
     return configuration.read_config(config_path)
 
 
-def update_config(tentacles_setup_config, klass, config_update) -> None:
+def update_config(tentacles_setup_config, klass, config_update, keep_existing = True) -> None:
     config_file = _get_config_file_path(tentacles_setup_config, klass)
     current_config = configuration.read_config(config_file)
     # only update values in config update not to erase values in root config (might not be editable)
-    current_config.update(config_update)
+    if keep_existing:
+        # keep inactive settings in nested dicts
+        current_config = _recursive_config_update(current_config, config_update)
+    else:
+        current_config.update(config_update)
     config_file = _get_config_file_path(tentacles_setup_config, klass, updated_config=True)
     configuration.write_config(config_file, current_config)
 
+def _recursive_config_update(current_config: dict, config_update: dict)-> dict:
+    for key, values in config_update.items():
+        if isinstance(values, dict) and isinstance(current_config.get(key), dict):
+            current_config[key] = _recursive_config_update(current_config[key], values)
+            continue
+        current_config[key] = values     
+    return current_config
 
 def factory_reset_config(tentacles_setup_config, klass) -> None:
     shutil.copy(_get_reference_config_file_path(klass), _get_config_file_path(tentacles_setup_config, klass))
