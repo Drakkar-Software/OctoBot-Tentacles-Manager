@@ -145,3 +145,7 @@ def get_tentacle_class_from_string(tentacle_name, allow_cache=True):
             loaders.set_tentacle_class_by_name(tentacle_name, tentacle_class)
             return tentacle_class
     return _load_tentacle_class(tentacle_name)
+
+
+def get_tentacles_classes_names_for_type(tentacle_type) -> list:
+    return loaders.get_tentacles_classes_names_for_type(tentacle_type)

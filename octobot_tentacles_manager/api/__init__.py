@@ -85,6 +85,7 @@ from octobot_tentacles_manager.api.inspector import (
     get_tentacle_documentation,
     check_tentacle_version,
     get_tentacle_class_from_string,
+    get_tentacles_classes_names_for_type,
 )
 from octobot_tentacles_manager.api.uninstaller import (
     uninstall_all_tentacles,
@@ -143,6 +144,7 @@ __all__ = [
     "get_tentacle_documentation",
     "check_tentacle_version",
     "get_tentacle_class_from_string",
+    "get_tentacles_classes_names_for_type",
     "uninstall_all_tentacles",
     "uninstall_tentacles",
     "start_tentacle_creator",

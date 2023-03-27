@@ -62,10 +62,19 @@ def get_tentacles_classes_names_from_tentacle_module(tentacle_module_name) -> li
     ]
 
 
+def get_tentacles_classes_names_for_type(tentacle_type) -> list:
+    tentacle_names = []
+    for tentacle_details in _tentacle_by_tentacle_class.values():
+        if tentacle_details.tentacle_type.is_of_type(tentacle_type):
+            tentacle_names += tentacle_details.tentacle_class_names
+    return tentacle_names
+
+
 def get_documentation_file_path(klass) -> str:
-    return \
-        path.join(get_resources_path(klass), f"{klass if isinstance(klass, str) else klass.get_name()}"
-                                             f"{constants.DOCUMENTATION_EXT}")
+    return path.join(
+        get_resources_path(klass),
+        f"{klass if isinstance(klass, str) else klass.get_name()}{constants.DOCUMENTATION_EXT}"
+    )
 
 
 def get_documentation(klass) -> str:
