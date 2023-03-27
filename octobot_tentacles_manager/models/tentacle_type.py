@@ -35,6 +35,9 @@ class TentacleType:
             .replace(f".", path.sep)
         return TentacleType(tentacle_type_path, module_name)
 
+    def is_of_type(self, required_type) -> bool:
+        return required_type in self.path.split(path.sep)
+
     def get_last_element(self) -> str:
         """
         :return: the path last element
