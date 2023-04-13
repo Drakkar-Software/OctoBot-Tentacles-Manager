@@ -106,6 +106,11 @@ def update_activation_configuration(tentacles_setup_config: configuration.Tentac
     return tentacles_setup_config.update_activation_configuration(new_config, deactivate_others, add_missing_elements)
 
 
+def deactivate_all_tentacles(tentacles_setup_config: configuration.TentaclesSetupConfiguration,
+                             trading_modes: bool, strategies: bool, evaluators: bool):
+    tentacles_setup_config.deactivate_all(trading_modes, strategies, evaluators)
+
+
 def save_tentacles_setup_configuration(tentacles_setup_config: configuration.TentaclesSetupConfiguration) -> None:
     tentacles_setup_config.save_config()
 
