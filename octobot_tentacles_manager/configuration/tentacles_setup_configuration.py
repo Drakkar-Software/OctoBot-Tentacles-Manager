@@ -141,6 +141,22 @@ class TentaclesSetupConfiguration:
             except KeyError:
                 self.tentacles_activation[tentacle.tentacle_root_type] = {tentacle_name: True}
 
+    def deactivate_all(self, trading_modes: bool, strategies: bool, evaluators: bool):
+        to_deactivate_tentacles_types = [constants.TENTACLES_TRADING_MODE_PATH] if trading_modes else []
+        to_deactivate_tentacles_types += [constants.TENTACLES_EVALUATOR_STRATEGIES_PATH] if strategies else []
+        to_deactivate_tentacles_types += [
+            constants.TENTACLES_EVALUATOR_TA_PATH,
+            constants.TENTACLES_EVALUATOR_SOCIAL_PATH,
+            constants.TENTACLES_EVALUATOR_REALTIME_PATH,
+            constants.TENTACLES_EVALUATOR_SCRIPTED_PATH
+        ] if evaluators else []
+        for element_type, element_names in self.tentacles_activation.items():
+            for element_name in element_names:
+                if loaders.get_tentacle_classes()[element_name].get_simple_tentacle_type() \
+                        in to_deactivate_tentacles_types and self.tentacles_activation[element_type][element_name]:
+                    self.logger.info(f"Tentacles configuration updated: {element_name} {'deactivated'}")
+                    self.tentacles_activation[element_type][element_name] = False
+
     def _deactivate_other_evaluators(self, new_config):
         something_changed = False
         for element_type, element_names in self.tentacles_activation.items():
