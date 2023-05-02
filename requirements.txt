@@ -1,5 +1,6 @@
 # Tentacles compilation requirements
 setuptools
+cython==0.29.32
 
 # Drakkar-Software requirements
 OctoBot-Commons>=1.9, <1.10
