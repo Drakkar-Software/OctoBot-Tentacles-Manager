@@ -82,7 +82,7 @@ async def test_upload_folder(nexus_tests):
     # test upload file
     with open(local_file_name, "w") as test_file:
         test_file.write(json.dumps({'test-key': 1}))
-    shutil.make_archive(local_zip_path, constants.TENTACLES_PACKAGE_FORMAT, test_dir_path)
+    shutil.make_archive(os.path.abspath(local_zip_path), constants.TENTACLES_PACKAGE_FORMAT, test_dir_path)
     assert await uploader_api.upload_file_or_folder_to_nexus(nexus_path=TEST_NEXUS_PATH,
                                                              artifact_path=test_dir_path,
                                                              artifact_alias=nexus_test_file_name) == 0

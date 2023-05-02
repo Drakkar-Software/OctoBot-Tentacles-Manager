@@ -170,9 +170,11 @@ class ArtifactExporter:
         Archive creator temporary dir to a zip file
         :return: the path of the archive
         """
-        zipped_file = shutil.make_archive(os.path.join(self.artifact.output_dir, self.get_zip_file_name()),
-                                          constants.TENTACLES_PACKAGE_FORMAT,
-                                          constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
+        zipped_file = shutil.make_archive(
+            os.path.abspath(os.path.join(self.artifact.output_dir, self.get_zip_file_name())),
+            constants.TENTACLES_PACKAGE_FORMAT,
+            constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER
+        )
         try:
             # remove working folder
             shutil.rmtree(constants.TENTACLES_PACKAGE_CREATOR_TEMP_FOLDER)
