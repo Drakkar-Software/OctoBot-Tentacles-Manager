@@ -34,7 +34,7 @@ setup(
     url='https://github.com/Drakkar-Software/OctoBot-Tentacles-Manager',
     license='LGPL-3.0',
     author='Drakkar-Software',
-    author_email='drakkar-software@protonmail.com',
+    author_email='contact@drakkar.software',
     description='OctoBot project module installer',
     packages=PACKAGES,
     include_package_data=True,
@@ -43,7 +43,6 @@ setup(
     test_suite="tests",
     zip_safe=False,
     data_files=[],
-    setup_requires=REQUIRED,
     install_requires=REQUIRED,
     python_requires=REQUIRES_PYTHON,
     entry_points={
