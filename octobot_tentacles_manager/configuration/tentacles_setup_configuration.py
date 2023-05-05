@@ -152,10 +152,14 @@ class TentaclesSetupConfiguration:
         ] if evaluators else []
         for element_type, element_names in self.tentacles_activation.items():
             for element_name in element_names:
-                if loaders.get_tentacle_classes()[element_name].get_simple_tentacle_type() \
-                        in to_deactivate_tentacles_types and self.tentacles_activation[element_type][element_name]:
-                    self.logger.info(f"Tentacles configuration updated: {element_name} {'deactivated'}")
-                    self.tentacles_activation[element_type][element_name] = False
+                try:
+                    if loaders.get_tentacle_classes()[element_name].get_simple_tentacle_type() \
+                            in to_deactivate_tentacles_types and self.tentacles_activation[element_type][element_name]:
+                        self.logger.info(f"Tentacles configuration updated: {element_name} {'deactivated'}")
+                        self.tentacles_activation[element_type][element_name] = False
+                except KeyError:
+                    # do not crash on missing tentacles
+                    pass
 
     def _deactivate_other_evaluators(self, new_config):
         something_changed = False
