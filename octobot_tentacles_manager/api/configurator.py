@@ -147,6 +147,10 @@ def set_tentacle_config_proxy(new_proxy) -> dict:
     return configuration.set_get_config_proxy(new_proxy)
 
 
+def local_tentacle_config_proxy(new_proxy):
+    return configuration.local_get_config_proxy(new_proxy)
+
+
 def factory_tentacle_reset_config(tentacles_setup_config: configuration.TentaclesSetupConfiguration, klass) -> None:
     return configuration.factory_reset_config(tentacles_setup_config, klass)
 

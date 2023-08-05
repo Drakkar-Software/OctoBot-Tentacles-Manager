@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import contextlib
 import os
 import os.path as path
 import shutil
@@ -34,9 +35,19 @@ _GET_CONFIG_PROXY = _get_config_from_file_system
 
 
 def set_get_config_proxy(new_proxy):
-    # todo concurrency
+    # todo handle concurrency
     global _GET_CONFIG_PROXY
     _GET_CONFIG_PROXY = new_proxy
+
+
+@contextlib.contextmanager
+def local_get_config_proxy(new_proxy):
+    previous_proxy = _GET_CONFIG_PROXY
+    try:
+        set_get_config_proxy(new_proxy)
+        yield
+    finally:
+        set_get_config_proxy(previous_proxy)
 
 
 def get_config(tentacles_setup_config, klass) -> dict:
