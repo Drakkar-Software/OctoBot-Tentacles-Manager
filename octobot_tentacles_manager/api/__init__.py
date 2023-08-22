@@ -72,6 +72,7 @@ from octobot_tentacles_manager.api.updater import (
 from octobot_tentacles_manager.api.loader import (
     load_tentacles,
     reload_tentacle_info,
+    ensure_tentacle_info,
     are_tentacles_up_to_date,
     is_tentacles_setup_config_successfully_loaded,
     get_tentacles_installation_version,
@@ -136,6 +137,7 @@ __all__ = [
     "update_tentacles",
     "load_tentacles",
     "reload_tentacle_info",
+    "ensure_tentacle_info",
     "are_tentacles_up_to_date",
     "is_tentacles_setup_config_successfully_loaded",
     "get_tentacles_installation_version",

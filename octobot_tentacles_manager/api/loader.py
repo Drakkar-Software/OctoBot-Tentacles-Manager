@@ -43,3 +43,7 @@ def is_tentacles_setup_config_successfully_loaded(tentacles_setup_config):
 
 def reload_tentacle_info() -> None:
     loaders.reload_tentacle_by_tentacle_class()
+
+
+def ensure_tentacle_info() -> None:
+    loaders.ensure_tentacles_metadata(constants.TENTACLES_PATH)
