@@ -28,6 +28,7 @@ from octobot_tentacles_manager.workers.install_worker import InstallWorker
 from octobot_tentacles_manager.models.tentacle import Tentacle
 from octobot_tentacles_manager.util.tentacle_fetching import fetch_and_extract_tentacles
 from tests import event_loop, clean, fake_profiles, TEMP_DIR, OTHER_PROFILE
+from tests.workers.octobot_version import get_installation_context_octobot_version
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -56,9 +57,7 @@ async def test_install_two_tentacles(clean):
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         ref_profile_config = json.load(config_f)
         assert ref_profile_config == {
-            'installation_context': {
-                'octobot_version': 'unknown'
-            },
+            'installation_context': get_installation_context_octobot_version(),
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
             },
@@ -95,9 +94,7 @@ async def test_install_one_tentacle_with_requirement(clean):
     # test tentacles config
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
-            'installation_context': {
-                'octobot_version': 'unknown'
-            },
+            'installation_context': get_installation_context_octobot_version(),
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': UNKNOWN_TENTACLES_PACKAGE_LOCATION
             },
@@ -132,9 +129,7 @@ async def test_install_all_tentacles(clean):
     # test tentacles config
     with open(USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH, "r") as config_f:
         assert json.load(config_f) == {
-            'installation_context': {
-                'octobot_version': 'unknown'
-            },
+            'installation_context': get_installation_context_octobot_version(),
             'registered_tentacles': {
                 'OctoBot-Default-Tentacles': tentacles_path
             },

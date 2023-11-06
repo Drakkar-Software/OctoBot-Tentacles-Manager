@@ -20,10 +20,30 @@ import octobot_commons.tentacles_management as tentacles_management
 
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.loaders as loaders
+import octobot_tentacles_manager.enums as manager_enums
 
 
 def get_installed_tentacles_modules() -> set:
     return set(tentacle for tentacle in loaders.get_tentacle_classes().values())
+
+
+def get_installed_tentacles_modules_dict() -> dict:
+    return {_tentacle.name: {
+        manager_enums.InstalledTentaclesModule.NAME.value:_tentacle.name,
+        manager_enums.InstalledTentaclesModule.IN_DEV_MODE.value:_tentacle.in_dev_mode,
+        manager_enums.InstalledTentaclesModule.ARTIFACT_NAME.value:_tentacle.ARTIFACT_NAME,
+        manager_enums.InstalledTentaclesModule.METADATA.value:_tentacle.metadata,
+        manager_enums.InstalledTentaclesModule.ORIGIN_PACKAGE.value:_tentacle.origin_package,
+        manager_enums.InstalledTentaclesModule.ORIGIN_REPOSITORY.value:_tentacle.origin_repository,
+        manager_enums.InstalledTentaclesModule.TENTACLE_CLASS_NAMES.value:_tentacle.tentacle_class_names,
+        manager_enums.InstalledTentaclesModule.TENTACLE_GROUP.value:_tentacle.tentacle_group,
+        manager_enums.InstalledTentaclesModule.TENTACLE_MODULE_PATH.value:_tentacle.tentacle_module_path,
+        manager_enums.InstalledTentaclesModule.TENTACLE_PATH.value:_tentacle.tentacle_path,
+        manager_enums.InstalledTentaclesModule.TENTACLE_ROOT_PATH.value:_tentacle.tentacle_root_path,
+        manager_enums.InstalledTentaclesModule.TENTACLE_ROOT_TYPE.value:_tentacle.tentacle_root_type,
+        manager_enums.InstalledTentaclesModule.TENTACLES_REQUIREMENTS.value:_tentacle.tentacles_requirements,
+        manager_enums.InstalledTentaclesModule.VERSION.value:_tentacle.version
+    } for _tentacle in loaders.get_tentacle_classes().values()}
 
 
 def get_tentacle_group(klass) -> str:

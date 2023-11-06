@@ -26,3 +26,19 @@ class ArtifactTypes(enum.Enum):
 class UploaderTypes(enum.Enum):
     S3 = "s3"
     NEXUS = "nexus"
+
+class InstalledTentaclesModule(enum.Enum):
+    NAME = "name"
+    IN_DEV_MODE = "in_dev_mode"
+    ARTIFACT_NAME = "artifact_name"
+    METADATA = "metadata"
+    ORIGIN_PACKAGE = "origin_package"
+    ORIGIN_REPOSITORY = "origin_repository"
+    TENTACLE_CLASS_NAMES = "tentacle_class_names"
+    TENTACLE_GROUP = "tentacle_group"
+    TENTACLE_MODULE_PATH = "tentacle_module_path"
+    TENTACLE_PATH = "tentacle_path"
+    TENTACLE_ROOT_PATH = "tentacle_root_path"
+    TENTACLE_ROOT_TYPE = "tentacle_root_type"
+    TENTACLES_REQUIREMENTS = "tentacles_requirements"
+    VERSION = "version"
