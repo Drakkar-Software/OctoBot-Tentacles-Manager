@@ -45,16 +45,30 @@ def refresh_profile_tentacles_setup_config(
 
 
 def get_tentacles_setup_config(
-        config_path=constants.USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH) -> configuration.TentaclesSetupConfiguration:
+    config_path=constants.USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH
+) -> configuration.TentaclesSetupConfiguration:
     setup_config = configuration.TentaclesSetupConfiguration(config_path=config_path)
     setup_config.read_config()
     return setup_config
 
 
-def create_tentacles_setup_config_with_tentacles(*tentacles_classes):
-    setup_config = configuration.TentaclesSetupConfiguration()
+def create_tentacles_setup_config_with_tentacles(
+    *tentacles_classes, config_path=constants.USER_REFERENCE_TENTACLE_CONFIG_FILE_PATH
+) -> configuration.TentaclesSetupConfiguration:
+    setup_config = configuration.TentaclesSetupConfiguration(config_path=config_path)
     setup_config.from_activated_tentacles_classes(*tentacles_classes)
     return setup_config
+
+
+def fill_with_installed_tentacles(
+    tentacles_setup_config: configuration.TentaclesSetupConfiguration,
+    tentacles_folder: str = constants.TENTACLES_PATH
+):
+    available_tentacle = util.load_tentacle_with_metadata(tentacles_folder)
+    # fill overall tentacles setup config data
+    tentacles_setup_config.fill_tentacle_config(
+        available_tentacle,
+    )
 
 
 def is_tentacle_activated_in_tentacles_setup_config(tentacles_setup_config: configuration.TentaclesSetupConfiguration,

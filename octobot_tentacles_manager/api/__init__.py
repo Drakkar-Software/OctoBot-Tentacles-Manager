@@ -41,6 +41,7 @@ from octobot_tentacles_manager.api.uploader import (
 from octobot_tentacles_manager.api.configurator import (
     get_tentacles_setup_config,
     create_tentacles_setup_config_with_tentacles,
+    fill_with_installed_tentacles,
     is_tentacle_activated_in_tentacles_setup_config,
     get_class_from_name_with_activated_required_tentacles,
     get_tentacles_activation,
@@ -110,6 +111,7 @@ from octobot_tentacles_manager.api.installer import (
 __all__ = [
     "get_tentacles_setup_config",
     "create_tentacles_setup_config_with_tentacles",
+    "fill_with_installed_tentacles",
     "is_tentacle_activated_in_tentacles_setup_config",
     "get_class_from_name_with_activated_required_tentacles",
     "get_tentacles_activation",
