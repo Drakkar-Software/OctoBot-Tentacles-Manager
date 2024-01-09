@@ -49,7 +49,8 @@ jobs:
         S3_API_SECRET_KEY: ${{ secrets.S3_API_SECRET_KEY }}
         S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
         S3_REGION_NAME: ${{ secrets.S3_REGION_NAME }}
-        S3_ENDPOINT_URL: ${{ secrets.S3_ENDPOINT_URL }}
+        S3_ENDPOINT_URL: ${{ secrets.S3_UPLOAD_TEST_ENDPOINT_URL }}
+        TENTACLES_OCTOBOT_ONLINE_URL: ${{ secrets.UPLOAD_TEST_TENTACLES_OCTOBOT_ONLINE_URL }}
 
     - name: Publish coverage
       if: matrix.type == 'sources' && github.event_name == 'push'
