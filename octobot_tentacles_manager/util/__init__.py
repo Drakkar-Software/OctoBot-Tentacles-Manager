@@ -35,6 +35,8 @@ from octobot_tentacles_manager.util.tentacle_explorer import (
     get_tentacles_from_package,
 )
 from octobot_tentacles_manager.util.file_util import (
+    get_file_creation_time,
+    log_tentacles_file_details,
     find_or_create,
     replace_with_remove_or_rename,
     merge_folders,
@@ -64,6 +66,8 @@ __all__ = [
     "get_local_arch_download_path",
     "load_tentacle_with_metadata",
     "get_tentacles_from_package",
+    "get_file_creation_time",
+    "log_tentacles_file_details",
     "find_or_create",
     "get_tentacles_from_package",
     "replace_with_remove_or_rename",
