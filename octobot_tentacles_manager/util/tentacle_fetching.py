@@ -19,6 +19,7 @@ import os
 import os.path as path
 import shutil
 
+import octobot_commons.logging as commons_logging
 import octobot_commons.aiohttp_util as aiohttp_util
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.util as util
@@ -37,6 +38,11 @@ async def fetch_and_extract_tentacles(tentacles_temp_dir, tentacles_path_or_url,
             last_modified = await _download_tentacles(compressed_file, tentacles_path_or_url, aiohttp_session)
             await util.log_tentacles_file_details(compressed_file, last_modified)
         await _extract_tentacles(compressed_file, tentacles_temp_dir, merge_dirs)
+    except Exception as err:
+        commons_logging.get_logger("TentaclesFetching").warning(
+            f"Error when fetching tentacles from {tentacles_path_or_url}: {err} ({err.__class__.__name__})"
+        )
+        raise
     finally:
         if should_download and path.isfile(compressed_file):
             os.remove(compressed_file)
