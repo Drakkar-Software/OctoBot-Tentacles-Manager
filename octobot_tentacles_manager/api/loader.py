@@ -18,6 +18,7 @@ import packaging.version as packaging_version
 import octobot_tentacles_manager.constants as constants
 import octobot_tentacles_manager.loaders as loaders
 import octobot_tentacles_manager.managers as managers
+import octobot_tentacles_manager.util as util
 
 
 def load_tentacles(verbose=True) -> bool:
@@ -47,3 +48,11 @@ def reload_tentacle_info() -> None:
 
 def ensure_tentacle_info() -> None:
     loaders.ensure_tentacles_metadata(constants.TENTACLES_PATH)
+
+
+def register_extra_tentacle_data(tentacle_class, tentacle_type_path: str):
+    """
+    :param tentacle_class: class of the tentacle
+    :param tentacle_type_path: path of the tentacle, ex "Trading/mode"
+    """
+    return util.register_extra_tentacle_data(tentacle_class.get_name(), tentacle_type_path, tentacle_class)
