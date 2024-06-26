@@ -115,12 +115,13 @@ class TentaclesSetupManager:
             shutil.rmtree(constants.TENTACLES_REQUIREMENTS_INSTALL_TEMP_DIR)
 
     @staticmethod
-    def is_tentacles_arch_valid(verbose=True, raises=False) -> bool:
+    def is_tentacles_arch_valid(verbose=True, raises=False, import_tentacles=True) -> bool:
         try:
             if not TentaclesSetupManager._is_full_arch_valid(constants.TENTACLES_PATH,
                                                              constants.TENTACLES_FOLDERS_ARCH):
                 return False
-            import tentacles
+            if import_tentacles:
+                import tentacles
             return True
         except (ImportError, SyntaxError) as e:
             if verbose:

@@ -58,6 +58,20 @@ class TentaclesSetupConfiguration:
     def unregister_tentacles_package(self, package_name):
         self.registered_tentacles.pop(package_name)
 
+    def get_installed_packages_from_url(self, url: str):
+        return [
+            package
+            for package, package_url in self.registered_tentacles.items()
+            if url == package_url
+        ]
+
+    def get_all_installed_package_urls(self):
+        return list(set(
+            url
+            for url in self.registered_tentacles.values()
+            if url != constants.UNKNOWN_TENTACLES_PACKAGE_LOCATION
+        ))
+
     def fill_tentacle_config(self, tentacles, default_tentacle_config=constants.DEFAULT_TENTACLE_CONFIG,
                                    remove_missing_tentacles=True, update_location=None,
                                    force_update_registered_tentacles=False, newly_installed_tentacles=None,
