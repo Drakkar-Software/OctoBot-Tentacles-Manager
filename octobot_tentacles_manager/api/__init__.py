@@ -72,6 +72,7 @@ from octobot_tentacles_manager.api.updater import (
 )
 from octobot_tentacles_manager.api.loader import (
     load_tentacles,
+    is_tentacles_architecture_valid,
     reload_tentacle_info,
     ensure_tentacle_info,
     register_extra_tentacle_data,
@@ -92,6 +93,9 @@ from octobot_tentacles_manager.api.inspector import (
     check_tentacle_version,
     get_tentacle_class_from_string,
     get_tentacles_classes_names_for_type,
+    get_installed_packages_from_url,
+    get_tentacles_from_package_name,
+    get_all_installed_package_urls,
 )
 from octobot_tentacles_manager.api.uninstaller import (
     uninstall_all_tentacles,
@@ -139,6 +143,7 @@ __all__ = [
     "update_all_tentacles",
     "update_tentacles",
     "load_tentacles",
+    "is_tentacles_architecture_valid",
     "reload_tentacle_info",
     "ensure_tentacle_info",
     "register_extra_tentacle_data",
@@ -157,6 +162,9 @@ __all__ = [
     "check_tentacle_version",
     "get_tentacle_class_from_string",
     "get_tentacles_classes_names_for_type",
+    "get_installed_packages_from_url",
+    "get_tentacles_from_package_name",
+    "get_all_installed_package_urls",
     "uninstall_all_tentacles",
     "uninstall_tentacles",
     "start_tentacle_creator",
