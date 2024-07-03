@@ -239,11 +239,15 @@ class TentaclesSetupConfiguration:
             self._apply_reference_tentacles_config(read_activation_config)
             self.save_config()
 
-    def save_config(self):
+    def save_config(self, is_config_update: bool = False) -> bool:
+        changed = False
         parent_dir, _ = path.split(self.config_path)
         if not path.exists(parent_dir):
             os.makedirs(parent_dir)
-        configuration.write_config(self.config_path, self._to_dict())
+        if not is_config_update or not configuration.is_same_config(self.config_path, self._to_dict()):
+            configuration.write_config(self.config_path, self._to_dict())
+            changed = True
+        return changed
 
     def _update_tentacles_setup_config(self,
                                        tentacles,
