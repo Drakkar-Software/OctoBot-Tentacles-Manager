@@ -36,11 +36,11 @@ class TentaclesSetupManager:
         self.bot_installation_path = bot_installation_path
 
     def refresh_user_tentacles_setup_config_file(self,
-                                                       tentacles_setup_config_to_update=None,
-                                                       update_location=None,
-                                                       force_update_registered_tentacles=False,
-                                                       newly_installed_tentacles=None,
-                                                       uninstalled_tentacles=None):
+                                                 tentacles_setup_config_to_update=None,
+                                                 update_location=None,
+                                                 force_update_registered_tentacles=False,
+                                                 newly_installed_tentacles=None,
+                                                 uninstalled_tentacles=None):
         available_tentacle = util.load_tentacle_with_metadata(self.tentacle_setup_root_path)
         if not tentacles_setup_config_to_update:
             reference_tentacle_setup_config = configuration.TentaclesSetupConfiguration(
