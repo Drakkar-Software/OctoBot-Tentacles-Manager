@@ -21,7 +21,18 @@ import shutil
 
 import aiofiles
 import octobot_commons.logging as logging
-import yaml
+import octobot_commons.constants as commons_constants
+try:
+    import yaml
+except ImportError:
+    if commons_constants.USE_MINIMAL_LIBS:
+        # mock yaml imports
+        class YamlImportMock:
+            def dump(self, *args):
+                raise ImportError("yaml not installed")
+        yaml = YamlImportMock()
+    else:
+        raise
 
 import octobot_tentacles_manager.models as models
 import octobot_tentacles_manager.constants as constants

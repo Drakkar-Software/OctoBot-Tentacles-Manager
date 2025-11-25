@@ -12,6 +12,7 @@ jobs:
     uses: Drakkar-Software/.github/.github/workflows/python3_lint_workflow.yml@master
     with:
       project_main_package: octobot_tentacles_manager
+      use_full_requirements: true
 
   tests:
     needs: lint
@@ -31,7 +32,7 @@ jobs:
         architecture: ${{ matrix.arch }}
 
     - name: Install dependencies
-      run: pip install --prefer-binary -r dev_requirements.txt -r requirements.txt
+      run: pip install --prefer-binary -r dev_requirements.txt -r requirements.txt -r full_requirements.txt
 
     - name: Pytests
       run: |
@@ -62,6 +63,8 @@ jobs:
     needs: tests
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     uses: Drakkar-Software/.github/.github/workflows/python3_sdist_workflow.yml@master
+    with:
+      use_full_requirements: true
     secrets:
       PYPI_OFFICIAL_UPLOAD_URL: ${{ secrets.PYPI_OFFICIAL_UPLOAD_URL }}
       PYPI_USERNAME: __token__

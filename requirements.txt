@@ -1,9 +1,8 @@
 # Tentacles compilation requirements
 setuptools
-cython==0.29.32
 
 # Drakkar-Software requirements
-OctoBot-Commons>=1.9.44, <1.10
+OctoBot-Commons>=1.9.88, <1.10
 
 # async files management
 aiofiles>=0.6.0, <0.7
@@ -11,14 +10,5 @@ aiofiles>=0.6.0, <0.7
 # async http requests
 aiohttp>=3.9.5
 
-# Templating requirements
-jinja2>=3.0.3
-
-# artifact metadata
-pyyaml>=6.0
-
 # version comparison
 packaging>=25.0
-
-# s3
-aioboto3==12.1.0

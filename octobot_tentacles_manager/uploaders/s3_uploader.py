@@ -14,7 +14,19 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import os
-import aioboto3
+import octobot_commons.constants as commons_constants
+try:
+    import aioboto3
+except ImportError:
+    if commons_constants.USE_MINIMAL_LIBS:
+        # mock aioboto3 imports
+        class Aioboto3ImportMock:
+            class Session:
+                def __init__(self, *args):
+                    raise ImportError("aioboto3 not installed")
+        aioboto3 = Aioboto3ImportMock()
+    else:
+        raise
 import logging
 
 import octobot_tentacles_manager.uploaders.uploader as uploader
