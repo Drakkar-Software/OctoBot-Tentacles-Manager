@@ -16,7 +16,19 @@
 import os
 import os.path as path
 import logging
-import jinja2.nativetypes as nativetypes
+import octobot_commons.constants
+try:
+    import jinja2.nativetypes as nativetypes
+except ImportError:
+    if octobot_commons.constants.USE_MINIMAL_LIBS:
+        # mock jsonschema imports
+        class NativetypesImportMock:
+            class NativeEnvironment:
+                def __init__(self, *args):
+                    raise ImportError("jinja2 not installed")
+        nativetypes = NativetypesImportMock()
+    else:
+        raise
 
 import octobot_commons.logging as common_logging
 import octobot_tentacles_manager.constants as constants
