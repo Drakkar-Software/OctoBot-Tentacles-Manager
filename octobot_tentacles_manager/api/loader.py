@@ -50,8 +50,8 @@ def reload_tentacle_info() -> None:
     loaders.reload_tentacle_by_tentacle_class()
 
 
-def ensure_tentacle_info() -> None:
-    loaders.ensure_tentacles_metadata(constants.TENTACLES_PATH)
+def ensure_tentacle_info(tentacles_path=constants.TENTACLES_PATH) -> None:
+    loaders.ensure_tentacles_metadata(tentacles_path)
 
 
 def register_extra_tentacle_data(tentacle_class, tentacle_type_path: str):
